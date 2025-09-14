@@ -2,7 +2,7 @@
 
 export default function AboutSection() {
   return (
-    <section className="mb-5 shadow-sm mt-3 rounded-3 text-center">
+    <section id="about" className="mb-5 shadow-sm mt-3 rounded-3 text-center">
       <h2 className="fw-semibold">About Us</h2>
       <p>
         Bright Kingdom British School is dedicated to nurturing young

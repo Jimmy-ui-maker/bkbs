@@ -57,10 +57,15 @@ export default function FAQSection() {
             08087258344
           </a>{" "}
           <br />
-          Email:
-          <a href="mailto:brightkingdombritishschool@gmail.com" className=" text-truncate">
-            brightkingdombritishschool@gmail.com
-          </a>
+          <div className="d-flex justify-content-start">
+            <span>Email : </span>
+            <a
+              href="mailto:brightkingdombritishschool@gmail.com"
+              className="text-truncate"
+            >
+               brightkingdombritishschool@gmail.com
+            </a>
+          </div>
         </>
       ),
     },

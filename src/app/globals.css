@@ -61,7 +61,7 @@ body {
   border: none;
   padding: 12px;
   border-radius: 6px;
-  width: 20%;
+  width: 20%;               /* default for large screens */
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -70,6 +70,16 @@ body {
 .btn-get:hover {
   background-color: #000;
 }
+
+/* Small screen adjustments */
+@media (max-width: 768px) {
+  .btn-get {
+    width: 100%;            /* full width on small devices */
+    display: block;
+    margin: 10px 0;         /* add spacing */
+  }
+}
+
 
 /* Sticky chat button */
 .chat-btn {

@@ -1,6 +1,4 @@
-"use client";
 
-import Link from "next/link";
 
 export default function LandingSection() {
   return (
@@ -16,15 +14,9 @@ export default function LandingSection() {
               Building the leaders of tomorrow through excellence in education.
             </p>
             <div className="d-grid d-sm-flex gap-2">
-              <Link href="" className="btn-get  btn-lg soft-shadow">
+              <a href="#about" className="btn-get  btn-lg soft-shadow text-center">
                 Get started
-              </Link>
-              <Link
-                href=""
-                className="btn-get btn-lg soft-shadow"
-              >
-                About
-              </Link>
+              </a>
             </div>
           </div>
           <div className="col-12 col-md-5">
