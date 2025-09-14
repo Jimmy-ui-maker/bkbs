@@ -24,11 +24,11 @@ export default function FAQSection() {
     },
     {
       q: "What curriculum does the school follow?",
-      a: "We combine British and Nigerian curricula to prepare students for both local and international opportunities.",
+      a: "We combine British and Nigerian curricula to prepare learners for both local and international opportunities.",
     },
     {
       q: "Are there school transportation services?",
-      a: "Yes, we provide safe and reliable transportation services for students across designated routes.",
+      a: "Yes, we provide safe and reliable transportation services for learners across designated routes.",
     },
     {
       q: "Does the school provide lunch?",
@@ -36,11 +36,11 @@ export default function FAQSection() {
     },
     {
       q: "What measures are in place for student safety?",
-      a: "We maintain 24/7 security, CCTV monitoring, and strict visitor policies to ensure a safe environment.",
+      a: "We maintain 24/7 security, and strict visitor policies to ensure a safe environment.",
     },
     {
       q: "How can parents communicate with teachers?",
-      a: "Parents can reach out during scheduled meetings, via emails, or through our parent-portal communication system.",
+      a: "Parents can reach teachers through scheduled meetings, via emails, or through our parent-portal communication system.",
     },
     {
       q: "How can we contact the school?",
@@ -58,7 +58,7 @@ export default function FAQSection() {
           </a>{" "}
           <br />
           Email:
-          <a href="mailto:brightkingdombritishschool@gmail.com">
+          <a href="mailto:brightkingdombritishschool@gmail.com" className=" text-truncate">
             brightkingdombritishschool@gmail.com
           </a>
         </>
@@ -71,7 +71,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="mb-5 shadow-sm">
+    <section className="mb-5 shadow-sm pb-4">
       <h2 className="fw-bold text-center mb-4">Frequently Asked Questions</h2>
       <div className="container faq-container ">
         {faqs.map((item, index) => (
