@@ -45,17 +45,20 @@ export default function LoginPage() {
           <div className="form-check mb-3">
             <input
               type="checkbox"
-              className="form-check-input"
+              className="form-check-input shadow-none"
               id="showPassword"
               onChange={(e) => setShowPassword(e.target.checked)}
             />
-            <label className="form-check-label" htmlFor="showPassword">
+            <label
+              className="form-check-label"
+              htmlFor="showPassword"
+            >
               Show Password
             </label>
           </div>
 
           {/* Sign In Button */}
-          <button type="submit" className="custom-btn">
+          <button type="submit" className="custom-btn ">
             Sign In
           </button>
         </form>
