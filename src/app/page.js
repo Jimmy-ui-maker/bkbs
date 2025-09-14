@@ -73,7 +73,7 @@ export default function LoginPage() {
 
       {/* Sticky Chat Button */}
       <button className="chat-btn">
-        <i className="bi bi-chat-dots"></i>
+        <i className="bi bi-info"></i>
       </button>
     </div>
   );
