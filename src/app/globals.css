@@ -1,14 +1,14 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
-/* Global background */
+/* Global background #b8ab3d */
 body {
-  background-color: #b8ab3d;
+  background-color: #ebf9c1;
   font-family: Arial, sans-serif;
 }
 
 /* Card styled same as background but lifted with shadow */
 .login-card {
-  background-color: #b8ab3d;
+  background-color: #ebf9c1;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
@@ -17,9 +17,9 @@ body {
 .login-input {
   width: 100%;
   padding: 10px;
-  border: none !important;        
-  border-radius: 6px !important;  
-  background-color: #b8ab3d !important; /* same as page */
+  border: none !important;
+  border-radius: 6px !important;
+  background-color: #ebf9c1 !important; /* same as page */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
   margin-top: 5px;
   margin-bottom: 10px;
@@ -30,7 +30,7 @@ body {
 
 /* Focus effect - slightly lighter */
 .login-input:focus {
-  background-color: #d6ca60 !important; /* lighter gold when focused */
+  background-color: #ebf9c1 !important; /* lighter gold when focused */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -51,8 +51,23 @@ body {
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .custom-btn:hover {
+  background-color: #000;
+}
+
+.btn-get {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  width: 20%;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-get:hover {
   background-color: #000;
 }
 
@@ -77,7 +92,6 @@ body {
   background-color: #000;
 }
 
-
 /* Fullscreen modal backdrop */
 .custom-modal {
   position: fixed;
@@ -85,7 +99,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -95,7 +109,7 @@ body {
 
 /* Modal inner container */
 .custom-modal-content {
-  background: #b8ab3d;
+  background: #ebf9c1;
   width: 100%;
   min-height: 100%;
   border-radius: 0;
@@ -104,6 +118,75 @@ body {
 
 /* Slide-down animation */
 @keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Gallery Card  */
+.gallery-card {
+  background-color: #ebf9c1; /* same as global background */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.gallery-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Gallery Image */
+.gallery-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Announcement Card */
+.announcement-card {
+  background-color: #ebf9c1;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.announcement-card:hover {
+  transform: translateY(-3px);
+}
+
+/* FAQ Styles */
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background-color: #ebf9c1;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.faq-item:hover {
+  transform: translateY(-2px);
+}
+
+.faq-question {
+  font-weight: 600;
+}
+
+.faq-answer {
+  margin-top: 10px;
+  font-size: 0.95rem;
 }

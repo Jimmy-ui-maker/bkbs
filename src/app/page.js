@@ -1,5 +1,10 @@
 "use client";
 
+import AboutSection from "@/components/modal-component/AboutSection";
+import AnnouncementPage from "@/components/modal-component/AnnouncementPage";
+import FAQSection from "@/components/modal-component/FAQSection";
+import GalleryPage from "@/components/modal-component/GalleryPage";
+import LandingSection from "@/components/modal-component/LandingSection";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -10,7 +15,7 @@ export default function LoginPage() {
     <div className="container d-flex flex-column justify-content-center align-items-center vh-100">
       {/* Logo */}
       <img
-        src="/imgs/logo.jpg"
+        src="/imgs/school logo.png"
         alt="BKBS Logo"
         width={120}
         height={120}
@@ -79,35 +84,23 @@ export default function LoginPage() {
         <div className="custom-modal">
           <div className="custom-modal-content">
             {/* Navbar */}
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+            <nav className="navbar navbar-expand-lg text-dark shadow-lg px-3">
               <a className="navbar-brand fw-bold" href="#">
                 BKBS
               </a>
               <button
-                className="btn-close btn-close-white ms-auto"
+                className="btn-close btn-close-dark ms-auto"
                 onClick={() => setShowModal(false)}
               ></button>
             </nav>
 
             {/* Page Sections */}
-            <div className="p-4 text-center">
-              {/* Landing Page */}
-              <section className="mb-5">
-                <h1 className="fw-bold">Welcome to Bright Kingdom British School</h1>
-                <p className="lead">
-                  Building the leaders of tomorrow through excellence in education.
-                </p>
-              </section>
-
-              {/* About the School */}
-              <section className="mb-5">
-                <h2 className="fw-semibold">About Us</h2>
-                <p>
-                  Bright Kingdom British School is dedicated to nurturing young
-                  minds with quality education, modern facilities, and strong values. 
-                  We prepare students for the future with confidence and integrity.
-                </p>
-              </section>
+            <div className="p-4">
+              <LandingSection />
+              <AboutSection />
+              <AnnouncementPage />
+              <GalleryPage />
+              <FAQSection />
             </div>
           </div>
         </div>
