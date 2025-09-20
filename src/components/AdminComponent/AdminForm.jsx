@@ -294,7 +294,7 @@ export default function AdminForm() {
         </form>
       </div>
 
-      {/* Staff Management Table */}
+      {/* Staff Management Table 
       <div className="card shadow-sm mt-5">
         <div className="card-header border-0 primaryColor text-white">
           Staff Management
@@ -370,6 +370,7 @@ export default function AdminForm() {
           </div>
         </div>
       </div>
+      */}
     </div>
   );
 }
