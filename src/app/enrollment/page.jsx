@@ -16,7 +16,7 @@ export default function EnrolmentDashboard() {
     const role = localStorage.getItem("role");
     const storedUsername = localStorage.getItem("username"); // 👈 fetch saved username
 
-    if (role === "enrollment") {
+    if (role === "enrolment") {
       setLoggedIn(true);
       if (storedUsername) {
         setUsername(storedUsername); // 👈 set username for navbar
@@ -31,7 +31,7 @@ export default function EnrolmentDashboard() {
   }
 
   return (
-    <div className="enrollment-dashboard">
+    <div className="enrolment-dashboard">
       {/* Navbar */}
       <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2">
         <div className="d-flex align-items-center">
