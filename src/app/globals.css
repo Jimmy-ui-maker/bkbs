@@ -432,3 +432,62 @@ input[type="file"].login-input::file-selector-button:hover {
   min-width: 600px; /* ensure table is wider than small screens */
 }
 
+
+/* NotFound Page Styling */
+.not-found {
+  background: linear-gradient( #b8ab3d, #ebf9c1);
+  font-family: "Comic Sans MS", "Poppins", sans-serif;
+  color: #333;
+}
+
+.not-found .emoji {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: bounce 1.5s infinite;
+}
+
+.oops-title {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ff6f61;
+  text-shadow: 2px 2px #ffcdd2;
+}
+
+.oops-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #00796b;
+}
+
+.funny-text {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-back-home {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  text-decoration: none;
+  background: #ff6f61;
+  color: white !important;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 10px rgba(255, 111, 97, 0.4);
+}
+
+.btn-back-home:hover {
+  background: #e64a19;
+  transform: scale(1.05);
+}
+
+/* Bounce Emoji Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
