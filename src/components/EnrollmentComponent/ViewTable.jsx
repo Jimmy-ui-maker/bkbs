@@ -72,45 +72,31 @@ export default function ViewTable() {
 
         {/* Learners Table */}
         {activeTab === "learners" && (
-          <div className="card">
-            <div className="card-body p-0 table-responsive">
-              <div className="table-scroll">
-                <table className="table table-striped mb-0">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Class</th>
-                      <th>Gender</th>
-                      <th>Parent</th>
-                      <th>Phone</th>
-                      <th>Phone</th>
-                      <th>Phone</th>
-                      <th>Phone</th>
-                      <th>Phone</th>
-                      <th>Phone</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {learners.map((learner) => (
-                      <tr key={learner.id}>
-                        <td>{learner.id}</td>
-                        <td>{learner.name}</td>
-                        <td>{learner.class}</td>
-                        <td>{learner.gender}</td>
-                        <td>{learner.parent}</td>
-                        <td>{learner.phone}</td>
-                        <td>{learner.phone}</td>
-                        <td>{learner.phone}</td>
-                        <td>{learner.phone}</td>
-                        <td>{learner.phone}</td>
-                        <td>{learner.phone}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="table-scroll">
+            <table className="table table-bordered table-striped custom-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Gender</th>
+                  <th>Parent</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {learners.map((learner) => (
+                  <tr key={learner.id}>
+                    <td>{learner.id}</td>
+                    <td>{learner.name}</td>
+                    <td>{learner.class}</td>
+                    <td>{learner.gender}</td>
+                    <td>{learner.parent}</td>
+                    <td>{learner.phone}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 

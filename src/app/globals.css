@@ -419,3 +419,15 @@ input[type="file"].login-input::file-selector-button:hover {
   background: var(--praColor);
   border-radius: 4px;
 }
+
+/* global.css */
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;   /* enable horizontal scroll */
+  -webkit-overflow-scrolling: touch; /* smooth on iOS */
+}
+
+.table-scroll table {
+  min-width: 600px; /* ensure table is wider than small screens */
+}
