@@ -1,7 +1,6 @@
 "use client";
 
 export default function ViewTable() {
-  // Dummy data for now
   const learners = [
     {
       id: 1,
@@ -49,7 +48,7 @@ export default function ViewTable() {
 
         {/* Learners Table */}
         <p className="fw-bold titleColor">Learners</p>
-        <div className="table-responsive mb-4">
+        <div className="table-scroll mb-4">
           <table className="table table-bordered table-striped custom-table">
             <thead>
               <tr>
@@ -78,7 +77,7 @@ export default function ViewTable() {
 
         {/* Teachers Table */}
         <p className="fw-bold titleColor">Teachers</p>
-        <div className="table-responsive">
+        <div className="table-scroll">
           <table className="table table-bordered table-striped custom-table">
             <thead>
               <tr>

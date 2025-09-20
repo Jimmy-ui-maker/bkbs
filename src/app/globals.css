@@ -385,11 +385,12 @@ input[type="file"].login-input::file-selector-button:hover {
   font-size: 0.9rem;
   border-radius: 8px;
   overflow: hidden;
+  white-space: nowrap; /* Prevent table from breaking in small screens */
 }
 
 .custom-table thead {
-  background-color: var(--praColor); /* your theme primary color */
-  color: var(--WhiteColor);
+  background-color: var(--praColor); /* theme color */
+  color: #fff;
 }
 
 .custom-table th,
@@ -402,4 +403,19 @@ input[type="file"].login-input::file-selector-button:hover {
 .custom-table tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.05);
   cursor: pointer;
+}
+
+/* Scroll wrapper for small screens */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: var(--praColor);
+  border-radius: 4px;
 }

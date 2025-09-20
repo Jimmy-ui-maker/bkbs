@@ -33,7 +33,7 @@ export default function EnrolmentDashboard() {
   return (
     <div className="enrolment-dashboard">
       {/* Navbar */}
-      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-3">
+      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2">
         <div className="d-flex align-items-center">
           <img
             src="/imgs/school logo.png"
@@ -44,13 +44,13 @@ export default function EnrolmentDashboard() {
           />
           {/* Sidebar toggler (for small screens) */}
           <button
-            className="btn btn-sm text-light d-lg-none me-2"
+            className="btn btn-lg  text-light d-lg-none "
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas"
             aria-controls="sidebarOffcanvas"
           >
-            <i className="bi bi-list"></i>
+            <i className="bi bi-list "></i>
           </button>
           <p className="mb-0 fw-bold text-light">Enrolment Dashboard</p>
         </div>
