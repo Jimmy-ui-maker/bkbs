@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   // Default credentials
   const users = {
-    enrolment: { username: "enrol1", password: "password", route: "/enrolment" },
+    enrolment: { username: "enroll1", password: "password", route: "/enrollment" },
     admin: { username: "admin1", password: "admin1", route: "/admin" },
     teacher: { username: "teacher1", password: "teacher1", route: "/teacher" },
     headteacher: { username: "head1", password: "head1", route: "/headteacher" },

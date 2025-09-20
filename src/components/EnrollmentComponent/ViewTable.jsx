@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 export default function ViewTable() {
+  const [activeTab, setActiveTab] = useState("learners");
+
   const learners = [
     {
       id: 1,
@@ -46,63 +50,85 @@ export default function ViewTable() {
           Enrolment Records
         </h4>
 
+        {/* Tabs */}
+        <ul className="nav nav-tabs mb-3 justify-content-center">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "learners" ? "active" : ""}`}
+              onClick={() => setActiveTab("learners")}
+            >
+              Learners
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "teachers" ? "active" : ""}`}
+              onClick={() => setActiveTab("teachers")}
+            >
+              Teachers
+            </button>
+          </li>
+        </ul>
+
         {/* Learners Table */}
-        <p className="fw-bold titleColor">Learners</p>
-        <div className="table-scroll mb-4">
-          <table className="table table-bordered table-striped custom-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Gender</th>
-                <th>Parent</th>
-                <th>Phone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {learners.map((learner) => (
-                <tr key={learner.id}>
-                  <td>{learner.id}</td>
-                  <td>{learner.name}</td>
-                  <td>{learner.class}</td>
-                  <td>{learner.gender}</td>
-                  <td>{learner.parent}</td>
-                  <td>{learner.phone}</td>
+        {activeTab === "learners" && (
+          <div className="table-scroll">
+            <table className="table table-bordered table-striped custom-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Gender</th>
+                  <th>Parent</th>
+                  <th>Phone</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {learners.map((learner) => (
+                  <tr key={learner.id}>
+                    <td>{learner.id}</td>
+                    <td>{learner.name}</td>
+                    <td>{learner.class}</td>
+                    <td>{learner.gender}</td>
+                    <td>{learner.parent}</td>
+                    <td>{learner.phone}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Teachers Table */}
-        <p className="fw-bold titleColor">Teachers</p>
-        <div className="table-scroll">
-          <table className="table table-bordered table-striped custom-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Subject</th>
-                <th>Qualification</th>
-                <th>Experience</th>
-                <th>Phone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td>{teacher.id}</td>
-                  <td>{teacher.name}</td>
-                  <td>{teacher.subject}</td>
-                  <td>{teacher.qualification}</td>
-                  <td>{teacher.experience}</td>
-                  <td>{teacher.phone}</td>
+        {activeTab === "teachers" && (
+          <div className="table-scroll">
+            <table className="table table-bordered table-striped custom-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Subject</th>
+                  <th>Qualification</th>
+                  <th>Experience</th>
+                  <th>Phone</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {teachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>{teacher.id}</td>
+                    <td>{teacher.name}</td>
+                    <td>{teacher.subject}</td>
+                    <td>{teacher.qualification}</td>
+                    <td>{teacher.experience}</td>
+                    <td>{teacher.phone}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
