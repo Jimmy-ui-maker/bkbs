@@ -16,7 +16,7 @@ export default function NotFound() {
         {/* Heading */}
         <h1 className="oops-title">Oooops...!!!</h1>
         <h4 className="oops-subtitle">
-          This page is still under construction 🚧🔧
+          This page might be still under construction 🤯🚧🔧
         </h4>
 
         {/* Fun Message */}
