@@ -18,34 +18,44 @@ export default function LoginPage() {
 
   // Default credentials
   const users = {
-    enrolment: { username: "enroll1", password: "password", route: "/enrollment" },
+    enrolment: {
+      username: "enroll1",
+      password: "password",
+      route: "/enrollment",
+    },
     admin: { username: "admin1", password: "admin1", route: "/admin" },
     teacher: { username: "teacher1", password: "teacher1", route: "/teacher" },
-    headteacher: { username: "head1", password: "head1", route: "/headteacher" },
+    headteacher: {
+      username: "head1",
+      password: "head1",
+      route: "/headteacher",
+    },
   };
 
   const handleLogin = (e) => {
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
 
-  // Check credentials
-  for (const [roleKey, creds] of Object.entries(users)) {
-    if (username === creds.username && password === creds.password) {
-      // ✅ Save role in localStorage
-      localStorage.setItem("role", roleKey);
+    // Check credentials
+    for (const [roleKey, creds] of Object.entries(users)) {
+      if (username === creds.username && password === creds.password) {
+        console.log(
+          "✅ Logged in as:",
+          roleKey,
+          "→ Redirecting to:",
+          creds.route
+        );
 
-      // ✅ Save username in localStorage
-      localStorage.setItem("username", username);
-
-      // ✅ Redirect user to their dashboard
-      router.push(creds.route);
-      return;
+        localStorage.setItem("role", roleKey);
+        localStorage.setItem("username", username);
+        router.push(creds.route);
+        return;
+      }
     }
-  }
 
-  // ❌ Invalid login
-  setError("Invalid username or password");
-};
+    // ❌ Invalid login
+    setError("Invalid username or password");
+  };
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center vh-100">

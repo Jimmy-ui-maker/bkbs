@@ -422,17 +422,13 @@ input[type="file"].login-input::file-selector-button:hover {
 
 /* global.css */
 
-/* Make sure wrapper allows scroll */
 .table-scroll {
   width: 100%;
-  overflow-x: auto !important;
-  -webkit-overflow-scrolling: touch;
-  display: block; /* key to force scroll behavior */
+  overflow-x: auto;   /* enable horizontal scroll */
+  -webkit-overflow-scrolling: touch; /* smooth on iOS */
 }
 
-/* Force table to be wider than small screens */
 .table-scroll table {
-  min-width: 700px; /* adjust as needed */
-  width: max-content; /* prevent squashing */
+  min-width: 600px; /* ensure table is wider than small screens */
 }
 
