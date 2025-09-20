@@ -6,10 +6,46 @@ import FAQSection from "@/components/modal-component/FAQSection";
 import GalleryPage from "@/components/modal-component/GalleryPage";
 import LandingSection from "@/components/modal-component/LandingSection";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  // Default credentials
+  const users = {
+    enrolment: { username: "enrol1", password: "password", route: "/enrolment" },
+    admin: { username: "admin1", password: "admin1", route: "/admin" },
+    teacher: { username: "teacher1", password: "teacher1", route: "/teacher" },
+    headteacher: { username: "head1", password: "head1", route: "/headteacher" },
+  };
+
+  const handleLogin = (e) => {
+  e.preventDefault();
+  setError("");
+
+  // Check credentials
+  for (const [roleKey, creds] of Object.entries(users)) {
+    if (username === creds.username && password === creds.password) {
+      // ✅ Save role in localStorage
+      localStorage.setItem("role", roleKey);
+
+      // ✅ Save username in localStorage
+      localStorage.setItem("username", username);
+
+      // ✅ Redirect user to their dashboard
+      router.push(creds.route);
+      return;
+    }
+  }
+
+  // ❌ Invalid login
+  setError("Invalid username or password");
+};
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center vh-100">
@@ -30,11 +66,17 @@ export default function LoginPage() {
       <div className="login-card p-4 w-100" style={{ maxWidth: "400px" }}>
         <h5 className="fw-semibold mb-3">Sign In</h5>
 
-        <form>
+        <form onSubmit={handleLogin}>
           {/* Username */}
           <div className="mb-3">
             <label className="form-label">Username</label>
-            <input type="text" className="login-input" placeholder="Username" />
+            <input
+              type="text"
+              className="login-input"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
 
           {/* Password */}
@@ -44,6 +86,8 @@ export default function LoginPage() {
               type={showPassword ? "text" : "password"}
               className="login-input"
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
@@ -59,6 +103,9 @@ export default function LoginPage() {
               Show Password
             </label>
           </div>
+
+          {/* Error message */}
+          {error && <p className="text-danger small">{error}</p>}
 
           {/* Sign In Button */}
           <button type="submit" className="custom-btn">

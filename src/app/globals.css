@@ -200,3 +200,53 @@ body {
   margin-top: 10px;
   font-size: 0.95rem;
 }
+
+
+/* Navbar */
+.navbar {
+  background-color: #333 !important;
+  color: #fff;
+  height: 60px;
+}
+
+/* Sidebar (desktop) */
+.sidebar {
+  width: 220px;
+  background-color: #ebf9c1;
+  padding: 20px 10px;
+  min-height: calc(100vh - 60px);
+}
+
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-btn:hover,
+.sidebar-btn.active {
+  background-color: #b8ab3d;
+  color: #fff;
+}
+
+/* Content area */
+.content {
+  background: #fff;
+  min-height: calc(100vh - 60px);
+}
+
+/* Form card inside dashboard */
+.form-card {
+  background-color: #ebf9c1;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+}
