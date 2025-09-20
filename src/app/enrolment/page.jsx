@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import EnrolLearners from "@/components/EnrollmentComponent/EnrolLearners";
+import EnrolLearners from "@/components/EnrollmentComponent/EnrolmentTabs";
 import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 
 export default function EnrolmentDashboard() {
@@ -35,6 +35,13 @@ export default function EnrolmentDashboard() {
       {/* Navbar */}
       <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-3">
         <div className="d-flex align-items-center">
+          <img
+            src="/imgs/school logo.png"
+            alt="BKBS Logo"
+            width={40}
+            height={40}
+            className=" mx-1"
+          />
           {/* Sidebar toggler (for small screens) */}
           <button
             className="btn btn-sm text-light d-lg-none me-2"

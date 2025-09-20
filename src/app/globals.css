@@ -51,7 +51,7 @@ body {
 /* Custom button */
 .custom-btn {
   background-color: #333;
-  color: #fff;
+  color: var(--WhiteColor);
   border: none;
   padding: 12px;
   border-radius: 6px;
@@ -66,7 +66,7 @@ body {
 
 .btn-get {
   background-color: #333;
-  color: #fff;
+  color: var(--WhiteColor);
   border: none;
   padding: 12px;
   border-radius: 6px;
@@ -92,7 +92,7 @@ body {
 /* Sticky chat button */
 .chat-btn {
   background-color: #333;
-  color: #fff;
+  color: var(--WhiteColor);
   border: none;
   width: 55px;
   height: 55px;
@@ -231,7 +231,7 @@ body {
     height: 40px !important;
   }
 }
-.offcanvas{
+.offcanvas {
   background-color: var(--ppColor);
 }
 
@@ -247,9 +247,18 @@ body {
 .navbar p {
   font-size: 1rem;
   margin: 0;
-  color: #fff;
+  color: var(--WhiteColor);
+  font-size: 20px;
 }
 
+@media (max-width: 768px) {
+  .navbar p {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--WhiteColor);
+    font-size: 18px;
+  }
+}
 /* Sidebar toggler */
 .navbar .btn-sm {
   padding: 6px 10px;
@@ -336,7 +345,7 @@ input[type="file"].login-input {
 
 input[type="file"].login-input::file-selector-button {
   background: #b8ab3d;
-  color: #fff;
+  color: var(--WhiteColor);
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
@@ -367,7 +376,7 @@ input[type="file"].login-input::file-selector-button:hover {
 
 .nav-tabs .nav-link.active {
   background-color: var(--praColor);
-  color: #fff !important;
+  color: var(--WhiteColor) !important;
   border-radius: 6px;
 }
 
@@ -380,7 +389,7 @@ input[type="file"].login-input::file-selector-button:hover {
 
 .custom-table thead {
   background-color: var(--praColor); /* your theme primary color */
-  color: #fff;
+  color: var(--WhiteColor);
 }
 
 .custom-table th,
