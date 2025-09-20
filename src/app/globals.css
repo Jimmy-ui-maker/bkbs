@@ -1,5 +1,14 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
+:root {
+  --WhiteColor: #f2f2f2;
+  --praColor: #023e8a;
+  --ppColor: #b8ab3d;
+}
+
+* {
+  font-family: "Lucida Sans", sans-serif;
+}
 /* Global background #b8ab3d */
 body {
   background-color: #ebf9c1;
@@ -61,7 +70,7 @@ body {
   border: none;
   padding: 12px;
   border-radius: 6px;
-  width: 20%;               /* default for large screens */
+  width: 20%; /* default for large screens */
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -74,12 +83,11 @@ body {
 /* Small screen adjustments */
 @media (max-width: 768px) {
   .btn-get {
-    width: 100%;            /* full width on small devices */
+    width: 100%; /* full width on small devices */
     display: block;
-    margin: 10px 0;         /* add spacing */
+    margin: 10px 0; /* add spacing */
   }
 }
-
 
 /* Sticky chat button */
 .chat-btn {
@@ -201,18 +209,63 @@ body {
   font-size: 0.95rem;
 }
 
+/* Logout button adjustments */
+.logout-btn {
+  width: auto !important; /* auto width in navbar */
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* Navbar */
+.logout-btn i {
+  font-size: 1.2rem;
+}
+
+/* On small screens: icon only, smaller padding */
+@media (max-width: 768px) {
+  .logout-btn {
+    padding: 8px 10px;
+    border-radius: 50%;
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+.offcanvas{
+  background-color: var(--ppColor);
+}
+
+/* Sticky navbar */
 .navbar {
-  background-color: #333 !important;
+  background-color: var(--ppColor); /* use your theme color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  min-height: 60px;
+  z-index: 1030; /* stays above offcanvas */
+}
+
+/* Navbar title */
+.navbar p {
+  font-size: 1rem;
+  margin: 0;
   color: #fff;
-  height: 60px;
+}
+
+/* Sidebar toggler */
+.navbar .btn-sm {
+  padding: 6px 10px;
+}
+
+/* Adjust gap for small screens */
+@media (max-width: 768px) {
+  .navbar .d-flex.align-items-center {
+    gap: 0.25rem !important; /* tighter spacing */
+  }
 }
 
 /* Sidebar (desktop) */
 .sidebar {
   width: 220px;
-  background-color: #ebf9c1;
+  background-color: #b8ab3d;
   padding: 20px 10px;
   min-height: calc(100vh - 60px);
 }
@@ -233,13 +286,13 @@ body {
 
 .sidebar-btn:hover,
 .sidebar-btn.active {
-  background-color: #b8ab3d;
-  color: #fff;
+  background-color: #ebf9c1;
+  color: #000;
 }
 
 /* Content area */
 .content {
-  background: #fff;
+  background: #ebf9c1;
   min-height: calc(100vh - 60px);
 }
 
@@ -249,4 +302,95 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.titleColor {
+  color: var(--ppColor) !important;
+  font-weight: 700px;
+}
+
+.primaryColor {
+  background-color: var(--praColor);
+  color: var(--WhiteColor);
+}
+.primaryColor:hover {
+  background-color: var(--praColor);
+  color: var(--WhiteColor);
+  opacity: 0.8;
+}
+
+/* Make learner form card blend with background */
+.login-card {
+  background-color: #ebf9c1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+}
+
+/* Override file input to match transparent style */
+input[type="file"].login-input {
+  padding: 6px;
+  background-color: #ebf9c1 !important;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+input[type="file"].login-input::file-selector-button {
+  background: #b8ab3d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+input[type="file"].login-input::file-selector-button:hover {
+  background: #000;
+  color: #ebf9c1;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+  color: #333;
+  font-weight: 600;
+  border: none;
+  padding: 10px 20px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--praColor);
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: var(--praColor);
+  color: #fff !important;
+  border-radius: 6px;
+}
+
+/* Table Styling */
+.custom-table {
+  font-size: 0.9rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-table thead {
+  background-color: var(--praColor); /* your theme primary color */
+  color: #fff;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 10px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.custom-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
 }

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import EnrolLearners from "@/components/EnrollmentComponent/EnrolLearners";
+import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 
 export default function EnrolmentDashboard() {
-  const [activeTab, setActiveTab] = useState("students");
+  const [activeTab, setActiveTab] = useState("forms");
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState(""); // 👈 store username
   const router = useRouter();
@@ -31,37 +33,38 @@ export default function EnrolmentDashboard() {
   return (
     <div className="enrolment-dashboard">
       {/* Navbar */}
-      <nav className="navbar d-flex justify-content-between align-items-center px-3">
-        <div className="d-flex align-items-center gap-3">
+      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-3">
+        <div className="d-flex align-items-center">
           {/* Sidebar toggler (for small screens) */}
           <button
-            className="btn btn-sm btn-light d-lg-none"
+            className="btn btn-sm text-light d-lg-none me-2"
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas"
             aria-controls="sidebarOffcanvas"
           >
-            <i className="bi bi-list fs-4"></i>
+            <i className="bi bi-list"></i>
           </button>
-          <h4 className="fw-bold m-0">Enrolment Dashboard</h4>
+          <p className="mb-0 fw-bold text-light">Enrolment Dashboard</p>
         </div>
 
-        <div className="d-flex align-items-center gap-3">
-          {/* Logged in Username */}
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          {/* Logged in Username (hidden on xs, visible on md+) */}
           <span className="fw-semibold text-light d-none d-md-block">
             {username ? username : "Guest"}
           </span>
 
-          {/* Logout Button */}
+          {/* Logout Button with icon on mobile */}
           <button
-            className="btn-get"
+            className="btn-get logout-btn"
             onClick={() => {
               localStorage.removeItem("role");
-              localStorage.removeItem("username"); // 👈 clear username too
+              localStorage.removeItem("username");
               router.push("/");
             }}
           >
-            Logout
+            <span className="d-none d-md-inline">Logout</span>
+            <i className="bi bi-box-arrow-right d-inline d-md-none"></i>
           </button>
         </div>
       </nav>
@@ -70,20 +73,16 @@ export default function EnrolmentDashboard() {
         {/* Sidebar for lg+ screens */}
         <aside className="sidebar d-none d-lg-block">
           <button
-            className={`sidebar-btn ${
-              activeTab === "students" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("students")}
+            className={`sidebar-btn ${activeTab === "forms" ? "active" : ""}`}
+            onClick={() => setActiveTab("forms")}
           >
-            Enroll Students
+            Enrollment
           </button>
           <button
-            className={`sidebar-btn ${
-              activeTab === "teachers" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("teachers")}
+            className={`sidebar-btn ${activeTab === "veiws" ? "active" : ""}`}
+            onClick={() => setActiveTab("veiws")}
           >
-            Enroll Teachers
+            Management
           </button>
         </aside>
 
@@ -104,71 +103,34 @@ export default function EnrolmentDashboard() {
           </div>
           <div className="offcanvas-body">
             <button
-              className={`sidebar-btn ${
-                activeTab === "students" ? "active" : ""
-              }`}
+              className={`sidebar-btn ${activeTab === "forms" ? "active" : ""}`}
               data-bs-dismiss="offcanvas"
-              onClick={() => setActiveTab("students")}
+              onClick={() => setActiveTab("forms")}
             >
-              Enroll Students
+              Enroll forms
             </button>
             <button
-              className={`sidebar-btn ${
-                activeTab === "teachers" ? "active" : ""
-              }`}
+              className={`sidebar-btn ${activeTab === "veiws" ? "active" : ""}`}
               data-bs-dismiss="offcanvas"
-              onClick={() => setActiveTab("teachers")}
+              onClick={() => setActiveTab("veiws")}
             >
-              Enroll Teachers
+              Management
             </button>
           </div>
         </div>
 
         {/* Dashboard Content */}
         <main className="content p-4 flex-grow-1">
-          {activeTab === "students" && (
+          {activeTab === "forms" && (
             <div>
-              <h5 className="fw-semibold mb-3">Enroll New Student</h5>
-              <form className="form-card">
-                <div className="mb-3">
-                  <label className="form-label">Full Name</label>
-                  <input type="text" className="form-control login-input" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Age</label>
-                  <input type="number" className="form-control login-input" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Class</label>
-                  <input type="text" className="form-control login-input" />
-                </div>
-                <button type="submit" className="btn-get">
-                  Save Student
-                </button>
-              </form>
+              <h5 className="fw-semibold mb-3">Enrollment Form</h5>
+              <EnrolLearners />
             </div>
           )}
-
-          {activeTab === "teachers" && (
+          {activeTab === "veiws" && (
             <div>
-              <h5 className="fw-semibold mb-3">Enroll New Teacher</h5>
-              <form className="form-card">
-                <div className="mb-3">
-                  <label className="form-label">Full Name</label>
-                  <input type="text" className="form-control login-input" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Subject</label>
-                  <input type="text" className="form-control login-input" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Email</label>
-                  <input type="email" className="form-control login-input" />
-                </div>
-                <button type="submit" className="btn-get">
-                  Save Teacher
-                </button>
-              </form>
+              <h5 className="fw-semibold mb-3">Table View </h5>
+              <ViewTable />
             </div>
           )}
         </main>
