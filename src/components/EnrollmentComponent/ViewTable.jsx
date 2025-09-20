@@ -47,7 +47,7 @@ export default function ViewTable() {
     <div className="container enForm d-flex justify-content-center align-items-center min-vh-100">
       <div className="login-card shadow-lg my-4 p-md-5 p-4 rounded w-100">
         <h4 className="text-center titleColor font-monospace fw-bold text-uppercase mb-4">
-          Enrolment Records
+          Enrollment Records
         </h4>
 
         {/* Tabs */}
