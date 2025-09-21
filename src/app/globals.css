@@ -2,7 +2,7 @@
 
 :root {
   --WhiteColor: #f2f2f2;
-  --praColor: #023e8a;
+  --praColor: #b8ab3d;
   --ppColor: #b8ab3d;
 }
 
@@ -328,6 +328,17 @@ body {
   opacity: 0.8;
 }
 
+.card {
+  background-color: #ebf9c1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.card .position {
+  background-color: #ebf9c1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
 /* Make learner form card blend with background */
 .login-card {
   background-color: #ebf9c1;
@@ -424,7 +435,7 @@ input[type="file"].login-input::file-selector-button:hover {
 
 .table-scroll {
   width: 100%;
-  overflow-x: auto;   /* enable horizontal scroll */
+  overflow-x: auto; /* enable horizontal scroll */
   -webkit-overflow-scrolling: touch; /* smooth on iOS */
 }
 
@@ -432,10 +443,9 @@ input[type="file"].login-input::file-selector-button:hover {
   min-width: 600px; /* ensure table is wider than small screens */
 }
 
-
 /* NotFound Page Styling */
 .not-found {
-  background: linear-gradient( #b8ab3d, #ebf9c1);
+  background: linear-gradient(#b8ab3d, #ebf9c1);
   font-family: "Comic Sans MS", "Poppins", sans-serif;
   color: #333;
 }
@@ -484,10 +494,92 @@ input[type="file"].login-input::file-selector-button:hover {
 
 /* Bounce Emoji Animation */
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #b8ab3d;
+  color: #fff;
+  min-height: 100vh;
+  padding: 15px 10px;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidebar-btn:hover,
+.sidebar-btn.active {
+  background: #fff;
+  color: #b8ab3d;
+}
+
+/* Content */
+.content {
+  background: #ebf9c1;
+  min-height: 100vh;
+}
+
+/* Table */
+.custom-table thead {
+  background-color: #b8ab3d;
+  color: #fff;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+
+/* Hide elements on print */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .print-area {
+    background: #fff9c4; /* soft yellow background */
+    position: relative;
+  }
+  .print-area::before {
+    content: "Bright Kingdom British School";
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 3rem;
+    color: rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    white-space: nowrap;
   }
 }

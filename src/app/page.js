@@ -105,7 +105,7 @@ export default function LoginPage() {
           <div className="form-check mb-3">
             <input
               type="checkbox"
-              className="form-check-input"
+              className="form-check-input shadow-none text-bg-secondary"
               id="showPassword"
               onChange={(e) => setShowPassword(e.target.checked)}
             />
