@@ -1,5 +1,3 @@
-
-
 export default function LandingSection() {
   return (
     <div className="section shadow-sm mt-4 rounded-3">
@@ -14,7 +12,10 @@ export default function LandingSection() {
               Building the leaders of tomorrow through excellence in education.
             </p>
             <div className="d-grid d-sm-flex gap-2">
-              <a href="#about" className="btn-get  btn-lg soft-shadow text-center">
+              <a
+                href="#about"
+                className="btn-get  btn-lg soft-shadow text-center"
+              >
                 Get started
               </a>
             </div>

@@ -30,7 +30,7 @@ export default function LearnerDashboard() {
 
   const learner = {
     name: "Sir Jimmy",
-    admissionNo: "BKBS/25/ABJ/001",
+    admissionNo: "BKBS/A25/001",
     class: "Basic 2",
     email: "sirjimmy.doe@example.com",
     phone: "+234 812 345 6789",

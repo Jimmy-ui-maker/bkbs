@@ -446,7 +446,6 @@ input[type="file"].login-input::file-selector-button:hover {
 /* NotFound Page Styling */
 .not-found {
   background: linear-gradient(#b8ab3d, #ebf9c1);
-  font-family: "Comic Sans MS", "Poppins", sans-serif;
   color: #333;
 }
 

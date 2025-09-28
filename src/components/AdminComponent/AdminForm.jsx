@@ -260,6 +260,7 @@ export default function AdminForm() {
               >
                 <option value="">Select Role</option>
                 <option value="Admin">Admin</option>
+                <option value="Head Teacher">Head Teacher</option>
                 <option value="Enrollment Officer">Enrollment Officer</option>
                 <option value="Support Officer">Support Officer</option>
               </select>
