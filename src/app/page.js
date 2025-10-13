@@ -70,7 +70,7 @@ export default function LoginPage() {
 
       {/* Title */}
       <h4 className="fw-bold text-center">Bright Kingdom British School</h4>
-      <p className="text-muted text-center">The future is now</p>
+      <p className=" text-center">The future is now</p>
 
       {/* Login Form */}
       <div className="login-card p-4 w-100" style={{ maxWidth: "400px" }}>
@@ -125,8 +125,8 @@ export default function LoginPage() {
 
         {/* Forgot Password */}
         <div className="text-end mt-2">
-          <a href="#" className="text-decoration-none fw-semibold">
-            Forgot Password →
+          <a href="/learnerportal" className=" fw-semibold">
+            Learner Login →
           </a>
         </div>
       </div>

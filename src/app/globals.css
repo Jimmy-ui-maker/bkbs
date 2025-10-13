@@ -4,6 +4,11 @@
   --WhiteColor: #f2f2f2;
   --praColor: #b8ab3d;
   --ppColor: #b8ab3d;
+  --bgColor: #ebf9c1;
+  --boderColor: #3d4847;
+  --textColor: #3d4847;
+  --boxShadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  --boxCardShadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -11,14 +16,23 @@
 }
 /* Global background #b8ab3d */
 body {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   font-family: Arial, sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+a {
+  color: var(--textColor);
 }
 
 /* Card styled same as background but lifted with shadow */
 .login-card {
-  background-color: #ebf9c1;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  background-color: var(--bgColor);
+  border: 1px solid var(--boderColor) !important;
   border-radius: 10px;
 }
 
@@ -28,29 +42,24 @@ body {
   padding: 10px;
   border: none !important;
   border-radius: 6px !important;
-  background-color: #ebf9c1 !important; /* same as page */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  background-color: var(--bgColor) !important; /* same as page */
+  border: 1px solid var(--boderColor) !important;
   margin-top: 5px;
   margin-bottom: 10px;
   outline: none;
-  color: #000; /* ensure text is visible */
+  color: var(--textColor); /* ensure text is visible */
   transition: all 0.2s ease;
 }
 
 /* Focus effect - slightly lighter */
 .login-input:focus {
-  background-color: #ebf9c1 !important; /* lighter gold when focused */
+  background-color: var(--bgColor) !important; /* lighter gold when focused */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35) !important;
-}
-
-/* Placeholder color */
-.login-input::placeholder {
-  color: rgba(0, 0, 0, 0.6);
 }
 
 /* Custom button */
 .custom-btn {
-  background-color: #333;
+  background-color: var(--textColor);
   color: var(--WhiteColor);
   border: none;
   padding: 12px;
@@ -61,11 +70,11 @@ body {
   transition: background 0.3s ease;
 }
 .custom-btn:hover {
-  background-color: #000;
+  background-color: var(--textColor);
 }
 
 .btn-get {
-  background-color: #333;
+  background-color: var(--textColor);
   color: var(--WhiteColor);
   border: none;
   padding: 12px;
@@ -77,7 +86,7 @@ body {
 }
 
 .btn-get:hover {
-  background-color: #000;
+  background-color: var(--textColor);
 }
 
 /* Small screen adjustments */
@@ -91,7 +100,7 @@ body {
 
 /* Sticky chat button */
 .chat-btn {
-  background-color: #333;
+  background-color: var(--textColor);
   color: var(--WhiteColor);
   border: none;
   width: 55px;
@@ -107,7 +116,7 @@ body {
 }
 
 .chat-btn:hover {
-  background-color: #000;
+  background-color: var(--textColor);
 }
 
 /* Fullscreen modal backdrop */
@@ -127,7 +136,7 @@ body {
 
 /* Modal inner container */
 .custom-modal-content {
-  background: #ebf9c1;
+  background: var(--bgColor);
   width: 100%;
   min-height: 100%;
   border-radius: 0;
@@ -148,7 +157,7 @@ body {
 
 /* Gallery Card  */
 .gallery-card {
-  background-color: #ebf9c1; /* same as global background */
+  background-color: var(--bgColor); /* same as global background */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
   height: 100%;
@@ -170,7 +179,7 @@ body {
 
 /* Announcement Card */
 .announcement-card {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease;
@@ -188,7 +197,7 @@ body {
 }
 
 .faq-item {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -227,7 +236,7 @@ body {
   .logout-btn {
     padding: 8px 10px;
     border-radius: 50%;
-    width: 40px !important;
+    width: 100px !important;
     height: 40px !important;
   }
 }
@@ -295,19 +304,19 @@ body {
 
 .sidebar-btn:hover,
 .sidebar-btn.active {
-  background-color: #ebf9c1;
-  color: #000;
+  background-color: var(--bgColor);
+  color: var(--textColor);
 }
 
 /* Content area */
 .content {
-  background: #ebf9c1;
+  background: var(--bgColor);
   min-height: calc(100vh - 60px);
 }
 
 /* Form card inside dashboard */
 .form-card {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   padding: 20px;
   border-radius: 10px;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -329,19 +338,19 @@ body {
 }
 
 .card {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 .card .position {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 
 /* Make learner form card blend with background */
 .login-card {
-  background-color: #ebf9c1;
+  background-color: var(--bgColor);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border-radius: 12px;
 }
@@ -349,14 +358,13 @@ body {
 /* Override file input to match transparent style */
 input[type="file"].login-input {
   padding: 6px;
-  background-color: #ebf9c1 !important;
+  background-color: var(--bgColor) !important;
   border-radius: 6px;
   cursor: pointer;
 }
 
 input[type="file"].login-input::file-selector-button {
   background: #b8ab3d;
-  color: var(--WhiteColor);
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
@@ -365,13 +373,13 @@ input[type="file"].login-input::file-selector-button {
 }
 
 input[type="file"].login-input::file-selector-button:hover {
-  background: #000;
-  color: #ebf9c1;
+  background: var(--textColor);
+  color: var(--textColor);
 }
 
 /* Tabs */
 .nav-tabs .nav-link {
-  color: #333;
+  color: var(--textColor);
   font-weight: 600;
   border: none;
   padding: 10px 20px;
@@ -445,8 +453,8 @@ input[type="file"].login-input::file-selector-button:hover {
 
 /* NotFound Page Styling */
 .not-found {
-  background: linear-gradient(#b8ab3d, #ebf9c1);
-  color: #333;
+  background: linear-gradient(#b8ab3d, var(--bgColor));
+  color: var(--textColor);
 }
 
 .not-found .emoji {
@@ -522,7 +530,7 @@ input[type="file"].login-input::file-selector-button:hover {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #000;
+  color: var(--textColor);
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
@@ -536,7 +544,7 @@ input[type="file"].login-input::file-selector-button:hover {
 
 /* Content */
 .content {
-  background: #ebf9c1;
+  background: var(--bgColor);
   min-height: 100vh;
 }
 
@@ -556,7 +564,6 @@ input[type="file"].login-input::file-selector-button:hover {
     display: none;
   }
 }
-
 
 /* Hide elements on print */
 @media print {
@@ -581,4 +588,106 @@ input[type="file"].login-input::file-selector-button:hover {
     font-weight: bold;
     white-space: nowrap;
   }
+}
+/* === Learner Portal General === */
+.learner-dashboard {
+  background-color: var(--bgColor);
+  min-height: 100vh;
+}
+
+.learner-dashboard .portal {
+  background-color: var(--bgColor);
+  border: 1px solid var(--boderColor) !important;
+}
+
+.learner-dashboard .modal-color {
+  background-color: var(--bgColor);
+  border: 1px solid var(--boderColor) !important;
+}
+/* === Top User Bar === */
+.user-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.user-btn {
+  background-color: var(--WhiteColor);
+  border: 1px solid var(--boderColor);
+  color: #333;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+.user-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.logout-btn {
+  background-color: var(--praColor);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 6px 14px;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #a49431;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 576px) {
+  .user-bar {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .user-btn,
+  .logout-btn {
+    width: 100%;
+    max-width: 180px;
+    font-size: 14px;
+  }
+}
+
+/* === Line & Cards === */
+.learner-dashboard .line {
+  color: var(--boderColor);
+  font-weight: 500;
+}
+
+.term-card {
+  border: 1px solid var(--boderColor) !important;
+  transition: 0.3s ease;
+}
+
+.term-card:hover {
+  border: 1px solid var(--praColor);
+  transform: scale(1.02);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.term-card .btn {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* === Buttons Inside Cards === */
+.btn-view {
+  background-color: #ebf9c1;
+  color: #333;
+}
+
+/* === Profile === */
+.profile-pic img {
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  border: 2px solid var(--boderColor) !important;
+}
+
+select {
+  background-color: var(--WhiteColor);
+  border: 1px solid var(--boderColor);
 }

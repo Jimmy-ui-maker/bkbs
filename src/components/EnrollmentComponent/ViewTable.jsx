@@ -1,50 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ViewTable() {
   const [activeTab, setActiveTab] = useState("learners");
+  const [learners, setLearners] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const learners = [
-    {
-      id: 1,
-      name: "John Doe",
-      class: "Basic 2",
-      gender: "Male",
-      parent: "Mr. Doe",
-      phone: "08012345678",
-    },
-    {
-      id: 2,
-      name: "Mary Johnson",
-      class: "Basic 1",
-      gender: "Female",
-      parent: "Mrs. Johnson",
-      phone: "08087654321",
-    },
-  ];
+  // Fetch learners & teachers
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Learners
+        const resLearners = await fetch("/api/learners");
+        const dataLearners = await resLearners.json();
+        if (resLearners.ok && dataLearners.success) {
+          setLearners(dataLearners.learners || []);
+        }
 
-  const teachers = [
-    {
-      id: 1,
-      name: "Mr. Smith",
-      subject: "Mathematics",
-      qualification: "B.Ed",
-      experience: "5-7 years",
-      phone: "08123456789",
-    },
-    {
-      id: 2,
-      name: "Ms. Grace",
-      subject: "English",
-      qualification: "M.Ed",
-      experience: "8-10 years",
-      phone: "08198765432",
-    },
-  ];
+        // Teachers
+        const resTeachers = await fetch("/api/teachers");
+        const dataTeachers = await resTeachers.json();
+        if (resTeachers.ok && dataTeachers.success) {
+          setTeachers(dataTeachers.teachers || []);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   return (
-    <div className="container enForm d-flex justify-content-center align-items-center min-vh-100">
+    <div className="container-fluid py-4">
       <div className="login-card shadow-lg my-4 p-md-5 p-4 rounded w-100">
         <h4 className="text-center titleColor font-monospace fw-bold text-uppercase mb-4">
           Enrollment Records
@@ -70,41 +62,57 @@ export default function ViewTable() {
           </li>
         </ul>
 
+        {loading && <p className="text-center">Loading...</p>}
+
         {/* Learners Table */}
-        {activeTab === "learners" && (
-          <div className="table-scroll">
-            <table className="table table-bordered table-striped custom-table">
-              <thead>
+        {activeTab === "learners" && !loading && (
+          <div
+            className="table-responsive"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="table table-bordered text-center align-middle">
+              <thead className="table-dark sticky-top">
                 <tr>
                   <th>#</th>
                   <th>Name</th>
                   <th>Class</th>
                   <th>Gender</th>
+                  <th>Password</th>
                   <th>Parent</th>
                   <th>Phone</th>
                 </tr>
               </thead>
               <tbody>
-                {learners.map((learner) => (
-                  <tr key={learner.id}>
-                    <td>{learner.id}</td>
-                    <td>{learner.name}</td>
-                    <td>{learner.class}</td>
-                    <td>{learner.gender}</td>
-                    <td>{learner.parent}</td>
-                    <td>{learner.phone}</td>
+                {learners.length > 0 ? (
+                  learners.map((learner, index) => (
+                    <tr key={learner._id || index}>
+                      <td>{index + 1}</td>
+                      <td>{learner.fullName}</td>
+                      <td>{learner.classLevel}</td>
+                      <td>{learner.gender}</td>
+                      <td>{learner.password}</td>
+                      <td>{learner.parentName}</td>
+                      <td>{learner.parentPhone}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6">No learners found</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         )}
 
         {/* Teachers Table */}
-        {activeTab === "teachers" && (
-          <div className="table-scroll">
-            <table className="table table-bordered table-striped custom-table">
-              <thead>
+        {activeTab === "teachers" && !loading && (
+          <div
+            className="table-responsive"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="table table-bordered text-center align-middle">
+              <thead className="table-dark sticky-top">
                 <tr>
                   <th>#</th>
                   <th>Name</th>
@@ -115,16 +123,22 @@ export default function ViewTable() {
                 </tr>
               </thead>
               <tbody>
-                {teachers.map((teacher) => (
-                  <tr key={teacher.id}>
-                    <td>{teacher.id}</td>
-                    <td>{teacher.name}</td>
-                    <td>{teacher.subject}</td>
-                    <td>{teacher.qualification}</td>
-                    <td>{teacher.experience}</td>
-                    <td>{teacher.phone}</td>
+                {teachers.length > 0 ? (
+                  teachers.map((teacher, index) => (
+                    <tr key={teacher._id || index}>
+                      <td>{index + 1}</td>
+                      <td>{teacher.fullName}</td>
+                      <td>{teacher.specialization}</td>
+                      <td>{teacher.qualification}</td>
+                      <td>{teacher.experience}</td>
+                      <td>{teacher.phone}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6">No teachers found</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

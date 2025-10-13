@@ -76,7 +76,7 @@ export default function EnrolmentDashboard() {
         </div>
       </nav>
 
-      <div className="d-flex">
+      <div className="d-flex flex-column flex-lg-row">
         {/* Sidebar for lg+ screens */}
         <aside className="sidebar d-none d-lg-block">
           <button

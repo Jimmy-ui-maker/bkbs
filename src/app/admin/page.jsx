@@ -67,7 +67,7 @@ export default function AdminDashboard() {
         </div>
       </nav>
 
-      <div className="d-flex">
+      <div className="d-flex flex-column flex-lg-row">
         {/* Sidebar for lg+ screens */}
         <aside className="sidebar d-none d-lg-block">
           {/* Officers Dropdown */}
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Dashboard Content */}
-        <main className="content p-4 flex-grow-1">
+        <main className="content p-3 flex-grow-1 ">
           {activeTab === "add-officer" && <AdminForm />}
           {activeTab === "manage-officer" && (
             <p>Officer Table Component goes here</p>

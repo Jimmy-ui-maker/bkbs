@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 import ResultCard from "@/components/ResultCard";
+import Comments from "@/components/LearnerComponent/Comments";
 
 ChartJS.register(
   CategoryScale,
@@ -106,7 +107,7 @@ export default function LearnerDashboard() {
     { key: "profile", label: "Profile", icon: "person" },
     { key: "results", label: "Results", icon: "bar-chart" },
     { key: "fees", label: "Fees", icon: "wallet2" },
-    { key: "messages", label: "Messages", icon: "envelope" },
+    { key: "comments", label: "Comments", icon: "envelope" },
     { key: "settings", label: "Settings", icon: "gear" },
   ];
 
@@ -347,11 +348,12 @@ export default function LearnerDashboard() {
             </div>
           )}
 
-          {/* Messages */}
-          {activeTab === "messages" && (
+          {/* comments */}
+          {activeTab === "comments" && (
             <div className="card shadow-sm p-3">
-              <h5 className="fw-bold">📩 Messages</h5>
-              <p>No new messages.</p>
+              <h5 className="fw-bold">📩 Comments</h5>
+              <p>No new comments.</p>
+              <Comments/>
             </div>
           )}
 
