@@ -123,7 +123,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Forgot Password */}
+        {/* learners portal */}
         <div className="text-end mt-2">
           <a href="/learnerportal" className=" fw-semibold">
             Learner Login →
