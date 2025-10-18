@@ -124,8 +124,11 @@ export default function LoginPage() {
         </form>
 
         {/* learners portal */}
-        <div className="text-end mt-2">
-          <a href="/learnerportal" className=" fw-semibold">
+        <div className="text-end mt-2 ">
+          <a href="/login" className=" fw-semibold mx-2">
+            Teachers Login →
+          </a>
+          <a href="/learnerportal" className=" fw-semibold mx-2">
             Learner Login →
           </a>
         </div>

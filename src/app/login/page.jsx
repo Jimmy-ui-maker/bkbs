@@ -111,6 +111,12 @@ export default function TeacherLoginPage() {
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
+        {/* teachers portal */}
+        <div className="text-end mt-2">
+          <a href="/" className=" fw-semibold">
+            Home Page 
+          </a>
+        </div>
       </div>
     </div>
   );
