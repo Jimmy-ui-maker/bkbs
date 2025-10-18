@@ -158,9 +158,10 @@ a {
 /* Gallery Card  */
 .gallery-card {
   background-color: var(--bgColor); /* same as global background */
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--boderColor) !important;
   border-radius: 10px;
   height: 100%;
+
   transition: transform 0.2s ease;
 }
 
@@ -174,14 +175,14 @@ a {
   height: 70px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--boderColor) !important;
 }
 
 /* Announcement Card */
 .announcement-card {
   background-color: var(--bgColor);
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--boderColor) !important;
   transition: transform 0.2s ease;
 }
 
@@ -200,7 +201,7 @@ a {
   background-color: var(--bgColor);
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--boderColor) !important;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
@@ -589,6 +590,7 @@ input[type="file"].login-input::file-selector-button:hover {
     white-space: nowrap;
   }
 }
+
 /* === Learner Portal General === */
 .learner-dashboard {
   background-color: var(--bgColor);
@@ -654,7 +656,7 @@ input[type="file"].login-input::file-selector-button:hover {
 }
 
 /* === Line & Cards === */
-.learner-dashboard .line {
+.line {
   color: var(--boderColor);
   font-weight: 500;
 }
@@ -685,6 +687,17 @@ input[type="file"].login-input::file-selector-button:hover {
   object-fit: cover;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
   border: 2px solid var(--boderColor) !important;
+}
+
+/* === Profile Header Adjustment === */
+.profile-header {
+  margin-top: -70px; /* shifts image upward */
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    margin-top: -70px; /* smaller lift on mobile */
+  }
 }
 
 select {

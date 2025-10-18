@@ -45,6 +45,7 @@ export async function POST(req) {
       gender: learner.gender,
       classLevel: learner.classLevel,
       address: learner.address,
+      house: learner.house,
       dob: learner.dob,
       parentName: learner.parentName,
       parentPhone: learner.parentPhone,

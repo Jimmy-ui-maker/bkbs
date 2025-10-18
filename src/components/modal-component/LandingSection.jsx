@@ -1,6 +1,6 @@
 export default function LandingSection() {
   return (
-    <div className="section shadow-sm mt-4 rounded-3">
+    <div className="section shadow-sm mt-4 rounded-3 login-card">
       <div className="soft-card p-4 p-md-5">
         <div className="row align-items-center g-4">
           <div className="col-12 col-md-7">

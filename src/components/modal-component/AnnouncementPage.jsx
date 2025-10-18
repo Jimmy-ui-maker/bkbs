@@ -31,7 +31,7 @@ export default function AnnouncementPage() {
   ];
 
   return (
-    <section className="mb-5 shadow-sm mt-3 rounded-3">
+    <section className="mb-5 shadow-sm mt-3 rounded-3 login-card">
       <div className="container py-5">
         <h2 className="fw-bold text-center mb-4">Announcements</h2>
         {announcements.map((item, index) => (

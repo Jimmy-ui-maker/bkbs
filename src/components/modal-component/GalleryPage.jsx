@@ -29,7 +29,7 @@ export default function GalleryPage() {
   ];
 
   return (
-    <section className="mb-5 shadow-sm mt-3 rounded-3">
+    <section className="mb-5 shadow-sm mt-3 rounded-3 login-card">
       <div className="container pb-5">
         <h2 className="fw-bold text-center mb-4">School Gallery</h2>
         <div className="row g-4">

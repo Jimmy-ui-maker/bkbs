@@ -7,6 +7,7 @@ const learnerSchema = new mongoose.Schema({
   gender: { type: String, enum: ["Male", "Female"], required: true },
   classLevel: { type: String, required: true },
   address: { type: String, required: true },
+  house: { type: String, required: true },
   parentName: { type: String, required: true },
   parentPhone: { type: String, required: true },
   parentEmail: { type: String },

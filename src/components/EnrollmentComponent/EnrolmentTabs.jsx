@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 
-const CLOUD_NAME = "drhagfkin";
-const UPLOAD_PRESET = "my_blog_project_sirjimmy";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUD_NAME;
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
 
 export default function EnrolmentTabs() {
   const [activeTab, setActiveTab] = useState("learners");
   const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Learner form state
   const [learnerForm, setLearnerForm] = useState({
@@ -17,6 +20,7 @@ export default function EnrolmentTabs() {
     classLevel: "",
     password: "",
     address: "",
+    house: "",
     parentName: "",
     parentPhone: "",
     parentEmail: "",
@@ -73,10 +77,16 @@ export default function EnrolmentTabs() {
     e.preventDefault();
     setLoading(true);
 
+    // ✅ Check password match
+    if (learnerForm.password !== confirmPassword) {
+      alert("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
     try {
       let imgUrl = learnerForm.imgUrl;
 
-      // Upload passport if file is selected
       if (learnerFile) {
         imgUrl = await uploadImage(learnerFile);
       }
@@ -99,12 +109,14 @@ export default function EnrolmentTabs() {
           classLevel: "",
           password: "",
           address: "",
+          house: "",
           parentName: "",
           parentPhone: "",
           parentEmail: "",
           parentOccupation: "",
           imgUrl: "",
         });
+        setConfirmPassword("");
         setLearnerFile(null);
       } else {
         alert(data.error || "Failed to enroll learner");
@@ -184,7 +196,7 @@ export default function EnrolmentTabs() {
           <form onSubmit={handleLearnerSubmit}>
             <div className="row">
               <p className="fw-bold titleColor">Learner Information</p>
-              <hr className="mb-2 mt-0" />
+              <hr className="mb-2 mt-0 line" />
 
               {/* Full Name */}
               <div className="col-md-6">
@@ -248,6 +260,27 @@ export default function EnrolmentTabs() {
                   </select>
                 </div>
               </div>
+              {/* House */}
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="fw-bold ">House:</label>
+                  <select
+                    className="form-select login-input"
+                    required
+                    value={learnerForm.house}
+                    onChange={(e) =>
+                      handleChange("learner", "house", e.target.value)
+                    }
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="Red House">Red House</option>
+                    <option value="Blue House">Blue House</option>
+                    <option value="Green House">Green House</option>
+                    <option value="Yellow House">Yellow House</option>
+                    <option value="Purple House">Purple House</option>
+                  </select>
+                </div>
+              </div>
 
               {/* Class */}
               <div className="col-md-6">
@@ -279,17 +312,59 @@ export default function EnrolmentTabs() {
 
               {/* Password */}
               <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="fw-bold ">Password:</label>
+                <div className="mb-3 position-relative">
+                  <label className="fw-bold">Password:</label>
                   <input
-                    type="password"
-                    className="form-control login-input"
+                    type={showPassword ? "text" : "password"}
+                    className="form-control login-input pe-5"
                     required
                     value={learnerForm.password}
                     onChange={(e) =>
                       handleChange("learner", "password", e.target.value)
                     }
+                    placeholder="Enter password"
                   />
+                  <i
+                    className={`bi ${
+                      showPassword ? "bi-eye-slash" : "bi-eye"
+                    } position-absolute`}
+                    style={{
+                      top: "65%",
+                      right: "15px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#000",
+                    }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  ></i>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="col-md-6">
+                <div className="mb-3 position-relative">
+                  <label className="fw-bold">Confirm Password:</label>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="form-control login-input pe-5"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm password"
+                  />
+                  <i
+                    className={`bi ${
+                      showConfirmPassword ? "bi-eye-slash" : "bi-eye"
+                    } position-absolute`}
+                    style={{
+                      top: "65%",
+                      right: "15px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#000",
+                    }}
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  ></i>
                 </div>
               </div>
 
@@ -579,19 +654,34 @@ export default function EnrolmentTabs() {
                   </select>
                 </div>
               </div>
+
               {/* Password */}
               <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="fw-bold ">Password:</label>
+                <div className="mb-3 position-relative">
+                  <label className="fw-bold">Password:</label>
                   <input
-                    type="password"
-                    className="form-control login-input"
+                    type={showPassword ? "text" : "password"}
+                    className="form-control login-input pe-5"
                     required
                     value={teacherForm.password}
                     onChange={(e) =>
                       handleChange("teacher", "password", e.target.value)
                     }
+                    placeholder="Enter password"
                   />
+                  <i
+                    className={`bi ${
+                      showPassword ? "bi-eye-slash" : "bi-eye"
+                    } position-absolute`}
+                    style={{
+                      top: "65%",
+                      right: "15px",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#000",
+                    }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  ></i>
                 </div>
               </div>
 

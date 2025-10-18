@@ -76,7 +76,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="mb-5 shadow-sm pb-4">
+    <section className="mb-5 shadow-sm  py-4 login-card">
       <h2 className="fw-bold text-center mb-4">Frequently Asked Questions</h2>
       <div className="container faq-container ">
         {faqs.map((item, index) => (

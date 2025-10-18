@@ -1,10 +1,40 @@
 import mongoose from "mongoose";
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  throw new Error("⚠️ MONGODB_URI not found in environment variables");
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 export default async function dbConnect() {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("db connected successfully");
-  } catch (error) {
-    console.log("error ", error);
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 10000,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("✅ MongoDB connected successfully");
+      return mongoose;
+    });
   }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error("❌ MongoDB connection error:", e);
+    throw e;
+  }
+
+  return cached.conn;
 }

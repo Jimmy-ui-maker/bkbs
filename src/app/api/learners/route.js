@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db";
-import Learner from "@/models/Learner";
 import Counter from "@/models/Counter";
+import Learner from "@/models/Learner";
 
 export async function POST(req) {
   try {
@@ -22,7 +22,7 @@ export async function POST(req) {
     counter.sequence += 1;
     await counter.save();
 
-    // Format admission number
+    // Format admission number: BKBS/A25/001
     const admissionNo = `${schoolCode}/${stateCode}${yearShort}/${String(
       counter.sequence
     ).padStart(3, "0")}`;
@@ -34,20 +34,24 @@ export async function POST(req) {
       year: currentYear,
     });
 
-    return new Response(JSON.stringify({ success: true, learner }), {
-      status: 201,
-    });
+    console.log("✅ New learner admission number:", admissionNo);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Learner enrolled successfully",
+        admissionNo: learner.admissionNo,
+      }),
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Error enrolling learner:", error);
+    console.error("❌ Error enrolling learner:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
-
 
 export async function GET() {
   try {
