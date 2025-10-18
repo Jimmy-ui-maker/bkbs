@@ -14,7 +14,6 @@ function computeGrade(total) {
 
 export async function POST(req, { params }) {
   const { learnerId } = params;
-  // Accept partial fields; body may contain only one or some fields
   const body = await req.json();
   const { subject, term = "First Term", session = "2025/2026", force } = body;
 
@@ -29,10 +28,11 @@ export async function POST(req, { params }) {
     await dbConnect();
 
     const learner = await Learner.findById(learnerId);
-    if (!learner)
+    if (!learner) {
       return NextResponse.json({ success: false, error: "Learner not found" });
+    }
 
-    // Find or create a result document for this learner/term/session
+    // find or create result doc
     let result = await Result.findOne({ learnerId, term, session });
 
     if (!result) {
@@ -45,14 +45,12 @@ export async function POST(req, { params }) {
       });
     }
 
-    // ensure subjects exists
     if (!Array.isArray(result.subjects)) result.subjects = [];
 
     // find subject entry
-    let sub = result.subjects.find((s) => s.subject === subject);
-
-    if (!sub) {
-      // create a fresh subject entry with no forced default zeros (use null/undefined)
+    let subIndex = result.subjects.findIndex((s) => s.subject === subject);
+    let sub;
+    if (subIndex === -1) {
       sub = {
         subject,
         CA1: undefined,
@@ -64,58 +62,55 @@ export async function POST(req, { params }) {
         Grade: undefined,
       };
       result.subjects.push(sub);
+      subIndex = result.subjects.length - 1;
+    } else {
+      sub = result.subjects[subIndex];
     }
 
-    // Allowed fields mapping (frontend names -> stored keys)
-    const allowedFields = {
-      CA1: "CA1",
-      CA2: "CA2",
-      HF: "HF",
-      Project: "Project",
-      Exams: "Exams",
-    };
+    // allowed keys we accept from client
+    const allowed = ["CA1", "CA2", "HF", "Project", "Exams"];
 
-    // Update only fields present (and not null/empty string). If force==true we allow overwrite.
-    for (const key of Object.keys(allowedFields)) {
+    // update only fields present in body (non-empty). If force===true and value===null => clear.
+    for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
-        const raw = body[key];
-        // accept numeric-like values; skip if explicitly null/undefined/empty string
-        if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
-          sub[allowedFields[key]] = Number(raw);
-        } else if (force && raw === null) {
-          // force clearing if caller explicitly sends null and uses force flag
-          sub[allowedFields[key]] = undefined;
+        const v = body[key];
+        if (v === null && force) {
+          // explicit clear requested
+          result.subjects[subIndex][key] = undefined;
+        } else if (v !== undefined && v !== null && String(v).trim() !== "") {
+          result.subjects[subIndex][key] = Number(v);
         }
+        // else: skip (do not override existing value)
       }
     }
 
-    // compute total from whatever numeric values are present (treat missing as 0)
+    // compute total treating undefined as 0
+    const s = result.subjects[subIndex];
     const total =
-      Number(sub.CA1 || 0) +
-      Number(sub.CA2 || 0) +
-      Number(sub.HF || 0) +
-      Number(sub.Project || 0) +
-      Number(sub.Exams || 0);
+      Number(s.CA1 || 0) +
+      Number(s.CA2 || 0) +
+      Number(s.HF || 0) +
+      Number(s.Project || 0) +
+      Number(s.Exams || 0);
 
-    sub.Total = total;
-    sub.Grade = computeGrade(total);
+    result.subjects[subIndex].Total = total;
+    result.subjects[subIndex].Grade = computeGrade(total);
 
     await result.save();
 
-    // Return the updated subject entry so client can update UI easily
-    const updatedSubject = result.subjects.find((s) => s.subject === subject);
+    const resultSubject = result.subjects.find((x) => x.subject === subject);
 
     return NextResponse.json({
       success: true,
       message: "Subject scores updated.",
       result,
-      resultSubject: updatedSubject,
+      resultSubject,
     });
   } catch (error) {
     console.error("Error saving result:", error);
     return NextResponse.json({
       success: false,
-      error: error.message || "Server error, please try again later.",
+      error: error?.message || "Server error, please try again later.",
     });
   }
 }

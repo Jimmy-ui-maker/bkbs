@@ -8,7 +8,6 @@ export default function ExamOfficerDashboard() {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedLearner, setSelectedLearner] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState("");
-  // NOTE: use "HF" — keep backend & frontend keys consistent
   const [scores, setScores] = useState({
     CA1: "",
     CA2: "",
@@ -16,11 +15,12 @@ export default function ExamOfficerDashboard() {
     Project: "",
     Exams: "",
   });
-  const [existingResult, setExistingResult] = useState(null); // this will be the single subject object returned by server
+  const [resultDoc, setResultDoc] = useState(null); // full result doc for learner (term/session)
+  const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null); // single subject entry
   const [loading, setLoading] = useState(false);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
 
-  // fields order (server keys) and display info
+  // field meta
   const FIELDS = [
     { key: "CA1", label: "CA1", max: 15 },
     { key: "CA2", label: "CA2", max: 15 },
@@ -29,45 +29,43 @@ export default function ExamOfficerDashboard() {
     { key: "Exams", label: "Exams", max: 60 },
   ];
 
-  // Fetch learners
+  // fetch learners
   useEffect(() => {
-    async function fetchLearners() {
+    (async () => {
       try {
         const res = await fetch("/api/learners");
         const data = await res.json();
         if (data.success) setLearners(data.learners);
-      } catch (error) {
-        console.error("Error fetching learners:", error);
+      } catch (err) {
+        console.error("Error loading learners", err);
       }
-    }
-    fetchLearners();
+    })();
   }, []);
 
-  // Fetch subjects for selected class
+  // fetch subjects for class
   useEffect(() => {
     async function fetchSubjects() {
-      if (!selectedClass) return;
+      if (!selectedClass) {
+        setSubjects([]);
+        return;
+      }
       setSubjectsLoading(true);
       try {
-        // your API path (you told me route lives at src/app/api/adminapi/subjects)
         const res = await fetch(
           `/api/adminapi/subjects?classLevel=${encodeURIComponent(
             selectedClass
           )}`
         );
         const data = await res.json();
-        console.log("Fetched subjects:", data);
         if (
           data.success &&
           Array.isArray(data.subjects) &&
-          data.subjects.length > 0
+          data.subjects.length
         ) {
           setSubjects(data.subjects[0].subjects || []);
-        } else {
-          setSubjects([]);
-        }
+        } else setSubjects([]);
       } catch (err) {
-        console.error("Error fetching subjects:", err);
+        console.error("Error fetching subjects", err);
         setSubjects([]);
       } finally {
         setSubjectsLoading(false);
@@ -76,134 +74,148 @@ export default function ExamOfficerDashboard() {
     fetchSubjects();
   }, [selectedClass]);
 
-  // Fetch existing result for selected learner + selected subject
+  // fetch result doc for learner (most recent) when learner selected
   useEffect(() => {
-    async function fetchResultForSubject() {
-      if (!selectedLearner?._id || !selectedSubject) {
-        setExistingResult(null);
-        return;
-      }
-
+    async function fetchResults() {
+      setResultDoc(null);
+      setSelectedSubjectEntry(null);
+      setSelectedSubject("");
+      if (!selectedLearner?._id) return;
       try {
-        // GET returns all results for the learner (array of result docs)
         const res = await fetch(`/api/results/${selectedLearner._id}`);
         const data = await res.json();
-        if (!data.success) {
-          setExistingResult(null);
-          return;
-        }
-
-        // find the result doc that matches the term/session if you have them,
-        // otherwise pick the most recent one (first)
-        const resultDocs = Array.isArray(data.results) ? data.results : [];
-        if (resultDocs.length === 0) {
-          setExistingResult(null);
-          return;
-        }
-
-        // If you track term/session, refine selection here. For now take the most relevant:
-        const resultDoc = resultDocs[0];
-
-        // Now find the subject entry inside resultDoc.subjects
-        const subjectEntry = (resultDoc.subjects || []).find(
-          (s) => s.subject === selectedSubject
-        );
-
-        if (subjectEntry) {
-          setExistingResult(subjectEntry);
+        if (data.success && data.results && data.results.length) {
+          // take the latest/first result doc — if you have term/session selection add filters here
+          setResultDoc(data.results[0]);
         } else {
-          setExistingResult(null);
+          setResultDoc(null);
         }
       } catch (err) {
-        console.error("Error fetching result:", err);
-        setExistingResult(null);
+        console.error("Error fetching results", err);
+        setResultDoc(null);
       }
     }
+    fetchResults();
+  }, [selectedLearner]);
 
-    fetchResultForSubject();
-  }, [selectedLearner, selectedSubject]);
+  // when subject selected, set selectedSubjectEntry and prefill scores
+  useEffect(() => {
+    setSelectedSubjectEntry(null);
+    setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
+    if (!selectedSubject || !resultDoc) return;
 
-  // Handle score submission (step-by-step)
-  const handleScoreSubmit = async (e) => {
+    const s = (resultDoc.subjects || []).find(
+      (x) => x.subject === selectedSubject
+    );
+    if (s) {
+      setSelectedSubjectEntry(s);
+      setScores({
+        CA1: s.CA1 ?? "",
+        CA2: s.CA2 ?? "",
+        HF: s.HF ?? "",
+        Project: s.Project ?? "",
+        Exams: s.Exams ?? "",
+      });
+    } else {
+      setSelectedSubjectEntry(null);
+      setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
+    }
+  }, [selectedSubject, resultDoc]);
+
+  // compute completion percent for selected subject (how many fields filled)
+  const computePercent = () => {
+    if (!selectedSubject) return 0;
+    const entry = selectedSubjectEntry;
+    const totalFields = FIELDS.length;
+    const filled = FIELDS.reduce((acc, f) => {
+      const v = entry ? entry[f.key] : undefined;
+      return acc + (v !== undefined && v !== null ? 1 : 0);
+    }, 0);
+    return Math.round((filled / totalFields) * 100);
+  };
+
+  // Save handler: send only non-empty fields
+  const handleSave = async (e) => {
     e.preventDefault();
     if (!selectedLearner?._id) return alert("Select a learner first.");
     if (!selectedSubject) return alert("Select a subject.");
 
-    // find next field that is not yet set in existingResult
-    const nextFieldObj = FIELDS.find((f) => {
-      const val = existingResult ? existingResult[f.key] : undefined;
-      return val === undefined || val === null;
-    });
-
-    if (!nextFieldObj)
-      return alert("All scores already entered for this subject.");
-
-    const nextKey = nextFieldObj.key;
-    const rawValue = scores[nextKey];
-
-    if (String(rawValue).trim() === "")
-      return alert(`Enter score for ${nextFieldObj.label}.`);
-
-    const numeric = Number(rawValue);
-    if (isNaN(numeric) || numeric < 0 || numeric > nextFieldObj.max) {
-      return alert(
-        `Invalid ${nextFieldObj.label} score. Must be between 0 and ${nextFieldObj.max}.`
-      );
+    // collect fields the user filled (non-empty string)
+    const payload = { subject: selectedSubject };
+    let hasAny = false;
+    for (const f of FIELDS) {
+      const raw = scores[f.key];
+      if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+        const num = Number(raw);
+        if (isNaN(num) || num < 0 || num > f.max) {
+          return alert(`${f.label} must be between 0 and ${f.max}`);
+        }
+        payload[f.key] = num;
+        hasAny = true;
+      }
     }
+    if (!hasAny) return alert("Enter at least one score to save.");
 
     setLoading(true);
     try {
-      // send only the field being updated (partial update)
-      const payload = {
-        subject: selectedSubject,
-        [nextKey]: numeric,
-        // optionally add term/session if you want to specify
-      };
-
       const res = await fetch(`/api/results/${selectedLearner._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json();
       if (!data.success) {
-        alert(data.error || "Failed to save score.");
+        alert(data.error || "Failed to save scores.");
         return;
       }
 
-      // server returns resultSubject (single subject) and result (full doc)
-      // prefer resultSubject if present
-      const updatedSubject =
-        data.resultSubject ??
-        (data.result?.subjects || []).find(
-          (s) => s.subject === selectedSubject
+      // server returns resultSubject and result doc; update local copies
+      if (data.result) {
+        setResultDoc(data.result);
+      }
+      if (data.resultSubject) {
+        setSelectedSubjectEntry(data.resultSubject);
+      } else if (data.result && Array.isArray(data.result.subjects)) {
+        const s = data.result.subjects.find(
+          (x) => x.subject === selectedSubject
         );
-
-      if (updatedSubject) {
-        setExistingResult(updatedSubject);
-      } else {
-        // fallback: re-fetch results
-        // (keeps UI consistent if server response format differs)
-        const refetch = await fetch(`/api/results/${selectedLearner._id}`);
-        const refData = await refetch.json();
-        if (refData.success) {
-          const rd = refData.results[0];
-          const sub = (rd.subjects || []).find(
-            (s) => s.subject === selectedSubject
-          );
-          setExistingResult(sub || null);
-        }
+        setSelectedSubjectEntry(s || null);
       }
 
-      // clear the input for the field just submitted
-      setScores((prev) => ({ ...prev, [nextKey]: "" }));
+      // Clear only the fields we submitted
+      const newScores = { ...scores };
+      for (const key of Object.keys(payload)) {
+        if (key !== "subject") newScores[key] = "";
+      }
+      setScores(newScores);
     } catch (err) {
-      console.error("Error saving score:", err);
+      console.error("Error saving scores", err);
       alert("Network error. Try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to display all subjects mapped in table with current scores (if any)
+  const mappedSubjectsWithScores = () => {
+    const subs = subjects || [];
+    const list = subs.map((s) => {
+      const entry = (resultDoc?.subjects || []).find(
+        (r) => r.subject === s.name
+      );
+      return {
+        name: s.name,
+        code: s.code,
+        CA1: entry?.CA1 ?? "-",
+        CA2: entry?.CA2 ?? "-",
+        HF: entry?.HF ?? "-",
+        Project: entry?.Project ?? "-",
+        Exams: entry?.Exams ?? "-",
+        Total: entry?.Total ?? "-",
+        Grade: entry?.Grade ?? "-",
+      };
+    });
+    return list;
   };
 
   const classes = [...new Set(learners.map((l) => l.classLevel))];
@@ -226,7 +238,7 @@ export default function ExamOfficerDashboard() {
               setSelectedClass(e.target.value);
               setSelectedLearner(null);
               setSelectedSubject("");
-              setExistingResult(null);
+              setResultDoc(null);
               setSubjects([]);
             }}
           >
@@ -239,7 +251,7 @@ export default function ExamOfficerDashboard() {
           </select>
         </div>
 
-        {/* loading subjects indicator */}
+        {/* loading subjects */}
         {subjectsLoading && (
           <p className="text-center text-muted mb-3">Loading subjects...</p>
         )}
@@ -272,7 +284,8 @@ export default function ExamOfficerDashboard() {
                           onClick={() => {
                             setSelectedLearner(learner);
                             setSelectedSubject("");
-                            setExistingResult(null);
+                            setResultDoc(null);
+                            setSelectedSubjectEntry(null);
                             setScores({
                               CA1: "",
                               CA2: "",
@@ -307,7 +320,7 @@ export default function ExamOfficerDashboard() {
                 value={selectedSubject}
                 onChange={(e) => {
                   setSelectedSubject(e.target.value);
-                  setExistingResult(null);
+                  setSelectedSubjectEntry(null);
                   setScores({
                     CA1: "",
                     CA2: "",
@@ -331,10 +344,32 @@ export default function ExamOfficerDashboard() {
               </select>
             </div>
 
-            {/* existing result table */}
-            {existingResult && (
+            {/* progress bar for selected subject */}
+            {selectedSubject && (
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Completion</label>
+                <div className="progress" style={{ height: "12px" }}>
+                  <div
+                    className="progress-bar bg-success"
+                    role="progressbar"
+                    style={{ width: `${computePercent()}%` }}
+                    aria-valuenow={computePercent()}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  />
+                </div>
+                <div className="text-end small text-muted mt-1">
+                  {computePercent()}%
+                </div>
+              </div>
+            )}
+
+            {/* current subject entry summary */}
+            {selectedSubjectEntry && (
               <div className="table-responsive mb-4">
-                <h6 className="fw-bold text-secondary">Current Scores:</h6>
+                <h6 className="fw-bold text-secondary">
+                  Current Scores (selected subject)
+                </h6>
                 <table className="table table-sm table-bordered text-center">
                   <thead className="table-light">
                     <tr>
@@ -363,9 +398,9 @@ export default function ExamOfficerDashboard() {
                         "Grade",
                       ].map((f) => (
                         <td key={f}>
-                          {existingResult[f] !== undefined &&
-                          existingResult[f] !== null
-                            ? existingResult[f]
+                          {selectedSubjectEntry[f] !== undefined &&
+                          selectedSubjectEntry[f] !== null
+                            ? selectedSubjectEntry[f]
                             : "-"}
                         </td>
                       ))}
@@ -375,37 +410,27 @@ export default function ExamOfficerDashboard() {
               </div>
             )}
 
-            {/* step-by-step inputs */}
-            <form onSubmit={handleScoreSubmit}>
+            {/* inputs */}
+            <form onSubmit={handleSave}>
               <div className="row">
-                {FIELDS.map(({ key, label, max }) => {
-                  const isLocked =
-                    existingResult &&
-                    existingResult[key] !== undefined &&
-                    existingResult[key] !== null;
-                  return (
-                    <div className="col-md-4 mb-3" key={key}>
-                      <label className="form-label fw-semibold">
-                        {label} ({max})
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control login-input"
-                        max={max}
-                        min="0"
-                        disabled={isLocked}
-                        placeholder={isLocked ? "Locked" : `Enter ${label}`}
-                        value={scores[key]}
-                        onChange={(e) =>
-                          setScores((prev) => ({
-                            ...prev,
-                            [key]: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                  );
-                })}
+                {FIELDS.map(({ key, label, max }) => (
+                  <div className="col-md-4 mb-3" key={key}>
+                    <label className="form-label fw-semibold">
+                      {label} ({max})
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control login-input"
+                      max={max}
+                      min="0"
+                      placeholder={`Enter ${label}`}
+                      value={scores[key]}
+                      onChange={(e) =>
+                        setScores((p) => ({ ...p, [key]: e.target.value }))
+                      }
+                    />
+                  </div>
+                ))}
               </div>
 
               <div className="text-center mt-3">
@@ -414,7 +439,7 @@ export default function ExamOfficerDashboard() {
                   className="btn btn-warning fw-semibold"
                   disabled={loading}
                 >
-                  {loading ? "Saving..." : "Save Next Score"}
+                  {loading ? "Saving..." : "Save Scores"}
                 </button>
                 <button
                   type="button"
@@ -425,6 +450,60 @@ export default function ExamOfficerDashboard() {
                 </button>
               </div>
             </form>
+
+            {/* mapped subjects table */}
+            <div className="table-responsive mt-4">
+              <h6 className="fw-semibold text-secondary">
+                All Subjects (class):
+              </h6>
+              <table className="table table-sm table-bordered text-center">
+                <thead className="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Subject</th>
+                    <th>CA1</th>
+                    <th>CA2</th>
+                    <th>HF</th>
+                    <th>Project</th>
+                    <th>Exams</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mappedSubjectsWithScores().map((s, i) => (
+                    <tr key={s.name}>
+                      <td>{i + 1}</td>
+                      <td>
+                        {s.name}
+                        {s.code && (
+                          <div className="small text-muted">({s.code})</div>
+                        )}
+                      </td>
+                      <td>{s.CA1}</td>
+                      <td>{s.CA2}</td>
+                      <td>{s.HF}</td>
+                      <td>{s.Project}</td>
+                      <td>{s.Exams}</td>
+                      <td>{s.Total}</td>
+                      <td>{s.Grade}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => {
+                            setSelectedSubject(s.name);
+                            // ensure subjectEntry from resultDoc will be loaded via effect
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
