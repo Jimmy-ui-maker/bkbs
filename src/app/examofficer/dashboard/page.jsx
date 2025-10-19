@@ -9,9 +9,12 @@ export default function ExamOfficerDashboard() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [learners, setLearners] = useState([]);
   const [subjects, setSubjects] = useState([]);
+
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedLearner, setSelectedLearner] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedTerm, setSelectedTerm] = useState("First Term");
+
   const [scores, setScores] = useState({
     CA1: "",
     CA2: "",
@@ -19,28 +22,16 @@ export default function ExamOfficerDashboard() {
     Project: "",
     Exams: "",
   });
+
   const [resultDoc, setResultDoc] = useState(null);
   const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null);
   const [loading, setLoading] = useState(false);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
 
-  // ✅ Step 1: Check auth once
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      router.push("/officerslogin");
-    } else {
-      setUser(JSON.parse(storedUser));
-    }
-    setCheckingAuth(false);
-  }, [router]);
-
-  // ✅ Step 2: Logout
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    router.push("/officerslogin");
-  };
+  const [sessions, setSessions] = useState([]);
+  const [currentSession, setCurrentSession] = useState("");
+  const [selectedSession, setSelectedSession] = useState("");
+  const [results, setResults] = useState([]);
 
   // ✅ FIELDS meta
   const FIELDS = [
@@ -50,6 +41,43 @@ export default function ExamOfficerDashboard() {
     { key: "Project", label: "Project", max: 5 },
     { key: "Exams", label: "Exams", max: 60 },
   ];
+
+  // ✅ Auth check
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) router.push("/officerslogin");
+    else setUser(JSON.parse(storedUser));
+    setCheckingAuth(false);
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    router.push("/officerslogin");
+  };
+
+  // ✅ Fetch sessions
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const res = await fetch("/api/adminapi/sessions");
+        const data = await res.json();
+        if (data.success && data.sessions.length > 0) {
+          setSessions(data.sessions);
+          const active =
+            data.sessions.find((s) => s.isActive) || data.sessions[0];
+          setCurrentSession(active.sessionName);
+          setSelectedSession(active.sessionName);
+        }
+      } catch (err) {
+        console.error("Failed to fetch sessions:", err);
+        setSessions([{ sessionName: "2024/2025", isActive: true }]);
+        setCurrentSession("2024/2025");
+        setSelectedSession("2024/2025");
+      }
+    };
+    fetchSessions();
+  }, []);
 
   // ✅ Fetch learners
   useEffect(() => {
@@ -96,30 +124,53 @@ export default function ExamOfficerDashboard() {
     fetchSubjects();
   }, [selectedClass]);
 
-  // ✅ Fetch results when learner changes
+  // ✅ Fetch learner results
   useEffect(() => {
     async function fetchResults() {
+      setResults([]);
       setResultDoc(null);
       setSelectedSubjectEntry(null);
       setSelectedSubject("");
       if (!selectedLearner?._id) return;
+
       try {
         const res = await fetch(`/api/results/${selectedLearner._id}`);
         const data = await res.json();
-        if (data.success && data.results && data.results.length) {
-          setResultDoc(data.results[0]);
-        } else {
-          setResultDoc(null);
-        }
+        if (data.success && Array.isArray(data.results)) {
+          setResults(data.results);
+        } else setResults([]);
       } catch (err) {
         console.error("Error fetching results", err);
-        setResultDoc(null);
+        setResults([]);
       }
     }
     fetchResults();
   }, [selectedLearner]);
 
-  // ✅ Update when subject changes
+  // ✅ Update current resultDoc when term/session changes
+  useEffect(() => {
+    if (!selectedLearner || !selectedSession || !selectedTerm) return;
+
+    const existing = results.find(
+      (r) =>
+        r.session?.trim() === selectedSession.trim() &&
+        r.term?.trim().toLowerCase() === selectedTerm.trim().toLowerCase()
+    );
+
+    if (existing) {
+      setResultDoc(existing);
+    } else {
+      // Fresh record for new session/term
+      setResultDoc({
+        learnerId: selectedLearner._id,
+        session: selectedSession,
+        term: selectedTerm,
+        subjects: [],
+      });
+    }
+  }, [results, selectedSession, selectedTerm, selectedLearner]);
+
+  // ✅ Update selected subject
   useEffect(() => {
     setSelectedSubjectEntry(null);
     setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
@@ -140,25 +191,18 @@ export default function ExamOfficerDashboard() {
     }
   }, [selectedSubject, resultDoc]);
 
-  // ✅ Compute completion percent
-  const computePercent = () => {
-    if (!selectedSubject) return 0;
-    const entry = selectedSubjectEntry;
-    const totalFields = FIELDS.length;
-    const filled = FIELDS.reduce((acc, f) => {
-      const v = entry ? entry[f.key] : undefined;
-      return acc + (v !== undefined && v !== null ? 1 : 0);
-    }, 0);
-    return Math.round((filled / totalFields) * 100);
-  };
-
   // ✅ Save scores
   const handleSave = async (e) => {
     e.preventDefault();
     if (!selectedLearner?._id) return alert("Select a learner first.");
     if (!selectedSubject) return alert("Select a subject.");
 
-    const payload = { subject: selectedSubject };
+    const payload = {
+      subject: selectedSubject,
+      term: selectedTerm,
+      session: selectedSession,
+    };
+
     let hasAny = false;
     for (const f of FIELDS) {
       const raw = scores[f.key];
@@ -181,19 +225,25 @@ export default function ExamOfficerDashboard() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!data.success) {
-        alert(data.error || "Failed to save scores.");
-        return;
+
+      if (!data.success) return alert(data.error || "Failed to save scores.");
+
+      if (data.result) {
+        setResultDoc(data.result);
+        setResults((prev) => {
+          const updated = [...prev];
+          const idx = updated.findIndex(
+            (r) =>
+              r.session === data.result.session && r.term === data.result.term
+          );
+          if (idx >= 0) updated[idx] = data.result;
+          else updated.push(data.result);
+          return updated;
+        });
       }
 
-      if (data.result) setResultDoc(data.result);
-      if (data.resultSubject) setSelectedSubjectEntry(data.resultSubject);
-
-      const newScores = { ...scores };
-      for (const key of Object.keys(payload)) {
-        if (key !== "subject") newScores[key] = "";
-      }
-      setScores(newScores);
+      alert("✅ Scores saved successfully!");
+      setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
     } catch (err) {
       console.error("Error saving scores", err);
       alert("Network error. Try again.");
@@ -224,7 +274,6 @@ export default function ExamOfficerDashboard() {
 
   const classes = [...new Set(learners.map((l) => l.classLevel))];
 
-  // ✅ Render section AFTER all hooks are declared
   if (checkingAuth) {
     return (
       <div className="d-flex vh-100 justify-content-center align-items-center">
@@ -239,11 +288,11 @@ export default function ExamOfficerDashboard() {
 
   return (
     <section className="container py-5">
-      {/* ✅ Header bar with user info */}
-      <div className="d-flex justify-content-between align-items-center mb-4  pb-2">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4 pb-2">
         <div>
           <h4 className="fw-bold text-primary mb-0">Exam Officer Page</h4>
-          <small className="">
+          <small>
             {user?.name} ({user?.email}) — {user?.role}
           </small>
         </div>
@@ -254,7 +303,9 @@ export default function ExamOfficerDashboard() {
           Logout
         </button>
       </div>
-      <hr className=" line" />
+
+      <hr className="line" />
+
       <div className="login-card p-4 shadow rounded-4 border">
         {/* Class select */}
         <div className="mb-4 text-center">
@@ -280,12 +331,7 @@ export default function ExamOfficerDashboard() {
           </select>
         </div>
 
-        {/* loading subjects */}
-        {subjectsLoading && (
-          <p className="text-center  mb-3">Loading subjects...</p>
-        )}
-
-        {/* learners table */}
+        {/* Learners table */}
         {selectedClass && !subjectsLoading && (
           <div className="table-responsive mb-5">
             <table className="table table-bordered align-middle text-center">
@@ -334,14 +380,46 @@ export default function ExamOfficerDashboard() {
           </div>
         )}
 
-        {/* score form */}
+        {/* Score entry form */}
         {selectedLearner && (
           <div className="score-form p-4 rounded-4 login-card shadow-sm">
             <h5 className="fw-bold mb-3 text-center text-success">
               Scores for {selectedLearner.fullName}
             </h5>
 
-            {/* subject select */}
+            {/* TERM / SESSION SELECT */}
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">Select Term</label>
+                <select
+                  className="form-select login-input"
+                  value={selectedTerm}
+                  onChange={(e) => setSelectedTerm(e.target.value)}
+                >
+                  <option value="">-- Choose Term --</option>
+                  <option value="First Term">First Term</option>
+                  <option value="Second Term">Second Term</option>
+                  <option value="Third Term">Third Term</option>
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">Select Session</label>
+                <select
+                  className="form-select login-input"
+                  value={selectedSession}
+                  onChange={(e) => setSelectedSession(e.target.value)}
+                >
+                  <option value="">-- Choose Session --</option>
+                  {sessions.map((s) => (
+                    <option key={s.sessionName} value={s.sessionName}>
+                      {s.sessionName} {s.isActive ? "(Active)" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Subject select */}
             <div className="mb-3">
               <label className="form-label fw-semibold">Select Subject</label>
               <select
@@ -373,73 +451,7 @@ export default function ExamOfficerDashboard() {
               </select>
             </div>
 
-            {/* progress bar for selected subject */}
-            {selectedSubject && (
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Completion</label>
-                <div className="progress" style={{ height: "12px" }}>
-                  <div
-                    className="progress-bar bg-success"
-                    role="progressbar"
-                    style={{ width: `${computePercent()}%` }}
-                    aria-valuenow={computePercent()}
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  />
-                </div>
-                <div className="text-end small text-muted mt-1">
-                  {computePercent()}%
-                </div>
-              </div>
-            )}
-
-            {/* current subject entry summary */}
-            {selectedSubjectEntry && (
-              <div className="table-responsive mb-4">
-                <h6 className="fw-bold text-secondary">
-                  Current Scores (selected subject)
-                </h6>
-                <table className="table table-sm table-bordered text-center">
-                  <thead className="table-light">
-                    <tr>
-                      {[
-                        "CA1",
-                        "CA2",
-                        "HF",
-                        "Project",
-                        "Exams",
-                        "Total",
-                        "Grade",
-                      ].map((h) => (
-                        <th key={h}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {[
-                        "CA1",
-                        "CA2",
-                        "HF",
-                        "Project",
-                        "Exams",
-                        "Total",
-                        "Grade",
-                      ].map((f) => (
-                        <td key={f}>
-                          {selectedSubjectEntry[f] !== undefined &&
-                          selectedSubjectEntry[f] !== null
-                            ? selectedSubjectEntry[f]
-                            : "-"}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* inputs */}
+            {/* Inputs */}
             <form onSubmit={handleSave}>
               <div className="row">
                 {FIELDS.map(({ key, label, max }) => (
@@ -480,11 +492,15 @@ export default function ExamOfficerDashboard() {
               </div>
             </form>
 
-            {/* mapped subjects table */}
+            {/* ✅ mapped subjects table */}
             <div className="table-responsive mt-4">
-              <h6 className="fw-semibold text-secondary">
-                All Subjects (class):
+              <h6 className="fw-semibold">
+                All Subjects ({selectedTerm || "Term not selected"}) –{" "}
+                <span className="text-success">
+                  {selectedSession || "Session not selected"}
+                </span>
               </h6>
+
               <table className="table table-sm table-bordered text-center">
                 <thead className="table-dark">
                   <tr>
@@ -520,10 +536,7 @@ export default function ExamOfficerDashboard() {
                       <td>
                         <button
                           className="btn btn-sm btn-outline-primary"
-                          onClick={() => {
-                            setSelectedSubject(s.name);
-                            // ensure subjectEntry from resultDoc will be loaded via effect
-                          }}
+                          onClick={() => setSelectedSubject(s.name)}
                         >
                           Edit
                         </button>

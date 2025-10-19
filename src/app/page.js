@@ -115,11 +115,11 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-        <div className="text-center my-3">
-          <i className="bi bi-arrow-down fs-3 d-block mb-2"></i>
-          <p className="text-center py-1 mb-3">
+        <div className="text-center my-2">
+          <p className="text-center  mb-1">
             Below are Staffs and Learner forms
           </p>
+          👇
         </div>
         {/* learners portal */}
         <div className=" d-flex justify-content-between  ">
@@ -130,7 +130,7 @@ export default function LoginPage() {
             Officers →
           </a>
           <a href="/learnerportal" className=" fw-semibold mx-2">
-            Learner →
+            Learners →
           </a>
         </div>
 

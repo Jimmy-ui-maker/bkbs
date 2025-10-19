@@ -2,13 +2,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  ClassSelector,
+  SessionSelector,
+  ResultViewer,
+} from "@/components/LearnerComponent";
+
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUD_NAME;
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
 
 export default function LearnerPortal() {
   const router = useRouter();
   const [learner, setLearner] = useState(null);
-  const [selectedSession, setSelectedSession] = useState("2024/2025");
   const [showProfile, setShowProfile] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [updatedData, setUpdatedData] = useState({});
@@ -18,8 +23,31 @@ export default function LearnerPortal() {
   const [updatedFile, setUpdatedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const sessions = ["2024/2025", "2023/2024", "2022/2023"];
-  const terms = ["First Term", "Second Term", "Third Term"];
+  const [selectedSession, setSelectedSession] = useState("");
+  const [currentSession, setCurrentSession] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentSession = async () => {
+      try {
+        const res = await fetch("/api/adminapi/sessions");
+        const data = await res.json();
+
+        if (data.success && data.sessions.length > 0) {
+          // Get the latest or active session
+          const active =
+            data.sessions.find((s) => s.isActive) || data.sessions[0];
+          setCurrentSession(active.sessionName);
+          setSelectedSession(active.sessionName);
+        }
+      } catch (err) {
+        console.error("Failed to fetch session:", err);
+        setCurrentSession("2024/2025"); // fallback
+        setSelectedSession("2024/2025");
+      }
+    };
+
+    fetchCurrentSession();
+  }, []);
 
   useEffect(() => {
     const storedData = localStorage.getItem("learnerData");
@@ -137,7 +165,7 @@ export default function LearnerPortal() {
           <div className="d-flex justify-content-end align-items-end mb-3 user-bar">
             <div className="dropdown">
               <button
-                className="btn text-truncate modal-color p-2 rounded-circle border-0"
+                className="btn text-truncate modal-color p-3 rounded-circle border-0"
                 type="button"
                 id="userMenuButton"
                 data-bs-toggle="dropdown"
@@ -192,7 +220,7 @@ export default function LearnerPortal() {
           {/* ===== Profile Header (Adjusted Upward) ===== */}
           <div className="text-center mb-4 profile-header">
             <div
-              className="profile-pic mx-auto mb-2 rounded-circle overflow-hidden border border-3 border-warning-subtle"
+              className="profile-pic mx-auto mb-2 rounded-circle overflow-hidden "
               style={{ width: "120px", height: "120px" }}
             >
               <img
@@ -210,7 +238,10 @@ export default function LearnerPortal() {
           {/* ===== Current Info ===== */}
           <div className="text-center d-flex flex-wrap justify-content-center gap-4 my-3">
             <h6 className="fw-semibold">
-              Current Session: <span className="text-success">2024/2025</span>
+              Current Session:{" "}
+              <span className="text-success">
+                {currentSession || "Loading..."}
+              </span>
             </h6>
             <h6 className="fw-semibold">
               Current Class:{" "}
@@ -221,51 +252,27 @@ export default function LearnerPortal() {
 
           {/* ===== Session & Class Selectors ===== */}
           <div className="row mb-4 text-center">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">Select Class</label>
-              <select className="form-select login-input">
-                <option>{learner.classLevel}</option>
-              </select>
+            <div className="col-md-6">
+              <ClassSelector
+                learner={learner}
+                selectedClass={learner.classLevel}
+                setSelectedClass={(val) => console.log("Selected Class:", val)}
+              />
             </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">Select Session</label>
-              <select
-                className="form-select login-input"
-                value={selectedSession}
-                onChange={(e) => setSelectedSession(e.target.value)}
-              >
-                {sessions.map((session) => (
-                  <option key={session}>{session}</option>
-                ))}
-              </select>
+            <div className="col-md-6">
+              <SessionSelector
+                selectedSession={selectedSession}
+                setSelectedSession={setSelectedSession}
+              />
             </div>
           </div>
 
           {/* ===== Term Results ===== */}
-          <div className="result-section text-center">
-            <h5 className="mb-3">
-              Results for <span className="fw-bold">{selectedSession}</span>
-            </h5>
-            <div className="d-flex flex-wrap justify-content-center gap-3">
-              {terms.map((term) => (
-                <div
-                  key={term}
-                  className="term-card rounded-4 p-3 border border-warning-subtle"
-                  style={{ width: "250px" }}
-                >
-                  <h6 className="fw-bold mb-2">{term}</h6>
-                  <div className="d-flex justify-content-center gap-2">
-                    <button className="btn btn-outline-success btn-sm">
-                      <i className="bi bi-eye"></i> View
-                    </button>
-                    <button className="btn btn-outline-primary btn-sm">
-                      <i className="bi bi-download"></i> Download
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ResultViewer
+            learner={learner}
+            selectedClass={learner.classLevel}
+            selectedSession={selectedSession}
+          />
 
           {/* ===== Footer ===== */}
           <div className="text-center mt-5 small">
@@ -484,36 +491,6 @@ export default function LearnerPortal() {
                       </div>
                     </div>
 
-                    {/* Class 
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label fw-semibold">Class</label>
-                        <select
-                          className="form-select login-input"
-                          value={updatedData.classLevel || ""}
-                          onChange={(e) =>
-                            setUpdatedData({
-                              ...updatedData,
-                              classLevel: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">-- Select Class --</option>
-                          <option value="Creche">Creche</option>
-                          <option value="Reception 1">Reception 1</option>
-                          <option value="Reception 2">Reception 2</option>
-                          <option value="Nursery 1">Nursery 1</option>
-                          <option value="Nursery 2">Nursery 2</option>
-                          <option value="Basic 1">Basic 1</option>
-                          <option value="Basic 2">Basic 2</option>
-                          <option value="Basic 3">Basic 3</option>
-                          <option value="Basic 4">Basic 4</option>
-                          <option value="Basic 5">Basic 5</option>
-                          <option value="Basic 6">Basic 6</option>
-                        </select>
-                      </div>
-                    </div>
-*/}
                     {/* Address */}
                     <div className="col-md-12">
                       <div className="mb-3">

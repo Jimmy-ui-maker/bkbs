@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminForm from "@/components/AdminComponent/AdminForm";
 import ViewTable from "@/components/EnrollmentComponent/ViewTable";
+import AdminSessions from "@/components/AdminComponent/SessionForm";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("officers");
@@ -90,6 +91,14 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab("add-officer")}
               >
                 Add Officer
+              </button>
+              <button
+                className={`sidebar-btn ${
+                  activeTab === "add-session" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("add-session")}
+              >
+                Add Session
               </button>
               <button
                 className={`sidebar-btn ${
@@ -196,6 +205,7 @@ export default function AdminDashboard() {
         {/* Main Dashboard Content */}
         <main className="content p-3 flex-grow-1 ">
           {activeTab === "add-officer" && <AdminForm />}
+          {activeTab === "add-session" && <AdminSessions />}
           {activeTab === "manage-officer" && (
             <p>Officer Table Component goes here</p>
           )}

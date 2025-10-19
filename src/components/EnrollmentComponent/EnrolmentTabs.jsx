@@ -306,6 +306,12 @@ export default function EnrolmentTabs() {
                     <option value="Basic 4">Basic 4</option>
                     <option value="Basic 5">Basic 5</option>
                     <option value="Basic 6">Basic 6</option>
+                    <option value="JSS 1">JSS 1</option>
+                    <option value="JSS 2">JSS 2</option>
+                    <option value="JSS 3">JSS 3</option>
+                    <option value="SSS 1">SSS 1</option>
+                    <option value="SSS 2">SSS 2</option>
+                    <option value="SSS 3">SSS 3</option>
                   </select>
                 </div>
               </div>
