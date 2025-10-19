@@ -58,7 +58,7 @@ export default function LearnerLogin() {
         className="login-card p-4 w-100 shadow rounded-4"
         style={{ maxWidth: "400px" }}
       >
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="card login-card p-4 shadow-sm">
           {/* Admission Number */}
           <div className="mb-3">
             <label className="form-label">Admission Number</label>

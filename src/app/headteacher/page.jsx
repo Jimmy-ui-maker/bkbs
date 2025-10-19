@@ -10,19 +10,17 @@ export default function HeadteacherDashboard() {
   const [teachers, setTeachers] = useState([]);
   const [learners, setLearners] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
-  // Protect route: only headteacher role
+  // ✅ Protect route using officer login data
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const storedUsername = localStorage.getItem("username");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (role === "headteacher") {
+    if (user.role === "Head Teacher") {
       setLoggedIn(true);
-      if (storedUsername) setUsername(storedUsername);
+      setUsername(user.name);
     } else {
-      router.push("/");
+      router.push("/officerslogin");
     }
   }, [router]);
 
@@ -52,7 +50,10 @@ export default function HeadteacherDashboard() {
 
   // Promote learner
   const promoteLearner = async (id) => {
+    if (!confirm("Are you sure you want to promot this learner?")) return;
+
     setLoading(true);
+
     try {
       const res = await fetch(`/api/headteacher/learners/${id}/promote`, {
         method: "PUT",
@@ -61,7 +62,6 @@ export default function HeadteacherDashboard() {
 
       if (res.ok && data.success) {
         alert(`Learner promoted to ${data.learner.classLevel}`);
-        // refresh learners
         setLearners((prev) =>
           prev.map((l) => (l._id === id ? data.learner : l))
         );
@@ -97,7 +97,7 @@ export default function HeadteacherDashboard() {
           >
             <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0 fw-bold text-light ms-1">Headteacher Dashboard</p>
+          <p className="mb-0  text-light ms-1">Head Teacher </p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -107,9 +107,9 @@ export default function HeadteacherDashboard() {
           <button
             className="btn-get logout-btn"
             onClick={() => {
-              localStorage.removeItem("role");
-              localStorage.removeItem("username");
-              router.push("/");
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              router.push("/officerslogin");
             }}
           >
             <span className="d-none d-md-inline">Logout</span>

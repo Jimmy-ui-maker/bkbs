@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ExamOfficerDashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [learners, setLearners] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
@@ -15,12 +19,30 @@ export default function ExamOfficerDashboard() {
     Project: "",
     Exams: "",
   });
-  const [resultDoc, setResultDoc] = useState(null); // full result doc for learner (term/session)
-  const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null); // single subject entry
+  const [resultDoc, setResultDoc] = useState(null);
+  const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null);
   const [loading, setLoading] = useState(false);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
 
-  // field meta
+  // ✅ Step 1: Check auth once
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      router.push("/officerslogin");
+    } else {
+      setUser(JSON.parse(storedUser));
+    }
+    setCheckingAuth(false);
+  }, [router]);
+
+  // ✅ Step 2: Logout
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    router.push("/officerslogin");
+  };
+
+  // ✅ FIELDS meta
   const FIELDS = [
     { key: "CA1", label: "CA1", max: 15 },
     { key: "CA2", label: "CA2", max: 15 },
@@ -29,7 +51,7 @@ export default function ExamOfficerDashboard() {
     { key: "Exams", label: "Exams", max: 60 },
   ];
 
-  // fetch learners
+  // ✅ Fetch learners
   useEffect(() => {
     (async () => {
       try {
@@ -42,7 +64,7 @@ export default function ExamOfficerDashboard() {
     })();
   }, []);
 
-  // fetch subjects for class
+  // ✅ Fetch subjects for class
   useEffect(() => {
     async function fetchSubjects() {
       if (!selectedClass) {
@@ -74,7 +96,7 @@ export default function ExamOfficerDashboard() {
     fetchSubjects();
   }, [selectedClass]);
 
-  // fetch result doc for learner (most recent) when learner selected
+  // ✅ Fetch results when learner changes
   useEffect(() => {
     async function fetchResults() {
       setResultDoc(null);
@@ -85,7 +107,6 @@ export default function ExamOfficerDashboard() {
         const res = await fetch(`/api/results/${selectedLearner._id}`);
         const data = await res.json();
         if (data.success && data.results && data.results.length) {
-          // take the latest/first result doc — if you have term/session selection add filters here
           setResultDoc(data.results[0]);
         } else {
           setResultDoc(null);
@@ -98,7 +119,7 @@ export default function ExamOfficerDashboard() {
     fetchResults();
   }, [selectedLearner]);
 
-  // when subject selected, set selectedSubjectEntry and prefill scores
+  // ✅ Update when subject changes
   useEffect(() => {
     setSelectedSubjectEntry(null);
     setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
@@ -116,13 +137,10 @@ export default function ExamOfficerDashboard() {
         Project: s.Project ?? "",
         Exams: s.Exams ?? "",
       });
-    } else {
-      setSelectedSubjectEntry(null);
-      setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
     }
   }, [selectedSubject, resultDoc]);
 
-  // compute completion percent for selected subject (how many fields filled)
+  // ✅ Compute completion percent
   const computePercent = () => {
     if (!selectedSubject) return 0;
     const entry = selectedSubjectEntry;
@@ -134,13 +152,12 @@ export default function ExamOfficerDashboard() {
     return Math.round((filled / totalFields) * 100);
   };
 
-  // Save handler: send only non-empty fields
+  // ✅ Save scores
   const handleSave = async (e) => {
     e.preventDefault();
     if (!selectedLearner?._id) return alert("Select a learner first.");
     if (!selectedSubject) return alert("Select a subject.");
 
-    // collect fields the user filled (non-empty string)
     const payload = { subject: selectedSubject };
     let hasAny = false;
     for (const f of FIELDS) {
@@ -169,20 +186,9 @@ export default function ExamOfficerDashboard() {
         return;
       }
 
-      // server returns resultSubject and result doc; update local copies
-      if (data.result) {
-        setResultDoc(data.result);
-      }
-      if (data.resultSubject) {
-        setSelectedSubjectEntry(data.resultSubject);
-      } else if (data.result && Array.isArray(data.result.subjects)) {
-        const s = data.result.subjects.find(
-          (x) => x.subject === selectedSubject
-        );
-        setSelectedSubjectEntry(s || null);
-      }
+      if (data.result) setResultDoc(data.result);
+      if (data.resultSubject) setSelectedSubjectEntry(data.resultSubject);
 
-      // Clear only the fields we submitted
       const newScores = { ...scores };
       for (const key of Object.keys(payload)) {
         if (key !== "subject") newScores[key] = "";
@@ -196,10 +202,9 @@ export default function ExamOfficerDashboard() {
     }
   };
 
-  // Helper to display all subjects mapped in table with current scores (if any)
   const mappedSubjectsWithScores = () => {
     const subs = subjects || [];
-    const list = subs.map((s) => {
+    return subs.map((s) => {
       const entry = (resultDoc?.subjects || []).find(
         (r) => r.subject === s.name
       );
@@ -215,18 +220,42 @@ export default function ExamOfficerDashboard() {
         Grade: entry?.Grade ?? "-",
       };
     });
-    return list;
   };
 
   const classes = [...new Set(learners.map((l) => l.classLevel))];
 
+  // ✅ Render section AFTER all hooks are declared
+  if (checkingAuth) {
+    return (
+      <div className="d-flex vh-100 justify-content-center align-items-center">
+        <div className="spinner-border text-success" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
   return (
     <section className="container py-5">
+      {/* ✅ Header bar with user info */}
+      <div className="d-flex justify-content-between align-items-center mb-4  pb-2">
+        <div>
+          <h4 className="fw-bold text-primary mb-0">Exam Officer Dashboard</h4>
+          <small className="">
+            {user?.name} ({user?.email}) — {user?.role}
+          </small>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="btn btn-outline-danger btn-sm"
+        >
+          Logout
+        </button>
+      </div>
+      <hr className=" line" />
       <div className="login-card p-4 shadow rounded-4 border">
-        <h3 className="fw-bold mb-4 text-center text-primary">
-          Exam Officer Dashboard
-        </h3>
-
         {/* Class select */}
         <div className="mb-4 text-center">
           <label className="form-label fw-semibold me-2">Select Class:</label>
@@ -253,7 +282,7 @@ export default function ExamOfficerDashboard() {
 
         {/* loading subjects */}
         {subjectsLoading && (
-          <p className="text-center text-muted mb-3">Loading subjects...</p>
+          <p className="text-center  mb-3">Loading subjects...</p>
         )}
 
         {/* learners table */}

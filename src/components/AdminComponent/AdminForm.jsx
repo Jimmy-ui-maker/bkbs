@@ -35,7 +35,7 @@ export default function AdminForm() {
       let res;
       if (form._id) {
         // UPDATE
-        res = await fetch("/api/staff", {
+        res = await fetch("/api/adminapi/staff", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -49,7 +49,7 @@ export default function AdminForm() {
         });
       } else {
         // CREATE
-        res = await fetch("/api/staff", {
+        res = await fetch("/api/adminapi/staff", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
@@ -58,7 +58,9 @@ export default function AdminForm() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage(`✅ ${form._id ? "Staff updated" : "Staff registered"} successfully!`);
+        setMessage(
+          `✅ ${form._id ? "Staff updated" : "Staff registered"} successfully!`
+        );
         resetForm();
         fetchStaffs();
       } else {
@@ -89,7 +91,7 @@ export default function AdminForm() {
   // Fetch staff list
   const fetchStaffs = async () => {
     try {
-      const res = await fetch("/api/staff");
+      const res = await fetch("/api/adminapi/staff");
       const data = await res.json();
       if (data.success) setStaffs(data.staff);
     } catch (err) {
@@ -104,7 +106,7 @@ export default function AdminForm() {
   // Toggle block/unblock
   const toggleBlock = async (id, currentStatus) => {
     try {
-      const res = await fetch("/api/staff", {
+      const res = await fetch("/api/adminapi/staff", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, block: !currentStatus }),
@@ -120,7 +122,9 @@ export default function AdminForm() {
   const deleteStaff = async (id) => {
     if (!confirm("Are you sure you want to delete this staff?")) return;
     try {
-      const res = await fetch(`/api/staff?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/adminapi/staff?id=${id}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (data.success) fetchStaffs();
     } catch (err) {
@@ -162,7 +166,7 @@ export default function AdminForm() {
 
         {message && <div className="alert alert-info">{message}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-card">
           <div className="row">
             <p className="fw-bold text-muted">Staff Information</p>
             <hr />
@@ -259,10 +263,12 @@ export default function AdminForm() {
                 required
               >
                 <option value="">Select Role</option>
-                <option value="Admin">Admin</option>
                 <option value="Head Teacher">Head Teacher</option>
+                <option value="Exams Officer">Exams Officer</option>
                 <option value="Enrollment Officer">Enrollment Officer</option>
                 <option value="Support Officer">Support Officer</option>
+                <option value="Annoucement Officer">Annoucement Officer</option>
+                <option value="Quality Assurance Officer">Quality Assurance Officer</option>
               </select>
             </div>
 
@@ -279,7 +285,11 @@ export default function AdminForm() {
             </div>
           </div>
 
-          <button type="submit" className="btn primaryColor w-100" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn primaryColor w-100"
+            disabled={submitting}
+          >
             {submitting ? "Saving..." : form._id ? "Update Staff" : "Register"}
           </button>
 
@@ -295,7 +305,7 @@ export default function AdminForm() {
         </form>
       </div>
 
-      {/* Staff Management Table 
+      {/* Staff Management Table  */}
       <div className="card shadow-sm mt-5">
         <div className="card-header border-0 primaryColor text-white">
           Staff Management
@@ -371,7 +381,6 @@ export default function AdminForm() {
           </div>
         </div>
       </div>
-      */}
     </div>
   );
 }

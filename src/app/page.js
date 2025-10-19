@@ -72,11 +72,10 @@ export default function LoginPage() {
       <h4 className="fw-bold text-center">Bright Kingdom British School</h4>
       <p className=" text-center">The future is now</p>
 
+      <h4 className="fw-bold text-center">Admin Login Form</h4>
       {/* Login Form */}
-      <div className="login-card p-4 w-100" style={{ maxWidth: "400px" }}>
-        <h5 className="fw-semibold mb-3">Sign In</h5>
-
-        <form onSubmit={handleLogin}>
+      <div className="login-card  p-4 mb-5 w-100" style={{ maxWidth: "400px" }}>
+        <form onSubmit={handleLogin} className="card login-card p-4 shadow-sm">
           {/* Username */}
           <div className="mb-3">
             <label className="form-label">Username</label>
@@ -122,16 +121,35 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-
+        <p className=" text-center py-1">Staffs here</p>
         {/* learners portal */}
-        <div className="text-end mt-2 ">
+        <div className=" d-flex justify-content-between   ">
           <a href="/login" className=" fw-semibold mx-2">
-            Teachers Login →
+            Teachers →
+          </a>
+          <a href="/officerslogin" className=" fw-semibold mx-2">
+            Officers →
           </a>
           <a href="/learnerportal" className=" fw-semibold mx-2">
-            Learner Login →
+            Learner →
           </a>
         </div>
+
+        {/* Footer */}
+        <p className="mt-4 text-muted small text-center">
+          © {new Date().getFullYear()} Bright Kingdom British School
+        </p>
+
+        <style jsx>{`
+          @media (max-width: 576px) {
+            .login-card {
+              padding: 1.5rem !important;
+            }
+            button {
+              font-size: 0.95rem;
+            }
+          }
+        `}</style>
       </div>
 
       {/* Sticky Info Button */}

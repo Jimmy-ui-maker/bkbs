@@ -62,7 +62,7 @@ export default function TeacherLoginPage() {
       <h4 className="fw-bold text-center">Teacher Login</h4>
 
       <div className="login-card p-4 w-100" style={{ maxWidth: "400px" }}>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="card login-card p-4 shadow-sm">
           {/* Email */}
           <div className="mb-3">
             <label className="form-label">Email</label>
@@ -118,6 +118,22 @@ export default function TeacherLoginPage() {
           </a>
         </div>
       </div>
+      
+      {/* Footer */}
+      <p className="mt-4 text-muted small text-center">
+        © {new Date().getFullYear()} Bright Kingdom British School
+      </p>
+
+      <style jsx>{`
+        @media (max-width: 576px) {
+          .login-card {
+            padding: 1.5rem !important;
+          }
+          button {
+            font-size: 0.95rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
