@@ -115,9 +115,14 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-        <p className=" text-center py-1">Staffs here</p>
+        <div className="text-center my-3">
+          <i className="bi bi-arrow-down fs-3 d-block mb-2"></i>
+          <p className="text-center py-1 mb-3">
+            Below are Staffs and Learner forms
+          </p>
+        </div>
         {/* learners portal */}
-        <div className=" d-flex justify-content-between   ">
+        <div className=" d-flex justify-content-between  ">
           <a href="/login" className=" fw-semibold mx-2">
             Teachers →
           </a>
