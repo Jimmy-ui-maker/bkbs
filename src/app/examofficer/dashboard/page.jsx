@@ -242,7 +242,7 @@ export default function ExamOfficerDashboard() {
       {/* ✅ Header bar with user info */}
       <div className="d-flex justify-content-between align-items-center mb-4  pb-2">
         <div>
-          <h4 className="fw-bold text-primary mb-0">Exam Officer Dashboard</h4>
+          <h4 className="fw-bold text-primary mb-0">Exam Officer Page</h4>
           <small className="">
             {user?.name} ({user?.email}) — {user?.role}
           </small>

@@ -24,12 +24,6 @@ export default function LoginPage() {
       route: "/enrollment",
     },
     admin: { username: "admin1", password: "admin1", route: "/admin" },
-    teacher: { username: "teacher1", password: "teacher1", route: "/teacher" },
-    headteacher: {
-      username: "head1",
-      password: "head1",
-      route: "/headteacher",
-    },
   };
 
   const handleLogin = (e) => {

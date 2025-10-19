@@ -8,66 +8,76 @@ import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 export default function EnrolmentDashboard() {
   const [activeTab, setActiveTab] = useState("forms");
   const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState(""); // 👈 store username
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Protect route: only "enrolment" role allowed
+  // ✅ Protect route using officer login data
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const storedUsername = localStorage.getItem("username"); // 👈 fetch saved username
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (role === "enrolment") {
+    if (user.role === "Enrollment Officer") {
       setLoggedIn(true);
-      if (storedUsername) {
-        setUsername(storedUsername); // 👈 set username for navbar
-      }
+      setUsername(user.name);
     } else {
-      router.push("/"); // redirect to login
+      router.push("/");
     }
+
+    setTimeout(() => setLoading(false), 500); // small delay for smooth spinner
   }, [router]);
 
-  if (!loggedIn) {
-    return null; // prevent flicker before redirect
+  // ✅ Show spinner while verifying login
+  if (loading) {
+    return (
+      <div className="d-flex vh-100 justify-content-center align-items-center">
+        <div className="spinner-border text-success" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
+
+  if (!loggedIn) return null;
 
   return (
     <div className="enrolment-dashboard">
       {/* Navbar */}
-      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2">
+      {/* Navbar */}
+      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2 bg-dark">
         <div className="d-flex align-items-center">
           <img
             src="/imgs/school logo.png"
             alt="BKBS Logo"
             width={40}
             height={40}
-            className=" mx-1"
+            className="mx-1"
           />
           {/* Sidebar toggler (for small screens) */}
           <button
-            className="btn btn-lg  text-light d-lg-none "
+            className="btn btn-lg text-light d-lg-none"
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas"
             aria-controls="sidebarOffcanvas"
           >
-            <i className="bi bi-list "></i>
+            <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0 fw-bold text-light">Enrollment Dashboard</p>
+          <p className="mb-0 fw-bold text-light ms-1">Enrollment Dashboard</p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
-          {/* Logged in Username (hidden on xs, visible on md+) */}
+          {/* Username */}
           <span className="fw-semibold text-light d-none d-md-block">
-            {username ? username : "Guest"}
+            {username || "Guest"}
           </span>
 
-          {/* Logout Button with icon on mobile */}
+          {/* Logout Button */}
           <button
             className="btn-get logout-btn"
             onClick={() => {
-              localStorage.removeItem("role");
-              localStorage.removeItem("username");
-              router.push("/");
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              router.push("/officerslogin");
             }}
           >
             <span className="d-none d-md-inline">Logout</span>
