@@ -117,7 +117,7 @@ export default function LoginPage() {
         </form>
         <div className="text-center my-2">
           <p className="text-center  mb-1">
-            Below are Staffs and Learner forms
+            Below are Staffs and Learners form
           </p>
           👇
         </div>

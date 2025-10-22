@@ -47,7 +47,7 @@ export default function AdminDashboard() {
           >
             <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0 fw-bold text-light">Admin Dashboard</p>
+          <p className="mb-0 fw-bold text-light">Admin Page</p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
             }}
           >
             <span className="d-none d-md-inline">Logout</span>
-            <i className="bi bi-box-arrow-right d-inline d-md-none"></i>
+            <i className="bi bi-box-arrow-left d-inline d-md-none"></i>
           </button>
         </div>
       </nav>
@@ -167,6 +167,15 @@ export default function AdminDashboard() {
                   onClick={() => setActiveTab("add-officer")}
                 >
                   Add Officer
+                </button>
+                <button
+                  className={`sidebar-btn ${
+                    activeTab === "add-session" ? "active" : ""
+                  }`}
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => setActiveTab("add-session")}
+                >
+                  Add Session
                 </button>
                 <button
                   className={`sidebar-btn ${
