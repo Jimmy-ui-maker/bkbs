@@ -108,17 +108,22 @@ export default function ResultViewer({
                 </div>
 
                 {/* HEADER */}
-                <div className="d-flex justify-content-between align-items-center  pb-2 mb-3">
-                  <div className="d-flex align-items-center gap-3">
-                    <img
-                      src="/imgs/school logo.png"
-                      alt="school logo"
-                      className="school-logo"
-                    />
-                    <div>
-                      <h5 className="fw-bold mb-1">
+                <div className="report-header text-center mb-3 pb-3 border-bottom">
+                  <div className="d-flex justify-content-between align-items-center">
+                    {/* Left: Logo */}
+                    <div className="text-start">
+                      <img
+                        src="/imgs/school logo.png"
+                        alt="school logo"
+                        className="school-logo"
+                      />
+                    </div>
+
+                    {/* Center: School Info */}
+                    <div className="flex-grow-1">
+                      <h4 className="fw-bold mb-1 text-uppercase ">
                         Bright Kingdom British School
-                      </h5>
+                      </h4>
                       <p className="small mb-0">
                         Phase 3, Zakoyi-Bmuko, Dutse, Abuja (FCT)
                       </p>
@@ -129,23 +134,24 @@ export default function ResultViewer({
                         Email: brightkingdombritishschool@gmail.com
                       </p>
                     </div>
+
+                    {/* Right: Passport */}
+                    <div className="text-end">
+                      <img
+                        src={learner.imgUrl}
+                        alt="passport"
+                        className="student-passport"
+                      />
+                    </div>
                   </div>
 
-                  <div className="text-end">
-                    <img
-                      src={learner.imgUrl}
-                      alt="passport"
-                      className="student-passport"
-                    />
-                  </div>
+                  <p className="small mt-2 mb-0 fw-semibold">
+                    <strong>
+                      Report Sheet for {viewingTerm} {selectedSession} Academic
+                      Session
+                    </strong>
+                  </p>
                 </div>
-
-                <p className="small mb-3">
-                  <strong>
-                    Report Sheet for {viewingTerm} {selectedSession} Academic
-                    Session
-                  </strong>
-                </p>
 
                 {/* STUDENT INFO */}
                 <div className="border-0  rounded-3 p-2 mb-3">
