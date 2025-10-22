@@ -1,3 +1,4 @@
+// src/app/examofficer/dashboard/page.jsx (or wherever your component is)
 "use client";
 
 import { useEffect, useState } from "react";
@@ -23,17 +24,20 @@ export default function ExamOfficerDashboard() {
     Exams: "",
   });
 
-  const [resultDoc, setResultDoc] = useState(null);
+
+  // current term object (structure: { term, subjects: [...] })
+  const [termObj, setTermObj] = useState(null);
   const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
 
   const [sessions, setSessions] = useState([]);
   const [currentSession, setCurrentSession] = useState("");
   const [selectedSession, setSelectedSession] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([]); // session-docs for learner
 
-  // ✅ FIELDS meta
+  // FIELDS meta
   const FIELDS = [
     { key: "CA1", label: "CA1", max: 15 },
     { key: "CA2", label: "CA2", max: 15 },
@@ -42,11 +46,14 @@ export default function ExamOfficerDashboard() {
     { key: "Exams", label: "Exams", max: 60 },
   ];
 
-  // ✅ Auth check
+  // auth check
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) router.push("/officerslogin");
-    else setUser(JSON.parse(storedUser));
+    if (!storedUser) {
+      router.push("/officerslogin");
+    } else {
+      setUser(JSON.parse(storedUser));
+    }
     setCheckingAuth(false);
   }, [router]);
 
@@ -56,7 +63,7 @@ export default function ExamOfficerDashboard() {
     router.push("/officerslogin");
   };
 
-  // ✅ Fetch sessions
+  // fetch sessions
   useEffect(() => {
     const fetchSessions = async () => {
       try {
@@ -68,10 +75,12 @@ export default function ExamOfficerDashboard() {
             data.sessions.find((s) => s.isActive) || data.sessions[0];
           setCurrentSession(active.sessionName);
           setSelectedSession(active.sessionName);
+        } else {
+          setSessions([]);
         }
       } catch (err) {
         console.error("Failed to fetch sessions:", err);
-        setSessions([{ sessionName: "2024/2025", isActive: true }]);
+        setSessions([]);
         setCurrentSession("2024/2025");
         setSelectedSession("2024/2025");
       }
@@ -79,7 +88,7 @@ export default function ExamOfficerDashboard() {
     fetchSessions();
   }, []);
 
-  // ✅ Fetch learners
+  // fetch learners
   useEffect(() => {
     (async () => {
       try {
@@ -92,7 +101,7 @@ export default function ExamOfficerDashboard() {
     })();
   }, []);
 
-  // ✅ Fetch subjects for class
+  // fetch subjects for class
   useEffect(() => {
     async function fetchSubjects() {
       if (!selectedClass) {
@@ -124,12 +133,11 @@ export default function ExamOfficerDashboard() {
     fetchSubjects();
   }, [selectedClass]);
 
-  // ✅ Fetch learner results
+  // fetch results (session docs) for selected learner
   useEffect(() => {
     async function fetchResults() {
       setResults([]);
-      setResultDoc(null);
-      setSelectedSubjectEntry(null);
+      setTermObj(null);
       setSelectedSubject("");
       if (!selectedLearner?._id) return;
 
@@ -137,8 +145,11 @@ export default function ExamOfficerDashboard() {
         const res = await fetch(`/api/results/${selectedLearner._id}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.results)) {
+          // results are session-docs (each with .session and .results array)
           setResults(data.results);
-        } else setResults([]);
+        } else {
+          setResults([]);
+        }
       } catch (err) {
         console.error("Error fetching results", err);
         setResults([]);
@@ -147,55 +158,70 @@ export default function ExamOfficerDashboard() {
     fetchResults();
   }, [selectedLearner]);
 
-  // ✅ Update current resultDoc when term/session changes
+  // when session or term or results or selectedLearner changes — compute current termObj
   useEffect(() => {
-    if (!selectedLearner || !selectedSession || !selectedTerm) return;
-
-    const existing = results.find(
-      (r) =>
-        r.session?.trim() === selectedSession.trim() &&
-        r.term?.trim().toLowerCase() === selectedTerm.trim().toLowerCase()
-    );
-
-    if (existing) {
-      setResultDoc(existing);
-    } else {
-      // Fresh record for new session/term
-      setResultDoc({
-        learnerId: selectedLearner._id,
-        session: selectedSession,
-        term: selectedTerm,
-        subjects: [],
-      });
+    if (!selectedLearner || !selectedSession || !selectedTerm) {
+      setTermObj(null);
+      return;
     }
+
+    // find session doc
+    const sessDoc = results.find((r) => r.session === selectedSession);
+
+    if (sessDoc && Array.isArray(sessDoc.results)) {
+      const t = sessDoc.results.find((x) => x.term === selectedTerm);
+      if (t) {
+        setTermObj(t);
+        return;
+      }
+    }
+
+    // no existing term -> fresh empty term
+    setTermObj({
+      term: selectedTerm,
+      subjects: [],
+    });
   }, [results, selectedSession, selectedTerm, selectedLearner]);
 
-  // ✅ Update selected subject
+  // when selected subject changes, fill scores from termObj
   useEffect(() => {
     setSelectedSubjectEntry(null);
     setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
-    if (!selectedSubject || !resultDoc) return;
+    if (!selectedSubject || !termObj) return;
 
-    const s = (resultDoc.subjects || []).find(
-      (x) => x.subject === selectedSubject
+    const subj = (termObj.subjects || []).find(
+      (s) => s.subject === selectedSubject
     );
-    if (s) {
-      setSelectedSubjectEntry(s);
+    if (subj) {
+      setSelectedSubjectEntry(subj);
       setScores({
-        CA1: s.CA1 ?? "",
-        CA2: s.CA2 ?? "",
-        HF: s.HF ?? "",
-        Project: s.Project ?? "",
-        Exams: s.Exams ?? "",
+        CA1: subj.CA1 ?? "",
+        CA2: subj.CA2 ?? "",
+        HF: subj.HF ?? "",
+        Project: subj.Project ?? "",
+        Exams: subj.Exams ?? "",
       });
     }
-  }, [selectedSubject, resultDoc]);
+  }, [selectedSubject, termObj]);
 
-  // ✅ Save scores
+  // compute percent
+  const computePercent = () => {
+    if (!selectedSubject) return 0;
+    const entry = selectedSubjectEntry;
+    const totalFields = FIELDS.length;
+    const filled = FIELDS.reduce((acc, f) => {
+      const v = entry ? entry[f.key] : undefined;
+      return acc + (v !== undefined && v !== null ? 1 : 0);
+    }, 0);
+    return Math.round((filled / totalFields) * 100);
+  };
+
+  // Save scores -> POST to API. API returns updated session-doc in sessionResult
   const handleSave = async (e) => {
     e.preventDefault();
     if (!selectedLearner?._id) return alert("Select a learner first.");
     if (!selectedSubject) return alert("Select a subject.");
+    if (!selectedSession) return alert("Select a session.");
 
     const payload = {
       subject: selectedSubject,
@@ -225,25 +251,35 @@ export default function ExamOfficerDashboard() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
+      if (!data.success) {
+        alert(data.error || "Failed to save scores.");
+        return;
+      }
 
-      if (!data.success) return alert(data.error || "Failed to save scores.");
-
-      if (data.result) {
-        setResultDoc(data.result);
+      // server returns sessionResult (the full session doc)
+      if (data.sessionResult) {
+        // merge / replace into local results[]
         setResults((prev) => {
-          const updated = [...prev];
-          const idx = updated.findIndex(
+          const copy = [...prev];
+          const idx = copy.findIndex(
             (r) =>
-              r.session === data.result.session && r.term === data.result.term
+              r._id === data.sessionResult._id ||
+              r.session === data.sessionResult.session
           );
-          if (idx >= 0) updated[idx] = data.result;
-          else updated.push(data.result);
-          return updated;
+          if (idx >= 0) copy[idx] = data.sessionResult;
+          else copy.push(data.sessionResult);
+          return copy;
         });
+
+        // set current termObj to the returned term if present
+        if (data.term) {
+          setTermObj(data.term);
+        }
       }
 
       alert("✅ Scores saved successfully!");
       setScores({ CA1: "", CA2: "", HF: "", Project: "", Exams: "" });
+      setSelectedSubject(""); // optional: reset selection to force reload if needed
     } catch (err) {
       console.error("Error saving scores", err);
       alert("Network error. Try again.");
@@ -255,9 +291,7 @@ export default function ExamOfficerDashboard() {
   const mappedSubjectsWithScores = () => {
     const subs = subjects || [];
     return subs.map((s) => {
-      const entry = (resultDoc?.subjects || []).find(
-        (r) => r.subject === s.name
-      );
+      const entry = (termObj?.subjects || []).find((r) => r.subject === s.name);
       return {
         name: s.name,
         code: s.code,
@@ -318,7 +352,7 @@ export default function ExamOfficerDashboard() {
               setSelectedClass(e.target.value);
               setSelectedLearner(null);
               setSelectedSubject("");
-              setResultDoc(null);
+              setTermObj(null);
               setSubjects([]);
             }}
           >
@@ -359,8 +393,7 @@ export default function ExamOfficerDashboard() {
                           onClick={() => {
                             setSelectedLearner(learner);
                             setSelectedSubject("");
-                            setResultDoc(null);
-                            setSelectedSubjectEntry(null);
+                            setTermObj(null);
                             setScores({
                               CA1: "",
                               CA2: "",
@@ -402,6 +435,7 @@ export default function ExamOfficerDashboard() {
                   <option value="Third Term">Third Term</option>
                 </select>
               </div>
+
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Select Session</label>
                 <select
@@ -492,7 +526,7 @@ export default function ExamOfficerDashboard() {
               </div>
             </form>
 
-            {/* ✅ mapped subjects table */}
+            {/* mapped subjects table */}
             <div className="table-responsive mt-4">
               <h6 className="fw-semibold">
                 All Subjects ({selectedTerm || "Term not selected"}) –{" "}
@@ -523,7 +557,7 @@ export default function ExamOfficerDashboard() {
                       <td>
                         {s.name}
                         {s.code && (
-                          <div className="small text-muted">({s.code})</div>
+                          <div className="small">({s.code})</div>
                         )}
                       </td>
                       <td>{s.CA1}</td>

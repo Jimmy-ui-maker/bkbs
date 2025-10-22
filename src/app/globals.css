@@ -704,3 +704,67 @@ select {
   background-color: var(--WhiteColor);
   border: 1px solid var(--boderColor);
 }
+
+/* === RESULT SHEET CUSTOM STYLE === */
+.result-sheet {
+  border: 1px solid var(--boderColor);
+  background-color: #ffffff;
+  padding: 15px;
+  font-size: 0.85rem;
+  position: relative;
+  border-radius: 8px;
+}
+
+.school-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.student-passport {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  border: 1px solid var(--boderColor);
+  object-fit: cover;
+}
+
+.result-section thead {
+  background-color: var(--bgColor);
+}
+
+.result-watermark {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 2.5rem;
+  color: rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Ensure table fonts shrink to fit */
+.result-sheet table {
+  font-size: 0.8rem;
+}
+
+.table td, .table th {
+  vertical-align: middle !important;
+  padding: 4px 6px !important;
+}
+.table-warning th {
+  background-color: #fff6d1 !important;
+}
+
+
+/* Prevent cut-off in A4 */
+@media print {
+  .result-sheet {
+    border: 1px solid var(--boderColor);
+    page-break-inside: avoid;
+    margin: 0;
+    padding: 10px;
+  }
+}

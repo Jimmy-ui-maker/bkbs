@@ -6,6 +6,7 @@ const SubjectSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
+        "Creche",
         "Reception 1",
         "Reception 2",
         "Nursery 1",

@@ -10,6 +10,7 @@ const subjectSchema = new mongoose.Schema({
   Exams: Number,
   Total: Number,
   Grade: String,
+  Remark: String,
 });
 
 const termSchema = new mongoose.Schema({
