@@ -1,4 +1,3 @@
-// src/app/teacher/login/page.jsx
 "use client";
 
 import { useState } from "react";
@@ -10,7 +9,6 @@ export default function TeacherLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
   const handleLogin = async (e) => {
@@ -33,12 +31,12 @@ export default function TeacherLoginPage() {
         return;
       }
 
-      // ✅ Store login info in localStorage
+      // ✅ Store login info using email instead of full name
       localStorage.setItem("role", "teacher");
-      localStorage.setItem("username", data.teacher.fullName);
+      localStorage.setItem("username", data.teacher.email); // 👈 Fix here
       localStorage.setItem("teacherId", data.teacher.id);
 
-      // ✅ Redirect to teacher dashboard
+      // Redirect to teacher dashboard
       router.push("/teacher");
     } catch (err) {
       console.error("Login failed:", err);
@@ -111,14 +109,15 @@ export default function TeacherLoginPage() {
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
-        {/* teachers portal */}
+
+        {/* Link to home */}
         <div className="text-end mt-2">
-          <a href="/" className=" fw-semibold">
-            Home Page 
+          <a href="/" className="fw-semibold">
+            Home Page
           </a>
         </div>
       </div>
-      
+
       {/* Footer */}
       <p className="mt-4 text-muted small text-center">
         © {new Date().getFullYear()} Bright Kingdom British School

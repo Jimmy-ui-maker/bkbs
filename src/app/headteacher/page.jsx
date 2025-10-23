@@ -24,7 +24,7 @@ export default function HeadteacherDashboard() {
     }
   }, [router]);
 
-  // Fetch teachers
+  // ✅ Fetch teachers
   useEffect(() => {
     if (activeTab === "teachers") {
       fetch("/api/headteacher/teachers")
@@ -36,7 +36,7 @@ export default function HeadteacherDashboard() {
     }
   }, [activeTab]);
 
-  // Fetch learners
+  // ✅ Fetch learners
   useEffect(() => {
     if (activeTab === "learners") {
       fetch("/api/headteacher/learners")
@@ -48,10 +48,9 @@ export default function HeadteacherDashboard() {
     }
   }, [activeTab]);
 
-  // Promote learner
+  // ✅ Promote learner
   const promoteLearner = async (id) => {
-    if (!confirm("Are you sure you want to promot this learner?")) return;
-
+    if (!confirm("Are you sure you want to promote this learner?")) return;
     setLoading(true);
 
     try {
@@ -97,7 +96,7 @@ export default function HeadteacherDashboard() {
           >
             <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0  text-light ms-1">Head Teacher </p>
+          <p className="mb-0 text-light ms-1">Head Teacher</p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -149,6 +148,7 @@ export default function HeadteacherDashboard() {
 
         {/* Content */}
         <main className="content p-3 flex-grow-1">
+          {/* TEACHERS TAB */}
           {activeTab === "teachers" && (
             <div>
               <h5 className="fw-semibold mb-3">All Teachers</h5>
@@ -159,28 +159,33 @@ export default function HeadteacherDashboard() {
                       <th>#</th>
                       <th>Name</th>
                       <th>Email</th>
-                      <th>Subject</th>
-                      <th>Class</th>
+                      <th>Subject / Specialization</th>
                       <th>Phone</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {teachers.map((t, i) => (
-                      <tr key={t._id}>
-                        <td>{i + 1}</td>
-                        <td>{t.fullName}</td>
-                        <td>{t.email}</td>
-                        <td>{t.subject}</td>
-                        <td>{t.classLevel}</td>
-                        <td>{t.phone}</td>
+                    {teachers.length > 0 ? (
+                      teachers.map((t, i) => (
+                        <tr key={t._id}>
+                          <td>{i + 1}</td>
+                          <td>{t.fullName}</td>
+                          <td>{t.email}</td>
+                          <td>{t.specialization}</td>
+                          <td>{t.phone}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5">No teachers found.</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
 
+          {/* LEARNERS TAB */}
           {activeTab === "learners" && (
             <div>
               <h5 className="fw-semibold mb-3">All Learners</h5>
@@ -196,35 +201,42 @@ export default function HeadteacherDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {learners.map((l, i) => (
-                      <tr key={l._id}>
-                        <td>{i + 1}</td>
-                        <td>{l.fullName}</td>
-                        <td>{l.admissionNo}</td>
-                        <td>{l.classLevel}</td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-primary"
-                            disabled={loading}
-                            onClick={() => promoteLearner(l._id)}
-                          >
-                            Promote
-                          </button>
-                        </td>
+                    {learners.length > 0 ? (
+                      learners.map((l, i) => (
+                        <tr key={l._id}>
+                          <td>{i + 1}</td>
+                          <td>{l.fullName}</td>
+                          <td>{l.admissionNo}</td>
+                          <td>{l.classLevel}</td>
+                          <td>
+                            <button
+                              className="btn btn-sm btn-primary"
+                              disabled={loading}
+                              onClick={() => promoteLearner(l._id)}
+                            >
+                              Promote
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5">No learners found.</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
 
+          {/* REPORTS TAB */}
           {activeTab === "reports" && (
             <div>
               <h5 className="fw-semibold mb-3">Reports</h5>
               <p>
-                Headteacher can view and generate teachers’ performance reports
-                here.
+                Headteacher can view and generate teachers’ performance or
+                learners’ progress reports here.
               </p>
             </div>
           )}

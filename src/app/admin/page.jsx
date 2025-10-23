@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminForm from "@/components/AdminComponent/AdminForm";
 import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 import AdminSessions from "@/components/AdminComponent/SessionForm";
+import AssignClassSection from "@/components/AdminComponent/AssignClassSection";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("officers");
@@ -102,6 +103,14 @@ export default function AdminDashboard() {
               </button>
               <button
                 className={`sidebar-btn ${
+                  activeTab === "assign-class" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("assign-class")}
+              >
+                Assign Class
+              </button>
+              <button
+                className={`sidebar-btn ${
                   activeTab === "manage-officer" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("manage-officer")}
@@ -179,6 +188,15 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   className={`sidebar-btn ${
+                    activeTab === "assign-class" ? "active" : ""
+                  }`}
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => setActiveTab("assign-class")}
+                >
+                  Assign Class
+                </button>
+                <button
+                  className={`sidebar-btn ${
                     activeTab === "manage-officer" ? "active" : ""
                   }`}
                   data-bs-dismiss="offcanvas"
@@ -215,6 +233,7 @@ export default function AdminDashboard() {
         <main className="content p-3 flex-grow-1 ">
           {activeTab === "add-officer" && <AdminForm />}
           {activeTab === "add-session" && <AdminSessions />}
+          {activeTab === "assign-class" && <AssignClassSection />}
           {activeTab === "manage-officer" && (
             <p>Officer Table Component goes here</p>
           )}

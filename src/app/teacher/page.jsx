@@ -2,14 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import AddScores from "@/components/TeacherComponent/AddScores";
 
 export default function TeachersDashboard() {
   const [activeTab, setActiveTab] = useState("records");
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [learners, setLearners] = useState([]);
+  const [selectedLearner, setSelectedLearner] = useState("");
+  const [assignedClass, setAssignedClass] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
-  // Protect route: only teacher role
+  // Route protection
   useEffect(() => {
     const role = localStorage.getItem("role");
     const storedUsername = localStorage.getItem("username");
@@ -18,9 +24,37 @@ export default function TeachersDashboard() {
       setLoggedIn(true);
       if (storedUsername) setUsername(storedUsername);
     } else {
-      router.push("/");
+      router.push("/login");
     }
   }, [router]);
+
+  const fetchLearners = async () => {
+    const email = localStorage.getItem("username");
+    if (!email) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/learners/teacher?email=${email}`);
+      const data = await res.json();
+      console.log("📦 [Client] Learners API Response:", data);
+
+      if (data.success) {
+        setLearners(data.learners || []);
+        setAssignedClass(data.classLevel || "Not Assigned");
+      } else {
+        console.warn("⚠️ [Client] No learners found for this teacher");
+      }
+    } catch (err) {
+      console.error("❌ [Client] Error fetching learners:", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLearners();
+  }, []);
 
   if (!loggedIn) return null;
 
@@ -36,7 +70,6 @@ export default function TeachersDashboard() {
             height={40}
             className="mx-1"
           />
-          {/* Sidebar toggle (mobile only) */}
           <button
             className="btn btn-lg text-light d-lg-none"
             type="button"
@@ -46,18 +79,24 @@ export default function TeachersDashboard() {
           >
             <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0 fw-bold text-light ms-2">Teacher Dashboard</p>
+          <p className="mb-0 fw-bold text-light ms-2">
+            Teacher Dashboard{" "}
+            {assignedClass && (
+              <span className="badge bg-warning text-dark ms-2">
+                {assignedClass}
+              </span>
+            )}
+          </p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
           <span className="fw-semibold text-light d-none d-md-block">
-            {username || "Guest"}
+            {username}
           </span>
           <button
             className="btn-get logout-btn"
             onClick={() => {
-              localStorage.removeItem("role");
-              localStorage.removeItem("username");
+              localStorage.clear();
               router.push("/");
             }}
           >
@@ -67,152 +106,399 @@ export default function TeachersDashboard() {
         </div>
       </nav>
 
-      <div className="d-flex flex-column flex-lg-row">
-        {/* Sidebar (desktop only) */}
-        <aside className="sidebar d-none d-lg-flex flex-column p-3 ">
-          <button
-            className={`sidebar-btn mb-2 ${
-              activeTab === "records" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("records")}
-          >
-            Records
-          </button>
-          <button
-            className={`sidebar-btn mb-2 ${
-              activeTab === "learners" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("learners")}
-          >
-            Learners
-          </button>
-        </aside>
-
-        {/* Mobile Sidebar */}
-        <div
-          className="offcanvas offcanvas-start"
-          tabIndex="-1"
-          id="sidebarOffcanvas"
-        >
-          <div className="offcanvas-header">
-            <h5 className="offcanvas-title">Menu</h5>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="offcanvas"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="offcanvas-body">
-            <button
-              className={`sidebar-btn w-100 mb-2 ${
-                activeTab === "records" ? "active" : ""
-              }`}
-              data-bs-dismiss="offcanvas"
-              onClick={() => setActiveTab("records")}
-            >
-              Records
-            </button>
-            <button
-              className={`sidebar-btn w-100 mb-2 ${
-                activeTab === "learners" ? "active" : ""
-              }`}
-              data-bs-dismiss="offcanvas"
-              onClick={() => setActiveTab("learners")}
-            >
-              Learners
-            </button>
+      {loading ? (
+        // Spinner while loading
+        <div className="d-flex justify-content-center align-items-center vh-100">
+          <div className="spinner-border text-warning" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
         </div>
+      ) : (
+        <div className="d-flex flex-column flex-lg-row">
+          {/* Sidebar */}
+          <aside className="sidebar d-none d-lg-flex flex-column p-3">
+            {["records", "learners", "skills"].map((tab) => (
+              <button
+                key={tab}
+                className={`sidebar-btn mb-2 ${
+                  activeTab === tab ? "active" : ""
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "records"
+                  ? "Records"
+                  : tab === "learners"
+                  ? "Learners"
+                  : "Skills & Traits"}
+              </button>
+            ))}
+          </aside>
 
-        {/* Content */}
-        <main className="content p-3 flex-grow-1">
-          {activeTab === "records" && (
-            <div>
-              <h5 className="fw-semibold mb-3">Add Learner Records</h5>
-
-              {/* Learner Dropdown */}
-              <div className="mb-3">
-                <label className="form-label fw-bold">Select Learner</label>
-                <select className="login-input">
-                  <option value="">-- Choose Learner --</option>
-                  <option value="john">John Doe</option>
-                  <option value="jane">Jane Smith</option>
-                </select>
-              </div>
-
-              {/* Record Form */}
-              <form className="card p-3 shadow-sm">
-                <div className="row g-3">
-                  <div className="col-12 col-md-6 col-lg-3">
-                    <label className="form-label">CA1 (30)</label>
-                    <input type="number" className="login-input" />
-                  </div>
-                  <div className="col-12 col-md-6 col-lg-3">
-                    <label className="form-label">CA2 (30)</label>
-                    <input type="number" className="login-input" />
-                  </div>
-                  <div className="col-12 col-md-6 col-lg-3">
-                    <label className="form-label">Project (10)</label>
-                    <input type="number" className="login-input" />
-                  </div>
-                  <div className="col-12 col-md-6 col-lg-3">
-                    <label className="form-label">Exam (60)</label>
-                    <input type="number" className="login-input" />
-                  </div>
-                </div>
-                <button type="button" className="btn-get mt-3 w-100 w-md-auto">
-                  Save Record
-                </button>
-              </form>
-
-              {/* Record Table */}
-              <div className="mt-4 table-responsive">
-                <h6 className="fw-bold">Sample Records</h6>
-                <table className="table table-bordered text-center">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Learner</th>
-                      <th>CA1</th>
-                      <th>CA2</th>
-                      <th>Project</th>
-                      <th>Exam</th>
-                      <th>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>John Doe</td>
-                      <td>25</td>
-                      <td>28</td>
-                      <td>9</td>
-                      <td>52</td>
-                      <td>114</td>
-                    </tr>
-                    <tr>
-                      <td>Jane Smith</td>
-                      <td>20</td>
-                      <td>27</td>
-                      <td>10</td>
-                      <td>55</td>
-                      <td>112</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          {/* Main Content */}
+          <main className="content p-3 flex-grow-1">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="fw-semibold text-warning">Teacher Dashboard</h5>
+              <button
+                className="btn btn-outline-warning btn-sm"
+                onClick={() => {
+                  setRefreshing(true);
+                  fetchLearners();
+                }}
+                disabled={refreshing}
+              >
+                {refreshing ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-1"
+                      role="status"
+                    ></span>
+                    Refreshing...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-arrow-clockwise"></i> Refresh
+                  </>
+                )}
+              </button>
             </div>
-          )}
-          {activeTab === "learners" && (
-            <div>
-              <h5 className="fw-semibold mb-3">Learners in Class</h5>
-              <ul className="list-group">
-                <li className="list-group-item">John Doe – BKBS001</li>
-                <li className="list-group-item">Jane Smith – BKBS002</li>
-              </ul>
-            </div>
-          )}
-        </main>
+
+            {activeTab === "records" && (
+              <RecordsTab
+                learners={learners}
+                selectedLearner={selectedLearner}
+                setSelectedLearner={setSelectedLearner}
+              />
+            )}
+            {activeTab === "learners" && (
+              <LearnersTab learners={learners} assignedClass={assignedClass} />
+            )}
+            {activeTab === "skills" && (
+              <SkillsTab
+                learners={learners}
+                selectedLearner={selectedLearner}
+                setSelectedLearner={setSelectedLearner}
+              />
+            )}
+          </main>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* Sub Components same as yours below — no need to change them */
+
+/* ============================ SUB COMPONENTS ============================ */
+
+function RecordsTab({ learners, selectedLearner, setSelectedLearner }) {
+  return (
+    <AddScores
+      learners={learners}
+      selectedLearner={selectedLearner}
+      setSelectedLearner={setSelectedLearner}
+    />
+  );
+}
+
+function LearnersTab({ learners, assignedClass }) {
+  return (
+    <div>
+      <h5 className="fw-semibold mb-3">
+        Learners in{" "}
+        <span className="text-warning">
+          {assignedClass || "Unassigned Class"}
+        </span>
+      </h5>
+      <ul className="list-group">
+        {learners.length > 0 ? (
+          learners.map((l) => (
+            <li key={l._id} className="list-group-item">
+              {l.fullName} – {l.admissionNo}
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item">No learners assigned yet.</li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+function SkillsTab({ learners, selectedLearner, setSelectedLearner }) {
+  const [psychomotor, setPsychomotor] = useState({
+    Writing: "",
+    Reading: "",
+    Fluency: "",
+    Sports: "",
+    LanguageSkill: "",
+  });
+  const [affective, setAffective] = useState({
+    Punctuality: "",
+    Neatness: "",
+    Politeness: "",
+    Cooperation: "",
+    SelfControl: "",
+    Attentiveness: "",
+  });
+
+  const [term, setTerm] = useState("First Term");
+  const [session, setSession] = useState(""); // 🆕 Add current session
+  const [sessions, setSessions] = useState([]); // 🆕 Store all sessions
+
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loadingSkills, setLoadingSkills] = useState(false);
+
+  // 🆕 Fetch sessions before anything else
+  useEffect(() => {
+    fetch("/api/adminapi/sessions")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.sessions?.length) {
+          setSessions(data.sessions);
+          // Select latest or current session automatically
+
+          const latest =
+            data.sessions.find((s) => s.isActive) ||
+            data.sessions[data.sessions.length - 1];
+          setSession(latest?.sessionName || "");
+        } else if (data.currentSession) {
+          setSession(data.currentSession.name);
+          setSessions([data.currentSession]);
+        }
+      })
+      .catch((err) => console.error("❌ Error fetching sessions:", err));
+  }, []);
+
+  // Fetch learner’s saved skills when selected
+  useEffect(() => {
+    if (!selectedLearner) return;
+    setLoadingSkills(true);
+    fetch(`/api/teachers/skills/${selectedLearner}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.skill) {
+          setPsychomotor(data.skill.psychomotor || {});
+          setAffective(data.skill.affective || {});
+          setTerm(data.skill.term || "First Term");
+          setSession(data.skill.session || session); // 🆕 use stored session if available
+        } else {
+          setPsychomotor({
+            Writing: "",
+            Reading: "",
+            Fluency: "",
+            Sports: "",
+            LanguageSkill: "",
+          });
+          setAffective({
+            Punctuality: "",
+            Neatness: "",
+            Politeness: "",
+            Cooperation: "",
+            SelfControl: "",
+            Attentiveness: "",
+          });
+        }
+      })
+      .catch((err) => console.error("❌ Error fetching skills:", err))
+      .finally(() => setLoadingSkills(false));
+  }, [selectedLearner]);
+
+  // Update skill selection dynamically
+  const handleSkillChange = (category, skillName, grade) => {
+    if (category === "psychomotor") {
+      setPsychomotor({ ...psychomotor, [skillName]: grade });
+    } else {
+      setAffective({ ...affective, [skillName]: grade });
+    }
+  };
+
+  // Save Skills to Database (now includes session)
+  const handleSave = async () => {
+    if (!selectedLearner) {
+      setMessage("⚠️ Please select a learner first!");
+      return;
+    }
+    if (!session) {
+      setMessage("⚠️ Please select a session!");
+      return;
+    }
+
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const res = await fetch(`/api/teachers/skills/${selectedLearner}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          learnerId: selectedLearner,
+          psychomotor,
+          affective,
+          term,
+          session, // 🆕 include session in payload
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMessage("✅ Skills saved successfully!");
+      } else {
+        setMessage("❌ Failed to save skills. Try again.");
+      }
+    } catch (err) {
+      console.error("Error saving skills:", err);
+      setMessage("❌ Server error while saving.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <h5 className="fw-semibold mb-3">Psychomotor & Affective Skills</h5>
+
+      {/* Learner Selection */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Select Learner</label>
+        <select
+          className="login-input"
+          value={selectedLearner}
+          onChange={(e) => setSelectedLearner(e.target.value)}
+        >
+          <option value="">-- Choose Learner --</option>
+          {learners.map((l) => (
+            <option key={l._id} value={l._id}>
+              {l.fullName}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {/*🆕 Session Selection */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Session</label>
+        <select
+          className="login-input"
+          value={session}
+          onChange={(e) => setSession(e.target.value)}
+        >
+          <option value="">-- Select Session --</option>
+          {sessions.map((s) => (
+            <option key={s._id} value={s.sessionName}>
+              {s.sessionName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Term Selection */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Term</label>
+        <select
+          className="login-input"
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+        >
+          <option>First Term</option>
+          <option>Second Term</option>
+          <option>Third Term</option>
+        </select>
+      </div>
+
+      {loadingSkills ? (
+        <div className="text-center my-4">
+          <div className="spinner-border text-warning" role="status"></div>
+          <p className="text-muted small mt-2">Loading skills data...</p>
+        </div>
+      ) : (
+        <>
+          <div className="row small mb-3">
+            <SkillTable
+              title="Psychomotor Skills"
+              items={Object.keys(psychomotor)}
+              category="psychomotor"
+              values={psychomotor}
+              onChange={handleSkillChange}
+            />
+            <SkillTable
+              title="Affective Ability"
+              items={Object.keys(affective)}
+              category="affective"
+              values={affective}
+              onChange={handleSkillChange}
+            />
+          </div>
+
+          <button
+            className="btn-get mt-3 w-100 w-md-auto"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                ></span>
+                Saving...
+              </>
+            ) : (
+              "Save Skills & Traits"
+            )}
+          </button>
+
+          {message && (
+            <p
+              className={`mt-3 fw-semibold ${
+                message.startsWith("✅")
+                  ? "text-success"
+                  : message.startsWith("⚠️")
+                  ? "text-warning"
+                  : "text-danger"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function SkillTable({ title, items, category, values, onChange }) {
+  return (
+    <div className="col-md-6 mb-3">
+      <table className="table table-bordered text-center">
+        <thead className="table-warning">
+          <tr>
+            <th>{title}</th>
+            {["A", "B", "C", "D", "E"].map((g) => (
+              <th key={g}>{g}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((skill) => (
+            <tr key={skill}>
+              <td>{skill}</td>
+              {["A", "B", "C", "D", "E"].map((grade) => (
+                <td key={grade}>
+                  <input
+                    type="radio"
+                    name={`${category}-${skill}`}
+                    value={grade}
+                    checked={values[skill] === grade}
+                    onChange={() => onChange(category, skill, grade)}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

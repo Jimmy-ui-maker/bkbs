@@ -538,10 +538,10 @@ export default function EnrolmentTabs() {
                 </div>
               </div>
 
-              {/* Grantor Phone */}
+              {/* Guarantor Phone */}
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label className="fw-bold ">Grantor Phone:</label>
+                  <label className="fw-bold ">Guarantor Phone:</label>
                   <input
                     type="text"
                     className="form-control login-input"

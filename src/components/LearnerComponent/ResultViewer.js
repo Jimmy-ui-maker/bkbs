@@ -12,6 +12,7 @@ export default function ResultViewer({
   const [viewingTerm, setViewingTerm] = useState(null);
   const [termData, setTermData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [skillData, setSkillData] = useState(null);
   const pdfRef = useRef();
 
   const terms = ["First Term", "Second Term", "Third Term"];
@@ -33,6 +34,20 @@ export default function ResultViewer({
         if (!termObj) return alert(`No record for ${term}`);
         setTermData(termObj);
         setViewingTerm(term);
+
+        // ✅ Fetch skills for that learner and term
+        const skillRes = await fetch(`/api/teachers/skills/${learner._id}`);
+        const skillJson = await skillRes.json();
+        if (
+          skillJson.success &&
+          skillJson.skill &&
+          skillJson.skill.term === term
+        ) {
+          setSkillData(skillJson.skill);
+        } else {
+          setSkillData(null);
+        }
+
         setShowModal(true);
       } else alert("No result data found.");
     } catch (err) {
@@ -279,16 +294,17 @@ export default function ResultViewer({
                             "Reading",
                             "Fluency",
                             "Sports",
-                            "Language Skill",
-                            "",
+                            "LanguageSkill",
                           ].map((s) => (
                             <tr key={s}>
                               <td>{s}</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
+                              {["A", "B", "C", "D", "E"].map((g) => (
+                                <td key={g}>
+                                  {skillData?.psychomotor?.[s] === g
+                                    ? "✔️"
+                                    : ""}
+                                </td>
+                              ))}
                             </tr>
                           ))}
                         </tbody>
@@ -314,46 +330,20 @@ export default function ResultViewer({
                             "Neatness",
                             "Politeness",
                             "Cooperation",
-                            "Self-control",
+                            "SelfControl",
                             "Attentiveness",
                           ].map((t) => (
                             <tr key={t}>
                               <td>{t}</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
-                              <td>—</td>
+                              {["A", "B", "C", "D", "E"].map((g) => (
+                                <td key={g}>
+                                  {skillData?.affective?.[t] === g ? "✔️" : ""}
+                                </td>
+                              ))}
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                    </div>
-
-                    {/* Grading Key Split into Two Columns */}
-                    <div className="col-md-12">
-                      <h6 className="fw-bold mb-2 text-center">Grading Key</h6>
-                      <hr className=" line" />
-                      <div className="row">
-                        <div className="col-md-4">
-                          <ul className="list-unstyled small">
-                            <li>A: 90–100 = Excellent</li>
-                            <li>B: 70–89 = Very Good</li>
-                          </ul>
-                        </div>
-                        <div className="col-md-4">
-                          <ul className="list-unstyled small">
-                            <li>C: 50–69 = Credit</li>
-                            <li>D: 40–49 = Pass</li>
-                          </ul>
-                        </div>
-                        <div className="col-md-4">
-                          <ul className="list-unstyled small">
-                            <li>E: 35–39 = Fair</li>
-                            <li>F: 0–34 = Intervention</li>
-                          </ul>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
