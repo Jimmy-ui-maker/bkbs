@@ -705,26 +705,75 @@ select {
   border: 1px solid var(--boderColor);
 }
 
+/* === FULL RESULT SHEET === */
+.result-sheet {
+  border: 2px solid var(--praColor);
+  background: linear-gradient(180deg, #fffef5 0%, var(--bgColor) 100%);
+  padding: 20px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: var(--boxCardShadow);
+  color: var(--textColor);
+}
 
-/* === REPORT SHEET HEADER === */
+/* Elegant dotted watermark background */
+.result-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(184, 171, 61, 0.15) 1px, transparent 1px);
+  background-size: 14px 14px;
+  border-radius: 10px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.result-sheet > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* === HEADER === */
 .report-header {
+  background: linear-gradient(135deg, #fff8dc 0%, #fff4b0 100%);
+  border: 2px solid var(--praColor);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(184, 171, 61, 0.4);
   position: relative;
   text-align: center;
 }
 
-.report-header h4 {
-  font-size: 1.1rem;
-  color: #003366; /* Elegant deep blue for title */
+.report-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(184, 171, 61, 0.15) 1px, transparent 1px);
+  background-size: 12px 12px;
+  border-radius: 10px;
+  z-index: 0;
 }
 
-.report-header p {
-  line-height: 1.2;
-  color: #2b2b2b;
+.report-header > * {
+  position: relative;
+  z-index: 1;
 }
 
+.report-header .d-flex {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-header .flex-grow-1 {
+  flex: 1;
+  text-align: center;
+}
+
+/* === LOGO & PASSPORT === */
 .school-logo {
-  width: 75px;
-  height: 75px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
 }
 
@@ -732,38 +781,77 @@ select {
   width: 90px;
   height: 90px;
   border-radius: 8px;
-   border: 1px solid var(--boderColor);
+  border: 2px solid var(--praColor);
   object-fit: cover;
+  box-shadow: 0 2px 6px rgba(184, 171, 61, 0.4);
 }
 
-/* === TABLE COLOR THEMES === */
-.table thead {
-  background-color: #f9f4dc !important; /* soft cream-yellow */
-  color: #2b2b2b;
-  font-weight: 600;
+/* === TEXT === */
+.report-header h4 {
+  color: var(--textColor);
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-.table-bordered td,
-.table-bordered th {
-  border: 1px solid #2b2b2b !important;
+.report-header p,
+.result-sheet p {
+  color: var(--textColor);
+  margin-bottom: 0;
 }
 
-.table tbody tr:nth-child(even) {
-  background-color: #fafafa;
+.report-header strong {
+  color: var(--praColor);
 }
 
-.table tbody tr:hover {
-  background-color: #fffbe6;
-}
-
-/* === RESULT SHEET === */
-.result-sheet {
+/* === TABLES === */
+.result-sheet table {
+  font-size: 0.8rem;
+  background-color: var(--WhiteColor);
   border: 1px solid var(--boderColor);
-  background-color: #ffffff;
-  padding: 15px;
-  font-size: 0.85rem;
-  border-radius: 10px;
-  position: relative;
+}
+
+.result-sheet thead {
+  background-color: var(--praColor);
+  color: #fff;
+}
+
+.result-sheet th,
+.result-sheet td {
+  border: 1px solid var(--boderColor) !important;
+  vertical-align: middle !important;
+  padding: 6px 8px !important;
+}
+
+.table-warning th {
+  background-color: #fff6d1 !important;
+}
+
+/* === SKILLS TABLE === */
+.table-skills thead th {
+  background-color: var(--praColor);
+  color: #fff;
+}
+
+.table-skills tbody td {
+  background-color: var(--WhiteColor);
+}
+
+/* === GRADING KEY === */
+.grading-key {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--textColor);
+}
+
+.grading-key ul {
+  width: 48%;
+  background: #fffef5;
+  border: 1px solid var(--praColor);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(184, 171, 61, 0.2);
 }
 
 /* === WATERMARK === */
@@ -774,17 +862,18 @@ select {
   transform: translate(-50%, -50%) rotate(-30deg);
   font-size: 3rem;
   color: rgba(0, 0, 0, 0.05);
-  white-space: nowrap;
+  font-weight: 700;
+  letter-spacing: 1px;
   z-index: 0;
   pointer-events: none;
+  white-space: nowrap;
 }
 
-/* Prevent cut-off in A4 */
+/* === PRINT === */
 @media print {
   .result-sheet {
-    border: 1px solid var(--boderColor);
     page-break-inside: avoid;
-    margin: 0;
-    padding: 10px;
+    box-shadow: none;
+    border: 1px solid var(--boderColor);
   }
 }

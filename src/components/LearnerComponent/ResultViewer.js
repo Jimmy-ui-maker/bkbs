@@ -343,14 +343,14 @@ export default function ResultViewer({
                         </div>
                         <div className="col-md-4">
                           <ul className="list-unstyled small">
-                            <li>C: 60–69 = Credit</li>
-                            <li>D: 50–59 = Pass</li>
+                            <li>C: 50–69 = Credit</li>
+                            <li>D: 40–49 = Pass</li>
                           </ul>
                         </div>
                         <div className="col-md-4">
                           <ul className="list-unstyled small">
-                            <li>E: 40–49 = Fair</li>
-                            <li>F: 0–39 = Poor</li>
+                            <li>E: 35–39 = Fair</li>
+                            <li>F: 0–34 = Intervention</li>
                           </ul>
                         </div>
                       </div>
@@ -370,7 +370,7 @@ export default function ResultViewer({
                       <strong>Teacher Remark:</strong> ________________________
                     </p>
                     <p>
-                      <strong>Head Teacher:</strong> ________________________
+                      <strong>Head Teacher Name:</strong> ________________________
                     </p>
                     <p>
                       <strong>Head Teacher Remark:</strong>{" "}

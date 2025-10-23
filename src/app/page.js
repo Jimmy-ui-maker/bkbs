@@ -52,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container d-flex flex-column justify-content-center align-items-center vh-100">
+    <div className="container d-flex flex-column justify-content-center py-4 align-items-center ">
       {/* Logo */}
       <img
         src="/imgs/school logo.png"
@@ -76,7 +76,6 @@ export default function LoginPage() {
             <input
               type="text"
               className="login-input"
-              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -88,7 +87,6 @@ export default function LoginPage() {
             <input
               type={showPassword ? "text" : "password"}
               className="login-input"
-              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

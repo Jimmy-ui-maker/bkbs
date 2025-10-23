@@ -24,7 +24,6 @@ export default function ExamOfficerDashboard() {
     Exams: "",
   });
 
-
   // current term object (structure: { term, subjects: [...] })
   const [termObj, setTermObj] = useState(null);
   const [selectedSubjectEntry, setSelectedSubjectEntry] = useState(null);
@@ -302,6 +301,7 @@ export default function ExamOfficerDashboard() {
         Exams: entry?.Exams ?? "-",
         Total: entry?.Total ?? "-",
         Grade: entry?.Grade ?? "-",
+        Remark: entry?.Remark ?? "-",
       };
     });
   };
@@ -547,6 +547,7 @@ export default function ExamOfficerDashboard() {
                     <th>Exams</th>
                     <th>Total</th>
                     <th>Grade</th>
+                    <th>Remark</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -556,9 +557,7 @@ export default function ExamOfficerDashboard() {
                       <td>{i + 1}</td>
                       <td>
                         {s.name}
-                        {s.code && (
-                          <div className="small">({s.code})</div>
-                        )}
+                        {s.code && <div className="small">({s.code})</div>}
                       </td>
                       <td>{s.CA1}</td>
                       <td>{s.CA2}</td>
@@ -567,6 +566,7 @@ export default function ExamOfficerDashboard() {
                       <td>{s.Exams}</td>
                       <td>{s.Total}</td>
                       <td>{s.Grade}</td>
+                      <td>{s.Remark}</td>
                       <td>
                         <button
                           className="btn btn-sm btn-outline-primary"

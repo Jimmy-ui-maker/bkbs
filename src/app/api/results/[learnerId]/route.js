@@ -5,12 +5,31 @@ import Result from "@/models/Result";
 import Learner from "@/models/Learner";
 
 function computeGrade(total) {
-  if (total >= 70) return "A";
-  if (total >= 60) return "B";
+  if (total >= 90) return "A";
+  if (total >= 70) return "B";
   if (total >= 50) return "C";
-  if (total >= 45) return "D";
-  if (total >= 40) return "E";
+  if (total >= 40) return "D";
+  if (total >= 35) return "E";
   return "F";
+}
+
+function computeRemark(grade) {
+  switch (grade) {
+    case "A":
+      return "Excellent";
+    case "B":
+      return "Very Good";
+    case "C":
+      return "Credit";
+    case "D":
+      return "Pass";
+    case "E":
+      return "Fair";
+    case "F":
+      return "Intervention";
+    default:
+      return "";
+  }
 }
 
 /**
@@ -124,6 +143,7 @@ export async function POST(req, { params }) {
 
     sEntry.Total = total;
     sEntry.Grade = computeGrade(total);
+    sEntry.Remark = computeRemark(sEntry.Grade);
 
     // Save the sessionDoc (which contains term array)
     await sessionDoc.save();
