@@ -781,7 +781,6 @@ select {
   width: 90px;
   height: 90px;
   border-radius: 8px;
-  border: 2px solid var(--praColor);
   object-fit: cover;
   box-shadow: 0 2px 6px rgba(184, 171, 61, 0.4);
 }

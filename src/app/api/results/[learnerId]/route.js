@@ -32,16 +32,10 @@ function computeRemark(grade) {
   }
 }
 
+export const dynamic = "force-dynamic";
+
 /**
- * POST: Add/update a subject score for a learner for a given session + term.
- * Schema assumed:
- * Result {
- *   learnerId,
- *   session: String,
- *   results: [
- *     { term: String, subjects: [{ subject, CA1, CA2, HF, Project, Exams, Total, Grade }] }
- *   ]
- * }
+ * POST: Add or update subject scores for a learner
  */
 export async function POST(req, { params }) {
   const { learnerId } = params;
@@ -68,38 +62,25 @@ export async function POST(req, { params }) {
       return NextResponse.json({ success: false, error: "Learner not found" });
     }
 
-    // Find or create the session document for this learner
+    // Find or create result document for this session
     let sessionDoc = await Result.findOne({ learnerId, session });
-
     if (!sessionDoc) {
-      sessionDoc = new Result({
-        learnerId,
-        session,
-        results: [], // terms go here
-      });
+      sessionDoc = new Result({ learnerId, session, results: [] });
     }
 
-    // Ensure results is an array
-    if (!Array.isArray(sessionDoc.results)) sessionDoc.results = [];
-
-    // Find (or create) term object inside sessionDoc.results
+    // Ensure term object exists
     let termIndex = sessionDoc.results.findIndex(
       (t) => String(t.term).trim() === String(term).trim()
     );
     if (termIndex === -1) {
-      sessionDoc.results.push({
-        term,
-        subjects: [],
-      });
+      sessionDoc.results.push({ term, subjects: [] });
       termIndex = sessionDoc.results.length - 1;
     }
 
     const termObj = sessionDoc.results[termIndex];
-
-    // Ensure subjects is array
     if (!Array.isArray(termObj.subjects)) termObj.subjects = [];
 
-    // Find subject entry
+    // Find or create subject
     let subjIndex = termObj.subjects.findIndex((s) => s.subject === subject);
     if (subjIndex === -1) {
       termObj.subjects.push({
@@ -116,10 +97,10 @@ export async function POST(req, { params }) {
       subjIndex = termObj.subjects.length - 1;
     }
 
-    // Allowed keys that may be sent from client
+    // Allowed keys
     const allowed = ["CA1", "CA2", "HF", "Project", "Exams"];
 
-    // Update only provided fields (non-empty). If force === true and value === null => clear.
+    // Update provided scores
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
         const v = body[key];
@@ -128,11 +109,10 @@ export async function POST(req, { params }) {
         } else if (v !== undefined && v !== null && String(v).trim() !== "") {
           termObj.subjects[subjIndex][key] = Number(v);
         }
-        // else skip - do not override existing value
       }
     }
 
-    // Recompute total and grade for that subject
+    // Compute total, grade, and remark
     const sEntry = termObj.subjects[subjIndex];
     const total =
       Number(sEntry.CA1 || 0) +
@@ -145,14 +125,12 @@ export async function POST(req, { params }) {
     sEntry.Grade = computeGrade(total);
     sEntry.Remark = computeRemark(sEntry.Grade);
 
-    // Save the sessionDoc (which contains term array)
+    // Save and return updated doc
     await sessionDoc.save();
 
-    // Prepare response: return the updated sessionDoc and the updated term entry + subject entry
-    const updatedSessionDoc = await Result.findById(sessionDoc._id).populate(
-      "learnerId",
-      "fullName admissionNo classLevel"
-    );
+    const updatedSessionDoc = await Result.findById(sessionDoc._id)
+      .populate("learnerId", "fullName admissionNo classLevel")
+      .lean();
 
     const updatedTerm = updatedSessionDoc.results.find(
       (t) => String(t.term).trim() === String(term).trim()
@@ -165,7 +143,7 @@ export async function POST(req, { params }) {
     return NextResponse.json({
       success: true,
       message: "Subject scores updated.",
-      sessionResult: updatedSessionDoc, // full session doc
+      sessionResult: updatedSessionDoc,
       term: updatedTerm || null,
       resultSubject: updatedSubject || null,
     });
@@ -179,15 +157,7 @@ export async function POST(req, { params }) {
 }
 
 /**
- * GET: Fetch all session-docs for this learner.
- * Accepts optional query params:
- * - session: "2024/2025"
- * - term: "First Term"
- *
- * Examples:
- * /api/results/:learnerId
- * /api/results/:learnerId?session=2024/2025
- * /api/results/:learnerId?session=2024/2025&term=First%20Term
+ * GET: Fetch all results for a learner (with optional filters)
  */
 export async function GET(req, { params }) {
   const { learnerId } = params;
@@ -197,31 +167,29 @@ export async function GET(req, { params }) {
 
   try {
     await dbConnect();
-    let docs = await Result.find({ learnerId }).populate(
-      "learnerId",
-      "fullName admissionNo classLevel"
-    );
+
+    let docs = await Result.find({ learnerId })
+      .populate("learnerId", "fullName admissionNo classLevel")
+      .lean(); // return plain objects (safe for JSON)
 
     if (!docs || docs.length === 0) {
       return NextResponse.json({ success: true, results: [] });
     }
 
-    // If session provided, filter to only that session
+    // Filter by session if provided
     if (session) {
       docs = docs.filter((d) => d.session === session);
     }
 
-    // If term provided, reduce each doc to only include that term (if exists)
+    // Filter by term if provided
     if (term) {
       docs = docs.map((d) => {
         const termObj = (d.results || []).find((t) => t.term === term);
-        const docObj = d.toObject();
-        docObj.results = termObj ? [termObj] : [];
-        return docObj;
+        return {
+          ...d,
+          results: termObj ? [termObj] : [],
+        };
       });
-    } else {
-      // convert to plain objects for consistent client shape
-      docs = docs.map((d) => d.toObject());
     }
 
     return NextResponse.json({ success: true, results: docs });

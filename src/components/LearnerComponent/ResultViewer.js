@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import html2pdf from "html2pdf.js";
 
 export default function ResultViewer({
   learner,
@@ -44,7 +43,8 @@ export default function ResultViewer({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    const html2pdf = (await import("html2pdf.js")).default;
     const opt = {
       margin: 0,
       filename: `${learner.fullName}-${viewingTerm}-result.pdf`,
@@ -370,7 +370,8 @@ export default function ResultViewer({
                       <strong>Teacher Remark:</strong> ________________________
                     </p>
                     <p>
-                      <strong>Head Teacher Name:</strong> ________________________
+                      <strong>Head Teacher Name:</strong>{" "}
+                      ________________________
                     </p>
                     <p>
                       <strong>Head Teacher Remark:</strong>{" "}
