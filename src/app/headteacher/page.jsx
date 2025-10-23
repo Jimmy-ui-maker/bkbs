@@ -78,7 +78,7 @@ export default function HeadteacherDashboard() {
   return (
     <div className="headteacher-dashboard">
       {/* Navbar */}
-      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-1 bg-dark">
+      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2 bg-dark">
         <div className="d-flex align-items-center">
           <img
             src="/imgs/school logo.png"
@@ -87,15 +87,18 @@ export default function HeadteacherDashboard() {
             height={40}
             className="mx-1"
           />
+
+          {/* Toggle button for offcanvas on mobile */}
           <button
             className="btn btn-lg text-light d-lg-none"
             type="button"
             data-bs-toggle="offcanvas"
-            data-bs-target="#sidebarOffcanvas"
+            data-bs-target="#sidebarOffcanvas" // 👈 must match the ID in the sidebar
             aria-controls="sidebarOffcanvas"
           >
             <i className="bi bi-list"></i>
           </button>
+
           <p className="mb-0 text-light ms-1">Head Teacher</p>
         </div>
 
@@ -117,8 +120,57 @@ export default function HeadteacherDashboard() {
         </div>
       </nav>
 
+      {/* Sidebar (Offcanvas + Static) */}
+      <div
+        className="offcanvas offcanvas-start d-lg-none"
+        tabIndex="-1"
+        id="sidebarOffcanvas" // 👈 this must match data-bs-target above
+        aria-labelledby="sidebarOffcanvasLabel"
+      >
+        <div className="offcanvas-header">
+          <h5 id="sidebarOffcanvasLabel">Menu</h5>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div className="offcanvas-body">
+          <div className="d-flex flex-column">
+            <button
+              className={`sidebar-btn mb-2 ${
+                activeTab === "teachers" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("teachers")}
+              data-bs-dismiss="offcanvas" // closes sidebar after clicking
+            >
+              Teachers
+            </button>
+            <button
+              className={`sidebar-btn mb-2 ${
+                activeTab === "learners" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("learners")}
+              data-bs-dismiss="offcanvas"
+            >
+              Learners
+            </button>
+            <button
+              className={`sidebar-btn mb-2 ${
+                activeTab === "reports" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("reports")}
+              data-bs-dismiss="offcanvas"
+            >
+              Reports
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="d-flex flex-column flex-lg-row">
-        {/* Sidebar */}
+        {/* Static Sidebar for large screens */}
         <aside className="sidebar d-none d-lg-flex flex-column p-3">
           <button
             className={`sidebar-btn mb-2 ${

@@ -97,7 +97,7 @@ export default function TeachersDashboard() {
             className="btn-get logout-btn"
             onClick={() => {
               localStorage.clear();
-              router.push("/");
+              router.push("/login");
             }}
           >
             <span className="d-none d-md-inline">Logout</span>
