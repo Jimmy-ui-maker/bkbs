@@ -121,14 +121,14 @@ export default function LoginPage() {
         </div>
         {/* learners portal */}
         <div className=" d-flex justify-content-between  ">
-          <a href="/login" className=" fw-semibold mx-2">
-            Teachers →
+          <a href="/teacherlogin" className=" fw-semibold mx-2">
+            Teachers
           </a>
           <a href="/officerslogin" className=" fw-semibold mx-2">
-            Officers →
+            Officers
           </a>
           <a href="/learnerportal" className=" fw-semibold mx-2">
-            Learners →
+            Learners
           </a>
         </div>
 

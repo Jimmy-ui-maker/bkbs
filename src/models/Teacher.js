@@ -12,7 +12,6 @@ const teacherSchema = new mongoose.Schema({
   experience: { type: String, required: true },
   address: { type: String, required: true },
   password: { type: String, required: true },
-  classLevel: { type: String, default: "" }, // ✅ Added this
   createdAt: { type: Date, default: Date.now },
 });
 

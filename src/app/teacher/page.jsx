@@ -24,7 +24,7 @@ export default function TeachersDashboard() {
       setLoggedIn(true);
       if (storedUsername) setUsername(storedUsername);
     } else {
-      router.push("/login");
+      router.push("/teacherlogin");
     }
   }, [router]);
 
