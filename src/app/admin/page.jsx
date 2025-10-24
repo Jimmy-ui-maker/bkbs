@@ -6,6 +6,7 @@ import AdminForm from "@/components/AdminComponent/AdminForm";
 import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 import AdminSessions from "@/components/AdminComponent/SessionForm";
 import AssignClassSection from "@/components/AdminComponent/AssignClassSection";
+import AdminSubjectsPage from "@/components/AdminComponent/AddSubjects";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("officers");
@@ -111,6 +112,14 @@ export default function AdminDashboard() {
               </button>
               <button
                 className={`sidebar-btn ${
+                  activeTab === "add-subjects" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("add-subjects")}
+              >
+                Add Subject
+              </button>
+              <button
+                className={`sidebar-btn ${
                   activeTab === "manage-officer" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("manage-officer")}
@@ -196,6 +205,15 @@ export default function AdminDashboard() {
                   Assign Class
                 </button>
                 <button
+                className={`sidebar-btn ${
+                  activeTab === "add-subjects" ? "active" : ""
+                }`}
+                 data-bs-dismiss="offcanvas"
+                onClick={() => setActiveTab("add-subjects")}
+              >
+                Add Subject
+              </button>
+                <button
                   className={`sidebar-btn ${
                     activeTab === "manage-officer" ? "active" : ""
                   }`}
@@ -234,6 +252,7 @@ export default function AdminDashboard() {
           {activeTab === "add-officer" && <AdminForm />}
           {activeTab === "add-session" && <AdminSessions />}
           {activeTab === "assign-class" && <AssignClassSection />}
+          {activeTab === "add-subjects" && <AdminSubjectsPage />}
           {activeTab === "manage-officer" && (
             <p>Officer Table Component goes here</p>
           )}
