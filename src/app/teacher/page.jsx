@@ -133,6 +133,44 @@ export default function TeachersDashboard() {
               </button>
             ))}
           </aside>
+          {/* Sidebar Offcanvas for small screens */}
+          <div
+            className="offcanvas offcanvas-start "
+            tabIndex="-1"
+            id="sidebarOffcanvas"
+            aria-labelledby="sidebarOffcanvasLabel"
+          >
+            <div className="offcanvas-header border-bottom">
+              <h5 id="sidebarOffcanvasLabel" className="fw-bold mb-0">
+                Menu
+              </h5>
+              <button
+                type="button"
+                className="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div className="offcanvas-body d-flex flex-column">
+              {["records", "learners", "skills"].map((tab) => (
+                <button
+                  key={tab}
+                  className={`sidebar-btn text-start mb-2 ${
+                    activeTab === tab ? "active" : ""
+                  }`}
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab === "records"
+                    ? "Records"
+                    : tab === "learners"
+                    ? "Learners"
+                    : "Skills & Traits"}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Main Content */}
           <main className="content p-3 flex-grow-1">
