@@ -8,9 +8,7 @@ export async function GET(req, { params }) {
   const { id } = params;
 
   try {
-    const skill = await Skill.findOne({ learnerId: id }).sort({
-      updatedAt: -1,
-    });
+    const skill = await Skill.findOne({ learnerId: id }).sort({ updatedAt: -1 });
     if (!skill) {
       return new Response(
         JSON.stringify({ success: false, message: "No skill record found" }),
@@ -18,9 +16,10 @@ export async function GET(req, { params }) {
       );
     }
 
-    return new Response(JSON.stringify({ success: true, skill }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ success: true, skill }),
+      { status: 200 }
+    );
   } catch (err) {
     console.error("GET Skill error:", err);
     return new Response(
@@ -43,9 +42,10 @@ export async function POST(req, { params }) {
       { new: true, upsert: true }
     );
 
-    return new Response(JSON.stringify({ success: true, skill: updated }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ success: true, skill: updated }),
+      { status: 200 }
+    );
   } catch (err) {
     console.error("POST Skill error:", err);
     return new Response(
