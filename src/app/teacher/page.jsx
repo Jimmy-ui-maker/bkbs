@@ -406,7 +406,19 @@ function SkillsTab({ learners, selectedLearner, setSelectedLearner }) {
           <option>Third Term</option>
         </select>
       </div>
-
+      {message && (
+        <p
+          className={`mt-3 fw-semibold ${
+            message.startsWith("✅")
+              ? "text-success"
+              : message.startsWith("⚠️")
+              ? "text-warning"
+              : "text-danger"
+          }`}
+        >
+          {message}
+        </p>
+      )}
       {loadingSkills ? (
         <div className="text-center my-4">
           <div className="spinner-border text-warning" role="status"></div>
@@ -448,20 +460,6 @@ function SkillsTab({ learners, selectedLearner, setSelectedLearner }) {
               "Save Skills & Traits"
             )}
           </button>
-
-          {message && (
-            <p
-              className={`mt-3 fw-semibold ${
-                message.startsWith("✅")
-                  ? "text-success"
-                  : message.startsWith("⚠️")
-                  ? "text-warning"
-                  : "text-danger"
-              }`}
-            >
-              {message}
-            </p>
-          )}
         </>
       )}
     </div>
