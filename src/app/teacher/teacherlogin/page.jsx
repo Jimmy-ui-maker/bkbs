@@ -47,7 +47,7 @@ export default function TeacherLoginPage() {
   };
 
   return (
-    <div className="container d-flex flex-column justify-content-center align-items-center vh-100">
+    <div className="container d-flex flex-column justify-content-center py-5 align-items-center ">
       {/* Logo */}
       <img
         src="/imgs/school logo.png"
@@ -67,7 +67,6 @@ export default function TeacherLoginPage() {
             <input
               type="email"
               className="login-input"
-              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -80,7 +79,6 @@ export default function TeacherLoginPage() {
             <input
               type={showPassword ? "text" : "password"}
               className="login-input"
-              placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -91,7 +89,7 @@ export default function TeacherLoginPage() {
           <div className="form-check mb-3">
             <input
               type="checkbox"
-              className="form-check-input"
+              className="form-check-input shadow-none"
               id="showPassword"
               checked={showPassword}
               onChange={(e) => setShowPassword(e.target.checked)}
@@ -119,9 +117,23 @@ export default function TeacherLoginPage() {
       </div>
 
       {/* Footer */}
-      <p className="mt-4 text-muted small text-center">
-        © {new Date().getFullYear()} Bright Kingdom British School
-      </p>
+      <footer className="mt-4 text-center small text-muted">
+        <p className="mb-1">
+          © {new Date().getFullYear()} Bright Kingdom British School
+        </p>
+        <p className="mb-0">
+          Designed in{" "}
+          <span className="fw-semibold text-success">Nigeria 🇳🇬</span> by{" "}
+          <a
+            href="https://jimmysite.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none fw-bold text-warning"
+          >
+            Sir Jimmy
+          </a>
+        </p>
+      </footer>
 
       <style jsx>{`
         @media (max-width: 576px) {

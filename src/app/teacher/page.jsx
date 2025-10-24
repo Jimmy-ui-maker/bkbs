@@ -24,7 +24,7 @@ export default function TeachersDashboard() {
       setLoggedIn(true);
       if (storedUsername) setUsername(storedUsername);
     } else {
-      router.push("/teacherlogin");
+      router.push("/teacher/teacherlogin");
     }
   }, [router]);
 
@@ -68,7 +68,7 @@ export default function TeachersDashboard() {
             alt="BKBS Logo"
             width={40}
             height={40}
-            className="mx-1"
+            className="mx-1 d-none d-md-inline"
           />
           <button
             className="btn btn-lg text-light d-lg-none"
@@ -80,7 +80,7 @@ export default function TeachersDashboard() {
             <i className="bi bi-list"></i>
           </button>
           <p className="mb-0 fw-bold text-light ms-2">
-            Teacher Dashboard{" "}
+            Teacher Page{" "}
             {assignedClass && (
               <span className="badge bg-warning text-dark ms-2">
                 {assignedClass}
@@ -97,11 +97,11 @@ export default function TeachersDashboard() {
             className="btn-get logout-btn"
             onClick={() => {
               localStorage.clear();
-              router.push("/login");
+              router.push("/teacher/teacherlogin");
             }}
           >
             <span className="d-none d-md-inline">Logout</span>
-            <i className="bi bi-box-arrow-right d-inline d-md-none"></i>
+            <i className="bi bi-box-arrow-left d-inline d-md-none"></i>
           </button>
         </div>
       </nav>
@@ -175,7 +175,7 @@ export default function TeachersDashboard() {
           {/* Main Content */}
           <main className="content p-3 flex-grow-1">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-semibold text-warning">Teacher Dashboard</h5>
+              <h5 className="fw-semibold text-warning">Teacher Page</h5>
               <button
                 className="btn btn-outline-warning btn-sm"
                 onClick={() => {

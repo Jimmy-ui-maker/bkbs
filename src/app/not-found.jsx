@@ -26,12 +26,12 @@ export default function NotFound() {
         </p>
 
         {/* Link Back */}
-        <Link href="/" className="btn-back-home">
+        <a href="/" className="btn-back-home">
           ⬅️ Take Me Home
-        </Link>
+        </a>
 
         {/* Extra Funny Footer */}
-        <p className="mt-3 small text-muted">
+        <p className="mt-3 small ">
           (P.S. Our developer might be busy eating 🍕 or taking a ☕ break...)
         </p>
       </div>

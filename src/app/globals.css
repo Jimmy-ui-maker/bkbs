@@ -119,6 +119,52 @@ a {
   background-color: var(--textColor);
 }
 
+/* Portal Buttons */
+.portal-links {
+  gap: 10px;
+}
+
+.portal-btn {
+  flex: 1;
+  background-color: var(--textColor);
+  color: var(--WhiteColor);
+  border-radius: 8px;
+  text-decoration: none;
+  padding: 12px 18px;
+  font-weight: 600;
+  box-shadow: var(--boxShadow);
+  transition: all 0.3s ease;
+  border: 1px solid var(--boderColor);
+}
+
+.portal-btn:hover {
+  background-color: var(--bgColor);
+  color: var(--textColor);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.portal-btn i {
+  color: var(--bgColor);
+  font-size: 1.1rem;
+}
+.portal-btn i:hover {
+  color: var(--textColor);
+  font-size: 1.1rem;
+}
+
+/* Mobile friendly */
+@media (max-width: 768px) {
+  .portal-links {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .portal-btn {
+    width: 100%;
+  }
+}
+
 /* Fullscreen modal backdrop */
 .custom-modal {
   position: fixed;
@@ -238,7 +284,7 @@ a {
     padding: 8px 10px;
     border-radius: 50%;
     width: 100px !important;
-    height: 40px !important;
+    height: 30px !important;
   }
 }
 .offcanvas {
@@ -628,7 +674,7 @@ input[type="file"].login-input::file-selector-button:hover {
 
 .logout-btn {
   background-color: var(--praColor);
-  color: #fff;
+  color: #000;
   border: none;
   font-weight: 500;
   border-radius: 8px;
@@ -650,7 +696,7 @@ input[type="file"].login-input::file-selector-button:hover {
   .user-btn,
   .logout-btn {
     width: 100%;
-    max-width: 180px;
+    max-width: 40px;
     font-size: 14px;
   }
 }
@@ -722,7 +768,10 @@ select {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(184, 171, 61, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(
+    rgba(184, 171, 61, 0.15) 1px,
+    transparent 1px
+  );
   background-size: 14px 14px;
   border-radius: 10px;
   z-index: 0;
@@ -749,7 +798,10 @@ select {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(184, 171, 61, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(
+    rgba(184, 171, 61, 0.15) 1px,
+    transparent 1px
+  );
   background-size: 12px 12px;
   border-radius: 10px;
   z-index: 0;

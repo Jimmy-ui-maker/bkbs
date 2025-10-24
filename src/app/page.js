@@ -119,34 +119,37 @@ export default function LoginPage() {
           </p>
           👇
         </div>
-        {/* learners portal */}
-        <div className=" d-flex justify-content-between  ">
-          <a href="/teacherlogin" className=" fw-semibold mx-2">
-            Teachers
+        {/* Learners Portal */}
+        <div className="portal-links d-flex justify-content-between flex-wrap text-center mt-3">
+          <a href="/teacher/teacherlogin" className="portal-btn">
+            <i className="bi bi-person-workspace me-2"></i> Teachers
           </a>
-          <a href="/officerslogin" className=" fw-semibold mx-2">
-            Officers
+          <a href="/officerslogin" className="portal-btn">
+            <i className="bi bi-shield-lock me-2"></i> Officers
           </a>
-          <a href="/learnerportal" className=" fw-semibold mx-2">
-            Learners
+          <a href="/learnerportal" className="portal-btn">
+            <i className="bi bi-mortarboard me-2"></i> Learners
           </a>
         </div>
 
         {/* Footer */}
-        <p className="mt-4 text-muted small text-center">
-          © {new Date().getFullYear()} Bright Kingdom British School
-        </p>
-
-        <style jsx>{`
-          @media (max-width: 576px) {
-            .login-card {
-              padding: 1.5rem !important;
-            }
-            button {
-              font-size: 0.95rem;
-            }
-          }
-        `}</style>
+        <footer className="mt-4 text-center small text-muted">
+          <p className="mb-1">
+            © {new Date().getFullYear()} Bright Kingdom British School
+          </p>
+          <p className="mb-0">
+            Designed in{" "}
+            <span className="fw-semibold text-success">Nigeria 🇳🇬</span> by{" "}
+            <a
+              href="https://jimmysite.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-decoration-none fw-bold text-warning"
+            >
+              Sir Jimmy
+            </a>
+          </p>
+        </footer>
       </div>
 
       {/* Sticky Info Button */}

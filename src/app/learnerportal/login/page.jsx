@@ -42,7 +42,7 @@ export default function LearnerLogin() {
   };
 
   return (
-    <div className="container d-flex flex-column justify-content-center align-items-center vh-100 px-3">
+    <div className="container d-flex flex-column justify-content-center py-4 align-items-center">
       {/* Logo */}
       <img
         src="/imgs/school logo.png"
@@ -114,26 +114,29 @@ export default function LearnerLogin() {
         {/* learners portal */}
         <div className="text-end mt-2">
           <a href="/" className=" fw-semibold">
-            Home Page 
+            Home Page
           </a>
         </div>
       </div>
 
       {/* Footer */}
-      <p className="mt-4 text-muted small text-center">
-        © {new Date().getFullYear()} Bright Kingdom British School
-      </p>
-
-      <style jsx>{`
-        @media (max-width: 576px) {
-          .login-card {
-            padding: 1.5rem !important;
-          }
-          button {
-            font-size: 0.95rem;
-          }
-        }
-      `}</style>
+      <footer className="mt-4 text-center small text-muted">
+        <p className="mb-1">
+          © {new Date().getFullYear()} Bright Kingdom British School
+        </p>
+        <p className="mb-0">
+          Designed in{" "}
+          <span className="fw-semibold text-success">Nigeria 🇳🇬</span> by{" "}
+          <a
+            href="https://jimmysite.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none fw-bold text-warning"
+          >
+            Sir Jimmy
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

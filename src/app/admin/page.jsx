@@ -31,14 +31,14 @@ export default function AdminDashboard() {
   return (
     <div className="admin-dashboard">
       {/* Navbar */}
-      <nav className="navbar sticky-top d-flex justify-content-between align-items-center px-2">
+      <nav className="navbar sticky-top d-flex justify-content-between align-items-center bg-dark px-2">
         <div className="d-flex align-items-center">
           <img
             src="/imgs/school logo.png"
             alt="BKBS Logo"
             width={40}
             height={40}
-            className="mx-1"
+            className="mx-1 d-none d-md-inline"
           />
           <button
             className="btn btn-lg text-light d-lg-none"
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
           >
             <i className="bi bi-list"></i>
           </button>
-          <p className="mb-0 fw-bold text-light">Admin Page</p>
+          <p className="mb-0 fw-bold text-light text-center">Admin Dashoard</p>
         </div>
 
         <div className="d-flex align-items-center gap-2 flex-wrap">
