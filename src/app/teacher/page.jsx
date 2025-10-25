@@ -239,23 +239,40 @@ function RecordsTab({ learners, selectedLearner, setSelectedLearner }) {
 }
 
 function LearnersTab({ learners, assignedClass }) {
+  const classCount = learners?.length || 0;
+
   return (
     <div>
-      <h5 className="fw-semibold mb-3">
-        Learners in{" "}
-        <span className="text-warning">
-          {assignedClass || "Unassigned Class"}
+      <h5 className="fw-semibold mb-3 d-flex align-items-center justify-content-between">
+        <div>
+          Learners in{" "}
+          <span className="text-warning">
+            {assignedClass || "Unassigned Class"}
+          </span>
+        </div>
+
+        {/* ✅ Class Count Badge */}
+        <span className="badge bg-success fs-6 px-3 py-2">
+          {String(classCount).padStart(3, "0")}
         </span>
       </h5>
-      <ul className="list-group">
-        {learners.length > 0 ? (
+
+      <ul className="list-group form-card">
+        {classCount > 0 ? (
           learners.map((l) => (
-            <li key={l._id} className="list-group-item">
-              {l.fullName} – {l.admissionNo}
+            <li
+              key={l._id}
+              className="list-group-item form-card  d-flex justify-content-between align-items-center my-1"
+            >
+              <span>
+                {l.fullName} – <small>{l.admissionNo}</small>
+              </span>
             </li>
           ))
         ) : (
-          <li className="list-group-item">No learners assigned yet.</li>
+          <li className="list-group-item text-muted text-center">
+            No learners assigned yet.
+          </li>
         )}
       </ul>
     </div>

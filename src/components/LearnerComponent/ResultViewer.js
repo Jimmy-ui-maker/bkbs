@@ -14,11 +14,35 @@ export default function ResultViewer({
   const [showModal, setShowModal] = useState(false);
   const [skillData, setSkillData] = useState(null);
 
- 
   const pdfRef = useRef();
 
   const terms = ["First Term", "Second Term", "Third Term"];
   const [termDates, setTermDates] = useState(null);
+  const [highestLowest, setHighestLowest] = useState(null);
+
+  // ✅ Fetch class  summary
+  useEffect(() => {
+    const fetchClassSummary = async () => {
+      if (!selectedClass || !selectedSession || !viewingTerm) return;
+
+      try {
+        const res = await fetch(
+          `/api/results/class-summary?class=${selectedClass}&session=${selectedSession}&term=${viewingTerm}`
+        );
+        const data = await res.json();
+        if (data.success) {
+          setHighestLowest({
+            highest: data.highest,
+            lowest: data.lowest,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching class summary:", err);
+      }
+    };
+
+    fetchClassSummary();
+  }, [selectedClass, selectedSession, viewingTerm]);
 
   // Term date fetch
   // ✅ Fetch term dates dynamically based on term + session
@@ -53,7 +77,6 @@ export default function ResultViewer({
 
     if (viewingTerm && selectedSession) fetchTermDates();
   }, [viewingTerm, selectedSession]);
-
 
   // ✅ Fetch term result
   const fetchTermResult = async (term) => {
@@ -151,7 +174,7 @@ export default function ResultViewer({
               <div className="modal-header border-0">
                 <h5 className="fw-bold">Report Sheet — {viewingTerm}</h5>
                 <button
-                  className="btn-close"
+                  className="btn-close shadow-none"
                   onClick={() => setShowModal(false)}
                 ></button>
               </div>
@@ -309,10 +332,16 @@ export default function ResultViewer({
                     </div>
                     <div className="col-md-6">
                       <p>
-                        <strong>Highest in Class:</strong> —
+                        <strong>Highest in Class:</strong>{" "}
+                        {highestLowest?.highest
+                          ? `${highestLowest.highest.name} (${highestLowest.highest.total})`
+                          : "—"}
                       </p>
                       <p>
-                        <strong>Lowest in Class:</strong> —
+                        <strong>Lowest in Class:</strong>{" "}
+                        {highestLowest?.lowest
+                          ? `${highestLowest.lowest.name} (${highestLowest.lowest.total})`
+                          : "—"}
                       </p>
                     </div>
                   </div>
@@ -339,6 +368,7 @@ export default function ResultViewer({
                             "Fluency",
                             "Sports",
                             "LanguageSkill",
+                            "-",
                           ].map((s) => (
                             <tr key={s}>
                               <td>{s}</td>

@@ -132,7 +132,12 @@ export default function AddScores({
       }
       setLoadingScores(true);
       try {
-        const res = await fetch(`/api/results/${learnerId}`);
+        const res = await fetch(
+          `/api/results/${learnerId}?session=${encodeURIComponent(
+            currentSession
+          )}&term=${encodeURIComponent(currentTerm)}`
+        );
+
         const data = await res.json();
         if (data.success && Array.isArray(data.results)) {
           // find session doc
@@ -257,6 +262,8 @@ export default function AddScores({
         Total: entry?.Total ?? "-",
         Grade: entry?.Grade ?? "-",
         Remark: entry?.Remark ?? "-",
+        Highest: entry?.Highest ?? "-", // 👈 added
+        Lowest: entry?.Lowest ?? "-", // 👈 added
       };
     });
   };
@@ -447,11 +454,14 @@ export default function AddScores({
                 <th>Project</th>
                 <th>Exams</th>
                 <th>Total</th>
+                <th>Highest</th> {/* 👈 added */}
+                <th>Lowest</th> {/* 👈 added */}
                 <th>Grade</th>
                 <th>Remark</th>
                 <th>Action</th>
               </tr>
             </thead>
+
             <tbody>
               {mappedSubjectsWithScores().map((s, i) => (
                 <tr key={s.name}>
@@ -466,6 +476,8 @@ export default function AddScores({
                   <td>{s.Project}</td>
                   <td>{s.Exams}</td>
                   <td>{s.Total}</td>
+                  <td>{s.Highest}</td> {/* 👈 added */}
+                  <td>{s.Lowest}</td> {/* 👈 added */}
                   <td>{s.Grade}</td>
                   <td>{s.Remark}</td>
                   <td>
@@ -490,7 +502,7 @@ export default function AddScores({
               ))}
               {mappedSubjectsWithScores().length === 0 && (
                 <tr>
-                  <td colSpan="11">No subjects found for this class/term</td>
+                  <td colSpan="13">No subjects found for this class/term</td>
                 </tr>
               )}
             </tbody>

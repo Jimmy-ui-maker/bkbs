@@ -125,9 +125,32 @@ export async function POST(req, { params }) {
     sEntry.Grade = computeGrade(total);
     sEntry.Remark = computeRemark(sEntry.Grade);
 
-    // Save and return updated doc
+    // ✅ Save learner’s updated result
     await sessionDoc.save();
 
+    // ✅ Recompute Highest & Lowest for that subject in the same class/session/term
+    const allClassResults = await Result.find({ session })
+      .populate("learnerId", "classLevel")
+      .lean();
+
+    const sameClassResults = allClassResults.filter(
+      (r) => r.learnerId?.classLevel === learner.classLevel
+    );
+
+    const totals = [];
+    for (const r of sameClassResults) {
+      const termObj = (r.results || []).find((t) => t.term === term);
+      if (!termObj) continue;
+      const subjEntry = (termObj.subjects || []).find(
+        (s) => s.subject === subject
+      );
+      if (subjEntry) totals.push(subjEntry.Total || 0);
+    }
+
+    const Highest = totals.length ? Math.max(...totals) : total;
+    const Lowest = totals.length ? Math.min(...totals) : total;
+
+    // ✅ Get updated session doc for response
     const updatedSessionDoc = await Result.findById(sessionDoc._id)
       .populate("learnerId", "fullName admissionNo classLevel")
       .lean();
@@ -139,6 +162,12 @@ export async function POST(req, { params }) {
     const updatedSubject = updatedTerm
       ? updatedTerm.subjects.find((x) => x.subject === subject)
       : null;
+
+    // ✅ Attach computed stats before returning
+    if (updatedSubject) {
+      updatedSubject.Highest = Highest;
+      updatedSubject.Lowest = Lowest;
+    }
 
     return NextResponse.json({
       success: true,
@@ -156,6 +185,10 @@ export async function POST(req, { params }) {
   }
 }
 
+
+// ✅ In-memory cache to store subject stats temporarily
+const subjectStatsCache = new Map();
+
 /**
  * GET: Fetch all results for a learner (with optional filters)
  */
@@ -168,23 +201,26 @@ export async function GET(req, { params }) {
   try {
     await dbConnect();
 
+    // --- Fetch all results for this learner ---
     let docs = await Result.find({ learnerId })
       .populate("learnerId", "fullName admissionNo classLevel")
-      .lean(); // return plain objects (safe for JSON)
+      .lean();
 
     if (!docs || docs.length === 0) {
       return NextResponse.json({ success: true, results: [] });
     }
 
-    // Filter by session if provided
+    // --- Filter by session ---
     if (session) {
       docs = docs.filter((d) => d.session === session);
     }
 
-    // Filter by term if provided
+    // --- Filter by term (optional) ---
     if (term) {
       docs = docs.map((d) => {
-        const termObj = (d.results || []).find((t) => t.term === term);
+        const termObj = (d.results || []).find(
+          (t) => String(t.term).trim() === String(term).trim()
+        );
         return {
           ...d,
           results: termObj ? [termObj] : [],
@@ -192,12 +228,73 @@ export async function GET(req, { params }) {
       });
     }
 
+    // --- Compute subject-wise highest/lowest if session & term are given ---
+    if (session && term && docs.length > 0) {
+      const learnerClass = docs[0]?.learnerId?.classLevel;
+      const cacheKey = `${learnerClass}-${session}-${term}`;
+
+      let subjectHighLow = subjectStatsCache.get(cacheKey);
+
+      if (!subjectHighLow) {
+        console.log(`🧠 Computing subject stats for ${cacheKey}`);
+
+        const allClassResults = await Result.find({ session })
+          .populate("learnerId", "fullName classLevel")
+          .lean();
+
+        const sameClassResults = allClassResults.filter(
+          (r) => r.learnerId?.classLevel === learnerClass
+        );
+
+        const subjectStats = {};
+
+        for (const r of sameClassResults) {
+          const termObj = (r.results || []).find(
+            (t) => String(t.term).trim() === String(term).trim()
+          );
+          if (!termObj) continue;
+
+          for (const subj of termObj.subjects || []) {
+            if (!subjectStats[subj.subject]) subjectStats[subj.subject] = [];
+            subjectStats[subj.subject].push(Number(subj.Total) || 0);
+          }
+        }
+
+        subjectHighLow = {};
+        for (const [subject, totals] of Object.entries(subjectStats)) {
+          subjectHighLow[subject] = {
+            highest: Math.max(...totals),
+            lowest: Math.min(...totals),
+          };
+        }
+
+        // Cache for 10 mins
+        subjectStatsCache.set(cacheKey, subjectHighLow);
+        setTimeout(() => {
+          subjectStatsCache.delete(cacheKey);
+          console.log(`🧹 Cache cleared for ${cacheKey}`);
+        }, 10 * 60 * 1000);
+      } else {
+        console.log(`⚡ Using cached subject stats for ${cacheKey}`);
+      }
+
+      // --- Attach High/Low stats ---
+      for (const d of docs) {
+        for (const t of d.results || []) {
+          for (const s of t.subjects || []) {
+            s.Highest = subjectHighLow[s.subject]?.highest ?? "-";
+            s.Lowest = subjectHighLow[s.subject]?.lowest ?? "-";
+          }
+        }
+      }
+    }
+
     return NextResponse.json({ success: true, results: docs });
   } catch (error) {
-    console.error("Error fetching results:", error);
+    console.error("❌ Error fetching results:", error);
     return NextResponse.json({
       success: false,
-      error: "Failed to fetch results.",
+      error: error?.message || "Failed to fetch results.",
     });
   }
 }
