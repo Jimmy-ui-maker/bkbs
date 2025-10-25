@@ -147,6 +147,7 @@ a {
 .portal-btn i {
   color: var(--bgColor);
   background-color: var(--textColor);
+  border-radius: 8px;
   font-size: 1.1rem;
 }
 .portal-btn i:hover {
