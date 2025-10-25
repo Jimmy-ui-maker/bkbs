@@ -1,7 +1,7 @@
 // src/components/LearnerComponent/ResultViewer.js
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function ResultViewer({
   learner,
@@ -13,10 +13,49 @@ export default function ResultViewer({
   const [termData, setTermData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [skillData, setSkillData] = useState(null);
+
+ 
   const pdfRef = useRef();
 
   const terms = ["First Term", "Second Term", "Third Term"];
+  const [termDates, setTermDates] = useState(null);
 
+  // Term date fetch
+  // ✅ Fetch term dates dynamically based on term + session
+  useEffect(() => {
+    const fetchTermDates = async () => {
+      try {
+        const dateRes = await fetch("/api/adminapi/term-dates");
+        const dateJson = await dateRes.json();
+
+        console.log("📦 Raw API response:", dateJson);
+
+        // ✅ use `dateJson.terms` instead of `termDates`
+        if (dateJson.success && Array.isArray(dateJson.terms)) {
+          console.log("Fetched terms:", dateJson.terms);
+
+          const match = dateJson.terms.find(
+            (t) =>
+              t.session.trim().toLowerCase() ===
+                selectedSession.trim().toLowerCase() &&
+              t.term.trim().toLowerCase() === viewingTerm?.trim().toLowerCase()
+          );
+
+          console.log("Matched Term Record:", match);
+          setTermDates(match || null);
+        } else {
+          console.warn("❌ Unexpected API structure:", dateJson);
+        }
+      } catch (err) {
+        console.error("Failed to fetch term dates:", err);
+      }
+    };
+
+    if (viewingTerm && selectedSession) fetchTermDates();
+  }, [viewingTerm, selectedSession]);
+
+
+  // ✅ Fetch term result
   const fetchTermResult = async (term) => {
     if (!learner?._id) return alert("Learner data missing.");
     setLoadingTerm(term);
@@ -195,17 +234,22 @@ export default function ResultViewer({
                           <strong>Number in Class:</strong> 002
                         </p>
                       </div>
-                      <div className="col-md-4">
-                        <p>
-                          <strong>Term Opens:</strong> 20/09/2025
-                        </p>
-                        <p>
-                          <strong>Term Ends:</strong> 20/12/2025
-                        </p>
-                        <p>
-                          <strong>Next Term:</strong> 15/01/2026
-                        </p>
-                      </div>
+                      {termDates && (
+                        <div className="col-md-4">
+                          <p>
+                            <strong>Term Opens:</strong>{" "}
+                            {termDates.termOpens || "—"}
+                          </p>
+                          <p>
+                            <strong>Term Ends:</strong>{" "}
+                            {termDates.termEnds || "—"}
+                          </p>
+                          <p>
+                            <strong>Next Term:</strong>{" "}
+                            {termDates.nextTermBegins || "—"}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -354,7 +398,8 @@ export default function ResultViewer({
                       ____________________________
                     </p>
                     <p>
-                      <strong>Class Teacher:</strong> ________________________
+                      <strong>Class Teacher Name:</strong>{" "}
+                      ________________________
                     </p>
                     <p>
                       <strong>Teacher Remark:</strong> ________________________

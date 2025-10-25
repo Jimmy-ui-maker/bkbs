@@ -7,11 +7,13 @@ import ViewTable from "@/components/EnrollmentComponent/ViewTable";
 import AdminSessions from "@/components/AdminComponent/SessionForm";
 import AssignClassSection from "@/components/AdminComponent/AssignClassSection";
 import AdminSubjectsPage from "@/components/AdminComponent/AddSubjects";
+import AdminTermForm from "@/components/AdminComponent/AdminTermForm";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("officers");
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -120,6 +122,14 @@ export default function AdminDashboard() {
               </button>
               <button
                 className={`sidebar-btn ${
+                  activeTab === "add-term-dates" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("add-term-dates")}
+              >
+                Add Term Dates
+              </button>
+              <button
+                className={`sidebar-btn ${
                   activeTab === "manage-officer" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("manage-officer")}
@@ -205,14 +215,23 @@ export default function AdminDashboard() {
                   Assign Class
                 </button>
                 <button
-                className={`sidebar-btn ${
-                  activeTab === "add-subjects" ? "active" : ""
-                }`}
-                 data-bs-dismiss="offcanvas"
-                onClick={() => setActiveTab("add-subjects")}
-              >
-                Add Subject
-              </button>
+                  className={`sidebar-btn ${
+                    activeTab === "add-subjects" ? "active" : ""
+                  }`}
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => setActiveTab("add-subjects")}
+                >
+                  Add Subject
+                </button>
+                <button
+                  className={`sidebar-btn ${
+                    activeTab === "add-term-dates" ? "active" : ""
+                  }`}
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => setActiveTab("add-term-dates")}
+                >
+                  Add Term Dates
+                </button>
                 <button
                   className={`sidebar-btn ${
                     activeTab === "manage-officer" ? "active" : ""
@@ -249,10 +268,12 @@ export default function AdminDashboard() {
 
         {/* Main Dashboard Content */}
         <main className="content p-3 flex-grow-1 ">
+          
           {activeTab === "add-officer" && <AdminForm />}
           {activeTab === "add-session" && <AdminSessions />}
           {activeTab === "assign-class" && <AssignClassSection />}
           {activeTab === "add-subjects" && <AdminSubjectsPage />}
+          {activeTab === "add-term-dates" && <AdminTermForm />}
           {activeTab === "manage-officer" && (
             <p>Officer Table Component goes here</p>
           )}
