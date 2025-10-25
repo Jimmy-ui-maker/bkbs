@@ -264,6 +264,7 @@ export default function AddScores({
         Remark: entry?.Remark ?? "-",
         Highest: entry?.Highest ?? "-", // 👈 added
         Lowest: entry?.Lowest ?? "-", // 👈 added
+        Position: entry?.Position ?? "-", // 👈 added
       };
     });
   };
@@ -454,8 +455,9 @@ export default function AddScores({
                 <th>Project</th>
                 <th>Exams</th>
                 <th>Total</th>
-                <th>Highest</th> {/* 👈 added */}
-                <th>Lowest</th> {/* 👈 added */}
+                <th>Highest</th>
+                <th>Lowest</th>
+                <th>Position</th> {/* 👈 NEW */}
                 <th>Grade</th>
                 <th>Remark</th>
                 <th>Action</th>
@@ -466,18 +468,16 @@ export default function AddScores({
               {mappedSubjectsWithScores().map((s, i) => (
                 <tr key={s.name}>
                   <td>{i + 1}</td>
-                  <td>
-                    {s.name}
-                    {s.code && <div className="small">({s.code})</div>}
-                  </td>
+                  <td>{s.name}</td>
                   <td>{s.CA1}</td>
                   <td>{s.CA2}</td>
                   <td>{s.HF}</td>
                   <td>{s.Project}</td>
                   <td>{s.Exams}</td>
                   <td>{s.Total}</td>
-                  <td>{s.Highest}</td> {/* 👈 added */}
-                  <td>{s.Lowest}</td> {/* 👈 added */}
+                  <td>{s.Highest}</td>
+                  <td>{s.Lowest}</td>
+                  <td>{s.Position}</td> {/* 👈 NEW */}
                   <td>{s.Grade}</td>
                   <td>{s.Remark}</td>
                   <td>
@@ -500,11 +500,6 @@ export default function AddScores({
                   </td>
                 </tr>
               ))}
-              {mappedSubjectsWithScores().length === 0 && (
-                <tr>
-                  <td colSpan="13">No subjects found for this class/term</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
