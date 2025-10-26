@@ -84,7 +84,11 @@ export default function ResultViewer({
     setLoadingTerm(term);
 
     try {
-      const res = await fetch(`/api/results/${learner._id}`);
+      const res = await fetch(
+        `/api/results/${learner._id}?session=${encodeURIComponent(
+          selectedSession
+        )}&term=${encodeURIComponent(term)}`
+      );
       const data = await res.json();
 
       if (data.success && Array.isArray(data.results)) {
@@ -284,6 +288,7 @@ export default function ResultViewer({
                         <th>2nd CA (15)</th> <th>Home Fun (5)</th>{" "}
                         <th>Project (5)</th> <th>Exams (60)</th>{" "}
                         <th>Total (100)</th> <th>Highest</th> <th>Lowest</th>{" "}
+                        <th>Position</th>
                         <th>Grade</th> <th>Remark</th>
                       </tr>
                     </thead>
@@ -299,6 +304,7 @@ export default function ResultViewer({
                           <td>{s.Total ?? "-"}</td>
                           <td>{s.Highest ?? "-"}</td>
                           <td>{s.Lowest ?? "-"}</td>
+                          <td>{s.Position ?? "-"}</td>
                           <td>{s.Grade ?? "-"}</td>
                           <td>{s.Remark ?? "-"}</td>
                         </tr>
