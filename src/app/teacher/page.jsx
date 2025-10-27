@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddScores from "@/components/TeacherComponent/AddScores";
+import TeacherAttendance from "@/components/TeacherComponent/TeacherAttendance";
 
 export default function TeachersDashboard() {
   const [activeTab, setActiveTab] = useState("records");
@@ -117,7 +118,7 @@ export default function TeachersDashboard() {
         <div className="d-flex flex-column flex-lg-row">
           {/* Sidebar */}
           <aside className="sidebar d-none d-lg-flex flex-column p-3">
-            {["records", "learners", "skills"].map((tab) => (
+            {["records", "learners", "attendance", "skills"].map((tab) => (
               <button
                 key={tab}
                 className={`sidebar-btn mb-2 ${
@@ -129,13 +130,15 @@ export default function TeachersDashboard() {
                   ? "Records"
                   : tab === "learners"
                   ? "Learners"
+                  : tab === "attendance"
+                  ? "Attendance"
                   : "Skills & Traits"}
               </button>
             ))}
           </aside>
           {/* Sidebar Offcanvas for small screens */}
           <div
-            className="offcanvas offcanvas-start "
+            className="offcanvas offcanvas-start"
             tabIndex="-1"
             id="sidebarOffcanvas"
             aria-labelledby="sidebarOffcanvasLabel"
@@ -153,7 +156,7 @@ export default function TeachersDashboard() {
             </div>
 
             <div className="offcanvas-body d-flex flex-column">
-              {["records", "learners", "skills"].map((tab) => (
+              {["records", "learners", "attendance", "skills"].map((tab) => (
                 <button
                   key={tab}
                   className={`sidebar-btn text-start mb-2 ${
@@ -166,6 +169,8 @@ export default function TeachersDashboard() {
                     ? "Records"
                     : tab === "learners"
                     ? "Learners"
+                    : tab === "attendance"
+                    ? "Attendance"
                     : "Skills & Traits"}
                 </button>
               ))}
@@ -199,12 +204,19 @@ export default function TeachersDashboard() {
                 )}
               </button>
             </div>
-
             {activeTab === "records" && (
               <RecordsTab
                 learners={learners}
                 selectedLearner={selectedLearner}
                 setSelectedLearner={setSelectedLearner}
+              />
+            )}
+            /* inside your main render / tabs area */
+            {activeTab === "attendance" && (
+              // pass assignedClass which is present in your dashboard state (assignedClass)
+              <TeacherAttendance
+                assignedClass={assignedClass}
+                teacherId={localStorage.getItem("teacherId")}
               />
             )}
             {activeTab === "learners" && (
@@ -223,8 +235,6 @@ export default function TeachersDashboard() {
     </div>
   );
 }
-
-/* Sub Components same as yours below — no need to change them */
 
 /* ============================ SUB COMPONENTS ============================ */
 
@@ -286,6 +296,7 @@ function SkillsTab({ learners, selectedLearner, setSelectedLearner }) {
     Fluency: "",
     Sports: "",
     LanguageSkill: "",
+    "": "",
   });
   const [affective, setAffective] = useState({
     Punctuality: "",

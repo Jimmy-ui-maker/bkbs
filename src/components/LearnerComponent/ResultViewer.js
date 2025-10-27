@@ -20,6 +20,27 @@ export default function ResultViewer({
   const [termDates, setTermDates] = useState(null);
   const [highestLowest, setHighestLowest] = useState(null);
 
+  const [classCount, setClassCount] = useState(0);
+
+  // ✅ Count learner per class
+  useEffect(() => {
+    if (!selectedClass) return;
+
+    const fetchClassCount = async () => {
+      try {
+        const res = await fetch(
+          `/api/learners/count?class=${encodeURIComponent(selectedClass)}`
+        );
+        const data = await res.json();
+        if (data.success) setClassCount(data.count);
+      } catch (err) {
+        console.error("Error fetching class count:", err);
+      }
+    };
+
+    fetchClassCount();
+  }, [selectedClass]);
+
   // ✅ Fetch class  summary
   useEffect(() => {
     const fetchClassSummary = async () => {
@@ -258,7 +279,8 @@ export default function ResultViewer({
                           <strong>Time Present:</strong> 102
                         </p>
                         <p>
-                          <strong>Number in Class:</strong> 002
+                          <strong>Number in Class:</strong>{" "}
+                          {String(classCount).padStart(3, "0")}
                         </p>
                       </div>
                       {termDates && (
