@@ -217,6 +217,7 @@ export default function TeachersDashboard() {
               <TeacherAttendance
                 assignedClass={assignedClass}
                 teacherId={localStorage.getItem("teacherId")}
+                learners={learners}        // <-- add this
               />
             )}
             {activeTab === "learners" && (

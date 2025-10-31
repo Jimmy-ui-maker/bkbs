@@ -1,28 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { addDays, isBefore, format } from "date-fns";
+import { useState, useEffect, useRef } from "react";
+import { addDays, format, isWeekend } from "date-fns";
 import TermDurationSummary from "./TermDurationSummary";
 
 /**
- * TeacherAttendance
- * Props:
- *  - assignedClass (string)  e.g. "Nursery 2"  <-- important
- *  - teacherId (optional)
+ * TeacherAttendance (client)
+ * For per-learner marking, with auto summary based on TermDurationSummary
  */
-export default function TeacherAttendance({ assignedClass, teacherId }) {
-  const [learners, setLearners] = useState([]);
+export default function TeacherAttendance({
+  assignedClass,
+  teacherId,
+  learners = [],
+}) {
   const [sessions, setSessions] = useState([]);
-  const [terms, setTerms] = useState([]);
+  const [selectedLearner, setSelectedLearner] = useState("");
   const [selectedSession, setSelectedSession] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("");
   const [termRange, setTermRange] = useState(null);
-  const [weeks, setWeeks] = useState([]); // array of week arrays (each week is array of Date objects, Mon-Fri except first/last may be partial)
-  const [attendance, setAttendance] = useState({}); // { learnerId: { "Tue Sep 15 2025": true, ... }, ... }
-  const [message, setMessage] = useState("");
+  const [weeks, setWeeks] = useState([]); // array of arrays (Mon-Fri)
+  const [attendance, setAttendance] = useState({});
   const [collapsedWeeks, setCollapsedWeeks] = useState({});
+  const [message, setMessage] = useState("");
+  const saveTimeout = useRef(null);
+  const [effectiveDays, setEffectiveDays] = useState(0);
 
-  // --- sessions & term-dates fetch (once) ---
+  // 🔹 Fetch sessions once
   useEffect(() => {
     (async () => {
       try {
@@ -30,141 +33,81 @@ export default function TeacherAttendance({ assignedClass, teacherId }) {
         const data = await res.json();
         if (data?.success && Array.isArray(data.sessions))
           setSessions(data.sessions);
-        else setSessions([]);
       } catch (err) {
         console.error("Failed to fetch sessions", err);
-        setSessions([]);
-      }
-    })();
-
-    (async () => {
-      try {
-        const res = await fetch("/api/adminapi/term-dates");
-        const data = await res.json();
-        if (data?.success && Array.isArray(data.terms)) setTerms(data.terms);
-        else setTerms([]);
-      } catch (err) {
-        console.error("Failed to fetch term dates", err);
-        setTerms([]);
       }
     })();
   }, []);
 
-  // --- learners for class (triggered when assignedClass is present) ---
-  useEffect(() => {
-    if (!assignedClass) {
-      setLearners([]);
-      return;
-    }
-    (async () => {
-      try {
-        console.log("🚀 fetching learners for class:", assignedClass);
-        const res = await fetch(
-          `/api/learners?classLevel=${encodeURIComponent(assignedClass)}`
-        );
-        const data = await res.json();
-        console.log("📥 /api/learners response:", data);
-        if (data?.success && Array.isArray(data.learners))
-          setLearners(data.learners);
-        else setLearners([]);
-      } catch (err) {
-        console.error("Failed fetching learners:", err);
-        setLearners([]);
-      }
-    })();
-  }, [assignedClass]);
-
-  // --- get termRange when session + term selected ---
+  // 🔹 When session + term chosen → build week intervals (Mon–Fri)
   useEffect(() => {
     if (!selectedSession || !selectedTerm) {
       setTermRange(null);
       setWeeks([]);
+      setCollapsedWeeks({});
       return;
     }
+
     (async () => {
       try {
         const res = await fetch("/api/adminapi/term-dates");
         const data = await res.json();
-        if (!data?.success || !Array.isArray(data.terms)) {
-          setTermRange(null);
-          return;
-        }
+        if (!data?.success || !Array.isArray(data.terms)) return;
+
         const match = data.terms.find(
           (t) =>
-            String(t.session).trim().toLowerCase() ===
-              String(selectedSession).trim().toLowerCase() &&
-            String(t.term).trim().toLowerCase() ===
-              String(selectedTerm).trim().toLowerCase()
+            t.session.trim().toLowerCase() ===
+              selectedSession.trim().toLowerCase() &&
+            t.term.trim().toLowerCase() ===
+              selectedTerm.trim().toLowerCase()
         );
-        if (match) {
-          setTermRange({
-            termOpens: match.termOpens,
-            termEnds: match.termEnds,
-          });
-        } else {
+        if (!match) {
           setTermRange(null);
+          setWeeks([]);
+          return;
         }
+
+        const start = new Date(match.termOpens);
+        const end = new Date(match.termEnds);
+        const generated = [];
+        let cur = new Date(start);
+
+        while (cur <= end) {
+          const week = [];
+          for (let i = 0; i < 7 && cur <= end; i++) {
+            if (!isWeekend(cur)) week.push(new Date(cur));
+            cur = addDays(cur, 1);
+          }
+          if (week.length) generated.push(week);
+        }
+
+        setTermRange({ termOpens: match.termOpens, termEnds: match.termEnds });
+        setWeeks(generated);
+
+        // Collapse all by default
+        const collapsed = {};
+        generated.forEach((_, i) => (collapsed[i] = true));
+        setCollapsedWeeks(collapsed);
       } catch (err) {
-        console.error("Failed to fetch term range:", err);
-        setTermRange(null);
+        console.error("Failed to load term-dates/weeks:", err);
       }
     })();
   }, [selectedSession, selectedTerm]);
 
-  // --- generate weeks starting at termOpens (first week may be partial) ---
+  // 🔹 Load existing attendance for selected learner
   useEffect(() => {
-    if (!termRange) {
-      setWeeks([]);
-      setCollapsedWeeks({});
+    if (!selectedLearner || !termRange || !selectedSession || !selectedTerm) {
+      setAttendance({});
       return;
     }
-
-    try {
-      const start = new Date(termRange.termOpens);
-      const end = new Date(termRange.termEnds);
-
-      const generated = [];
-      let currentStart = start;
-
-      // keep creating weeks until we've passed `end`
-      while (currentStart <= end) {
-        // weekDays: currentStart .. currentStart + 4 (Mon-Fri concept), but if currentStart mid-week we still take next 5 days.
-        const weekDays = [];
-        for (let i = 0; i < 5; i++) {
-          const d = addDays(currentStart, i);
-          if (d > end) break;
-          weekDays.push(d);
-        }
-        generated.push(weekDays);
-
-        // advance currentStart: next week should start 5 days after currentStart,
-        // which will move us to the start of the 'next' block (if first week started midweek this lands to the next Monday or appropriate day).
-        currentStart = addDays(currentStart, 5);
-      }
-
-      setWeeks(generated);
-
-      // init collapse state
-      const collapseState = {};
-      generated.forEach((_, i) => (collapseState[i] = false));
-      setCollapsedWeeks(collapseState);
-    } catch (err) {
-      console.error("Failed to generate weeks:", err);
-      setWeeks([]);
-      setCollapsedWeeks({});
-    }
-  }, [termRange]);
-
-  // --- load existing attendance for the active term range & class, then populate `attendance` state ---
-  useEffect(() => {
-    if (!assignedClass || !selectedSession || !selectedTerm || !termRange)
-      return;
 
     (async () => {
       try {
         const startIso = new Date(termRange.termOpens).toISOString();
         const endIso = new Date(termRange.termEnds).toISOString();
-        const url = `/api/attendance/range?classLevel=${encodeURIComponent(
+        const url = `/api/attendance/range?learnerId=${encodeURIComponent(
+          selectedLearner
+        )}&classLevel=${encodeURIComponent(
           assignedClass
         )}&session=${encodeURIComponent(
           selectedSession
@@ -174,90 +117,123 @@ export default function TeacherAttendance({ assignedClass, teacherId }) {
 
         const res = await fetch(url);
         const data = await res.json();
-        if (!data?.success || !data.records) {
-          // nothing to map
-          return;
-        }
+        if (!data?.success || !data.records) return setAttendance({});
 
-        // data.records expected: { "2025-09-15": [{ learnerId, status }, ...], ... }
-        const newAttendance = {};
+        const normalized = {};
         for (const [dateKey, recs] of Object.entries(data.records)) {
-          // dateKey is ISO string or date string; normalize to Date.toDateString for client keys
           const d = new Date(dateKey);
           const key = d.toDateString();
-          for (const r of recs) {
-            const lid = String(r.learnerId);
-            if (!newAttendance[lid]) newAttendance[lid] = {};
-            newAttendance[lid][key] = r.status === "Present";
-          }
+          const rec = (recs || []).find(
+            (r) => String(r.learnerId) === String(selectedLearner)
+          );
+          if (rec) normalized[key] = rec.status === "Present";
         }
-
-        setAttendance(newAttendance);
+        setAttendance(normalized);
       } catch (err) {
-        console.error("Failed to load existing attendance:", err);
+        console.error("Failed to fetch attendance:", err);
       }
     })();
-  }, [assignedClass, selectedSession, selectedTerm, termRange]);
+  }, [
+    selectedLearner,
+    termRange,
+    selectedSession,
+    selectedTerm,
+    assignedClass,
+  ]);
 
-  // --- toggle checkbox & auto-save single-day record ---
-  const toggleAttendance = async (learnerId, date) => {
-    if (!assignedClass || !selectedSession || !selectedTerm) {
-      setMessage("⚠️ Select session & term first");
-      setTimeout(() => setMessage(""), 1800);
+  // 🔹 Compute summary relative to effectiveDays
+  const computeSummary = () => {
+    const present = Object.values(attendance).filter(Boolean).length;
+    const absent = Math.max(effectiveDays - present, 0);
+    const percentage =
+      effectiveDays > 0 ? ((present / effectiveDays) * 100).toFixed(1) : 0;
+    return { present, absent, percentage };
+  };
+
+  // 🔹 Toggle collapse
+  const toggleWeekCollapse = (i) =>
+    setCollapsedWeeks((p) => ({ ...p, [i]: !p[i] }));
+
+  // 🔹 Toggle attendance checkbox + save
+  const toggleAttendance = (day) => {
+    if (!selectedLearner || !selectedSession || !selectedTerm) {
+      setMessage("⚠️ Select learner, session & term first");
+      setTimeout(() => setMessage(""), 1500);
       return;
     }
 
-    const key = date.toDateString();
-    const newStatus = !attendance[learnerId]?.[key];
+    const key = day.toDateString();
+    const newStatus = !attendance[key];
+    setAttendance((p) => ({ ...p, [key]: newStatus }));
 
-    // optimistic UI
-    setAttendance((prev) => ({
-      ...prev,
-      [learnerId]: { ...(prev[learnerId] || {}), [key]: newStatus },
-    }));
-
-    try {
-      const res = await fetch("/api/attendance/mark", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          classLevel: assignedClass,
-          session: selectedSession,
-          term: selectedTerm,
-          date,
-          records: [{ learnerId, status: newStatus ? "Present" : "Absent" }],
-        }),
-      });
-      const json = await res.json();
-      if (!json?.success) throw new Error(json?.error || "save failed");
-      setMessage(`✅ ${format(date, "EEE, MMM d")} saved`);
-      setTimeout(() => setMessage(""), 1500);
-    } catch (err) {
-      console.error("Failed to save attendance:", err);
-      setMessage("❌ Failed to save. Try again.");
-      setTimeout(() => setMessage(""), 2000);
-      // revert optimistic change on failure
-      setAttendance((prev) => ({
-        ...prev,
-        [learnerId]: { ...(prev[learnerId] || {}), [key]: !newStatus },
-      }));
-    }
+    if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/attendance/mark", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            classLevel: assignedClass,
+            session: selectedSession,
+            term: selectedTerm,
+            date: day,
+            records: [
+              {
+                learnerId: selectedLearner,
+                status: newStatus ? "Present" : "Absent",
+              },
+            ],
+          }),
+        });
+        const j = await res.json();
+        if (!j?.success) throw new Error(j?.error || "Save failed");
+        setMessage(`✅ ${format(day, "EEE, MMM d")} saved`);
+        setTimeout(() => setMessage(""), 1000);
+      } catch (err) {
+        console.error("Save failed:", err);
+        setMessage("❌ Failed to save");
+        setTimeout(() => setMessage(""), 1000);
+        setAttendance((p) => ({ ...p, [key]: !newStatus }));
+      }
+    }, 250);
   };
 
-  const toggleWeekCollapse = (idx) =>
-    setCollapsedWeeks((p) => ({ ...p, [idx]: !p[idx] }));
+  const summary = computeSummary();
 
   return (
     <div className="card shadow-sm p-3">
-      <h5 className="fw-bold mb-3">📋 Class Attendance Register</h5>
+      <h5 className="fw-bold mb-3">📋 Attendance (per learner)</h5>
 
-      {termRange && <TermDurationSummary termRange={termRange} />}
+      {/* Term Duration Summary with auto callback */}
+      {termRange && (
+        <TermDurationSummary
+          termRange={termRange}
+          onEffectiveDaysChange={setEffectiveDays}
+        />
+      )}
 
+      {/* Controls */}
       <div className="row g-2 mb-3">
+        <div className="col-md-4">
+          <label className="form-label small">Learner</label>
+          <select
+            className="form-select form-select-sm"
+            value={selectedLearner}
+            onChange={(e) => setSelectedLearner(e.target.value)}
+          >
+            <option value="">Select Learner</option>
+            {learners.map((l) => (
+              <option key={l._id} value={l._id}>
+                {l.fullName}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="col-md-4">
           <label className="form-label small">Session</label>
           <select
-            className="form-select form-select-sm login-input"
+            className="form-select form-select-sm"
             value={selectedSession}
             onChange={(e) => setSelectedSession(e.target.value)}
           >
@@ -273,7 +249,7 @@ export default function TeacherAttendance({ assignedClass, teacherId }) {
         <div className="col-md-4">
           <label className="form-label small">Term</label>
           <select
-            className="form-select form-select-sm login-input"
+            className="form-select form-select-sm"
             value={selectedTerm}
             onChange={(e) => setSelectedTerm(e.target.value)}
           >
@@ -283,80 +259,98 @@ export default function TeacherAttendance({ assignedClass, teacherId }) {
             <option value="Third Term">Third Term</option>
           </select>
         </div>
-
-        <div className="col-md-4 align-self-end">
-          <div className="small text-muted">Class: {assignedClass || "—"}</div>
-        </div>
       </div>
 
-      {weeks.length === 0 && (
-        <div className="text-muted small mb-3">
-          Select session & term to load weeks.
+      {/* Summary Alerts */}
+      {selectedLearner && (
+        <div className="row text-center mb-3">
+          <div className="col-6 col-md-3">
+            <div className="alert alert-success py-2 mb-0">
+              ✅ Present: <strong>{summary.present}</strong>
+            </div>
+          </div>
+          <div className="col-6 col-md-3">
+            <div className="alert alert-danger py-2 mb-0">
+              ❌ Absent: <strong>{summary.absent}</strong>
+            </div>
+          </div>
+          <div className="col-6 col-md-3 mt-2 mt-md-0">
+            <div className="alert alert-info py-2 mb-0">
+              📅 Effective Days: <strong>{effectiveDays}</strong>
+            </div>
+          </div>
+          <div className="col-6 col-md-3 mt-2 mt-md-0">
+            <div className="alert alert-warning py-2 mb-0">
+              🧮 Attendance: <strong>{summary.percentage}%</strong>
+            </div>
+          </div>
         </div>
       )}
 
-      {weeks.map((week, wi) => (
-        <div key={wi} className="mb-3 border rounded">
-          <div
-            className="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center"
-            style={{ cursor: "pointer" }}
-            onClick={() => toggleWeekCollapse(wi)}
-          >
-            <span>
-              🗓️ Week {wi + 1} — {format(week[0], "MMM d")} -{" "}
-              {format(week[week.length - 1], "MMM d")}
-            </span>
-            <span>{collapsedWeeks[wi] ? "▶️ Expand" : "🔽 Collapse"}</span>
-          </div>
+      {/* Weeks Collapsible Table */}
+      {weeks.length === 0 ? (
+        <div className="text-muted small">
+          Select session & term to load attendance weeks.
+        </div>
+      ) : (
+        weeks.map((week, wi) => {
+          if (!Array.isArray(week) || week.length === 0) return null;
+          const weekStart = format(week[0], "MMM d");
+          const weekEnd = format(week[week.length - 1], "MMM d");
+          return (
+            <div key={wi} className="mb-3 border rounded">
+              <div
+                className="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center"
+                role="button"
+                onClick={() => toggleWeekCollapse(wi)}
+              >
+                <span>
+                  🗓️ Week {wi + 1} — {weekStart} - {weekEnd}
+                </span>
+                <span>{collapsedWeeks[wi] ? "▶️ Expand" : "🔽 Collapse"}</span>
+              </div>
 
-          {!collapsedWeeks[wi] && (
-            <div className="table-responsive">
-              <table className="table table-sm table-bordered text-center align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>Learner</th>
-                    {week.map((day, di) => (
-                      <th key={di}>{format(day, "EEE dd")}</th>
-                    ))}
-                  </tr>
-                </thead>
+              {!collapsedWeeks[wi] && message && (
+                <div className="alert alert-success text-center py-1 small m-0">
+                  {message}
+                </div>
+              )}
 
-                <tbody>
-                  {learners.length > 0 ? (
-                    learners.map((l) => (
-                      <tr key={l._id}>
-                        <td className="text-start fw-semibold">{l.fullName}</td>
-                        {week.map((day, di) => {
-                          const key = day.toDateString();
-                          return (
-                            <td key={di}>
+              {!collapsedWeeks[wi] && (
+                <div className="table-responsive">
+                  <table className="table table-sm table-bordered text-center mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="text-start">Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {week.map((d, idx) => {
+                        const key = d.toDateString();
+                        return (
+                          <tr key={idx}>
+                            <td className="text-start">
+                              {format(d, "EEE, MMM d yyyy")}
+                            </td>
+                            <td>
                               <input
                                 type="checkbox"
-                                className="form-check-input"
-                                checked={!!attendance[l._id]?.[key]}
-                                onChange={() => toggleAttendance(l._id, day)}
+                                className="form-check-input shadow-none"
+                                checked={!!attendance[key]}
+                                onChange={() => toggleAttendance(d)}
                               />
                             </td>
-                          );
-                        })}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={week.length + 1} className="text-muted">
-                        No learners assigned to this class.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
-
-      {message && (
-        <div className="alert alert-info mt-3 small text-center">{message}</div>
+          );
+        })
       )}
     </div>
   );

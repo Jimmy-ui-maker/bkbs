@@ -122,6 +122,22 @@ export default function ResultViewer({
         setTermData(termObj);
         setViewingTerm(term);
 
+        // ✅ Fetch attendance summary
+        try {
+          const attRes = await fetch(
+            `/api/attendance/summary?learnerId=${learner._id}&session=${selectedSession}&term=${term}`
+          );
+          const attJson = await attRes.json();
+          if (attJson.success) {
+            setTermData((prev) => ({
+              ...prev,
+              timePresent: attJson.presentCount || 0,
+            }));
+          }
+        } catch (err) {
+          console.error("Attendance summary fetch failed:", err);
+        }
+
         // ✅ Fetch skills for that learner and term
         const skillRes = await fetch(`/api/teachers/skills/${learner._id}`);
         const skillJson = await skillRes.json();
@@ -276,8 +292,12 @@ export default function ResultViewer({
                           <strong>Class:</strong> {selectedClass}
                         </p>
                         <p>
-                          <strong>Time Present:</strong> 102
+                          <strong>Time Present:</strong>{" "}
+                          {termData?.timePresent !== undefined
+                            ? termData.timePresent
+                            : "—"}
                         </p>
+
                         <p>
                           <strong>Number in Class:</strong>{" "}
                           {String(classCount).padStart(3, "0")}

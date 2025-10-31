@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { eachDayOfInterval, isWeekend, format } from "date-fns";
 
 /**
  * TermDurationSummary
  * Props:
  *   termRange: { termOpens: string, termEnds: string }
+ *   onEffectiveDaysChange: (days: number) => void
  */
-export default function TermDurationSummary({ termRange }) {
+export default function TermDurationSummary({
+  termRange,
+  onEffectiveDaysChange,
+}) {
   const [holidays, setHolidays] = useState(0);
 
   const summary = useMemo(() => {
@@ -17,7 +21,6 @@ export default function TermDurationSummary({ termRange }) {
     const start = new Date(termRange.termOpens);
     const end = new Date(termRange.termEnds);
 
-    // get weekdays only
     const allDays = eachDayOfInterval({ start, end });
     const weekdays = allDays.filter((d) => !isWeekend(d));
     const totalWeekdays = weekdays.length;
@@ -26,13 +29,21 @@ export default function TermDurationSummary({ termRange }) {
     return { totalWeekdays, effectiveDays };
   }, [termRange, holidays]);
 
+  // 🔄 send the effective days to parent anytime it changes
+  useEffect(() => {
+    if (summary?.effectiveDays && onEffectiveDaysChange) {
+      onEffectiveDaysChange(summary.effectiveDays);
+    }
+  }, [summary?.effectiveDays]);
+
   if (!termRange) return null;
 
   return (
     <div className="alert alert-info small py-2 mb-3">
       <div className="d-flex flex-wrap justify-content-between align-items-center">
         <div>
-          <strong>📅 Term:</strong> {format(new Date(termRange.termOpens), "MMM d")} –{" "}
+          <strong>📅 Term:</strong>{" "}
+          {format(new Date(termRange.termOpens), "MMM d")} –{" "}
           {format(new Date(termRange.termEnds), "MMM d, yyyy")}
         </div>
         <div>
