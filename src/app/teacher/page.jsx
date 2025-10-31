@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddScores from "@/components/TeacherComponent/AddScores";
 import TeacherAttendance from "@/components/TeacherComponent/TeacherAttendance";
+import TeacherRemarkForm from "@/components/TeacherComponent/TeacherRemarkForm";
 
 export default function TeachersDashboard() {
   const [activeTab, setActiveTab] = useState("records");
@@ -118,7 +119,7 @@ export default function TeachersDashboard() {
         <div className="d-flex flex-column flex-lg-row">
           {/* Sidebar */}
           <aside className="sidebar d-none d-lg-flex flex-column p-3">
-            {["records", "learners", "attendance", "skills"].map((tab) => (
+            {["records", "learners", "attendance", 'remark', "skills"].map((tab) => (
               <button
                 key={tab}
                 className={`sidebar-btn mb-2 ${
@@ -132,6 +133,8 @@ export default function TeachersDashboard() {
                   ? "Learners"
                   : tab === "attendance"
                   ? "Attendance"
+                  : tab === "remark"
+                  ? "Remark & Conduct"
                   : "Skills & Traits"}
               </button>
             ))}
@@ -156,7 +159,7 @@ export default function TeachersDashboard() {
             </div>
 
             <div className="offcanvas-body d-flex flex-column">
-              {["records", "learners", "attendance", "skills"].map((tab) => (
+              {["records", "learners", "attendance",'remark', "skills"].map((tab) => (
                 <button
                   key={tab}
                   className={`sidebar-btn text-start mb-2 ${
@@ -171,6 +174,8 @@ export default function TeachersDashboard() {
                     ? "Learners"
                     : tab === "attendance"
                     ? "Attendance"
+                    : tab === "remark"
+                    ? "Remark & Conduct"
                     : "Skills & Traits"}
                 </button>
               ))}
@@ -218,6 +223,14 @@ export default function TeachersDashboard() {
                 assignedClass={assignedClass}
                 teacherId={localStorage.getItem("teacherId")}
                 learners={learners}        // <-- add this
+              />
+            )}
+            {activeTab === "remark" && (
+              // pass assignedClass which is present in your dashboard state (assignedClass)
+              <TeacherRemarkForm
+                assignedClass={assignedClass}
+                teacherId={localStorage.getItem("teacherId")}
+                learners={learners}        
               />
             )}
             {activeTab === "learners" && (

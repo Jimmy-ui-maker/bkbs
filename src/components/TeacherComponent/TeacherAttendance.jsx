@@ -201,7 +201,7 @@ export default function TeacherAttendance({
   const summary = computeSummary();
 
   return (
-    <div className="card shadow-sm p-3">
+    <div className="card login-card shadow-sm p-3">
       <h5 className="fw-bold mb-3">📋 Attendance (per learner)</h5>
 
       {/* Term Duration Summary with auto callback */}
@@ -217,7 +217,7 @@ export default function TeacherAttendance({
         <div className="col-md-4">
           <label className="form-label small">Learner</label>
           <select
-            className="form-select form-select-sm"
+            className="form-select login-input form-select-sm"
             value={selectedLearner}
             onChange={(e) => setSelectedLearner(e.target.value)}
           >
@@ -233,7 +233,7 @@ export default function TeacherAttendance({
         <div className="col-md-4">
           <label className="form-label small">Session</label>
           <select
-            className="form-select form-select-sm"
+            className="form-select login-input form-select-sm"
             value={selectedSession}
             onChange={(e) => setSelectedSession(e.target.value)}
           >
@@ -249,7 +249,7 @@ export default function TeacherAttendance({
         <div className="col-md-4">
           <label className="form-label small">Term</label>
           <select
-            className="form-select form-select-sm"
+            className="form-select login-input form-select-sm"
             value={selectedTerm}
             onChange={(e) => setSelectedTerm(e.target.value)}
           >

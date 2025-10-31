@@ -1,0 +1,92 @@
+you just hit the point, but then we need to match everything to work perfectly, like teacher's name can be gotten from assign class, and <TeacherRemarkForm teacher={teacher} /> didnt work cos teacher is not define so i relace with {activeTab === "remark" && (
+              // pass assignedClass which is present in your dashboard state (assignedClass)
+              <TeacherRemarkForm
+                assignedClass={assignedClass}
+                teacherId={localStorage.getItem("teacherId")}
+                learners={learners}        // <-- add this
+              />
+            )}
+and it display just that its not active, 
+so we can use  // 🔹 Fetch sessions once
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/adminapi/sessions");
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.sessions))
+          setSessions(data.sessions);
+      } catch (err) {
+        console.error("Failed to fetch sessions", err);
+      }
+    })();
+  }, []); to fetch the session, and the schema should be a kind of result own import mongoose from "mongoose";
+
+const subjectSchema = new mongoose.Schema({
+  subject: String,
+  code: String,
+  CA1: Number,
+  CA2: Number,
+  HF: Number,
+  Project: Number,
+  Exams: Number,
+  Total: Number,
+  Grade: String,
+  Remark: String,
+});
+
+const termSchema = new mongoose.Schema({
+  term: { type: String, required: true }, // "First Term", "Second Term", "Third Term"
+  subjects: [subjectSchema],
+});
+
+const resultSchema = new mongoose.Schema(
+  {
+    learnerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Learner",
+      required: true,
+    },
+    session: { type: String, default: "2024/2025" },
+    results: [termSchema],
+  },
+  { timestamps: true }
+);
+
+export default mongoose.models.Result || mongoose.model("Result", resultSchema);
+you know we do work wih session and term
+in the scores record i use this to fetch the teachers infor // Fetch teacher's assigned class
+  useEffect(() => {
+    async function fetchAssignedClass() {
+      if (!teacher?._id) return;
+      try {
+        const res = await fetch(`/api/teachers/class/${teacher._id}`);
+        const data = await res.json();
+        if (data.success && data.classLevel) {
+          setSelectedClass(data.classLevel);
+        } else {
+          console.warn("No class assigned to this teacher");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching assigned class:", err);
+      }
+    }
+    fetchAssignedClass();
+  }, [teacher]);
+so incase you need it cos we re working based on assign class, and we use something like {/* Controls */}
+      <div className="row g-2 mb-3">
+        <div className="col-md-4">
+          <label className="form-label small">Learner</label>
+          <select
+            className="form-select login-input form-select-sm"
+            value={selectedLearner}
+            onChange={(e) => setSelectedLearner(e.target.value)}
+          >
+            <option value="">Select Learner</option>
+            {learners.map((l) => (
+              <option key={l._id} value={l._id}>
+                {l.fullName}
+              </option>
+            ))}
+          </select>
+        </div> to fetch display the learners per assign class which is th class level
+so please debug all the code to match our codes starting from the model api, form and the import in teacher dashboard
