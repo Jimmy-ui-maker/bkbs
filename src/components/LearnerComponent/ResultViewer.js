@@ -264,7 +264,7 @@ export default function ResultViewer({
           style={{ background: "rgba(0,0,0,0.7)" }}
         >
           <div className="modal-dialog modal-xl modal-dialog-centered">
-            <div className="modal-content p-3 rounded-4">
+            <div className="modal-content modal-color p-3 rounded-4">
               <div className="modal-header border-0">
                 <h5 className="fw-bold">Report Sheet — {viewingTerm}</h5>
                 <button
@@ -280,7 +280,7 @@ export default function ResultViewer({
                   </div>
 
                   {/* HEADER */}
-                  <div className="report-header text-center mb-3 pb-3 border-bottom">
+                  <div className="report-header text-center mb-3 pb-3 ">
                     <div className="d-flex justify-content-between align-items-center">
                       {/* Left: Logo */}
                       <div className="text-start">
@@ -326,7 +326,7 @@ export default function ResultViewer({
                   </div>
 
                   {/* STUDENT INFO */}
-                  <div className="border rounded-3 p-2 mb-3">
+                  <div className=" st-info border-top rounded-3 p-2 mb-3">
                     <div className="row g-2 text-start small">
                       <div className="col-md-4">
                         <p>
@@ -448,9 +448,9 @@ export default function ResultViewer({
                   </div>
 
                   {/* SKILLS */}
-                  <div className="row small mb-3">
+                  <div className="row small ">
                     {/* Psychomotor Skills */}
-                    <div className="col-md-6 mb-3">
+                    <div className="col-md-6 ">
                       <table className="table table-bordered text-center">
                         <thead className="table-warning">
                           <tr>
@@ -522,18 +522,18 @@ export default function ResultViewer({
                     </div>
                   </div>
 
-                  {/* REMARKS SECTION */}
-                  <div className="border-top pt-3 small text-start mt-4">
-                    <div className="row">
-                      {/* Left - Class Teacher */}
-                      <div className="col-md-6">
+                  {/* === REMARKS & FOOTER SECTION === */}
+                  <div className="result-footer-section small text-start">
+                    <div className="result-footer">
+                      {/* === Left: Class Teacher === */}
+                      <div className="footer-left">
                         <p>
-                          <strong>Learner Conduct:</strong>{" "}
+                          <strong>Learner’s Conduct:</strong>{" "}
                           {teacherRemark?.conduct ||
                             "____________________________"}
                         </p>
                         <p>
-                          <strong>Class Teacher Name:</strong>{" "}
+                          <strong>Class Teacher’s Name:</strong>{" "}
                           {teacherRemark?.teacherName ||
                             "________________________"}
                         </p>
@@ -543,34 +543,40 @@ export default function ResultViewer({
                         </p>
                       </div>
 
-                      {/* Right - Head Teacher */}
-                      <div className="col-md-6">
+                      {/* === Center: Stamp & Signature === */}
+                      <div className="footer-center text-center">
+                        <img
+                          src="/imgs/stamp2.png"
+                          alt="Bright Kingdom British School Stamp"
+                          className="stamp-image"
+                        />
+                        <img
+                          src="/imgs/signature.png"
+                          alt="School Head Signature"
+                          className="signature-image"
+                        />
+                        <div className="signature-line"></div>
+                      </div>
+
+                      {/* === Right: Head Teacher === */}
+                      <div className="footer-right text-start">
                         <p>
-                          <strong>Head Teacher Name:</strong>{" "}
+                          <strong className=" fw-bold">Head Teacher’s Name:</strong>{" "}
                           {headTeacherName || "________________________"}
                         </p>
                         <p>
-                          <strong>Head Teacher Remark:</strong>{" "}
+                          <strong>Head Teacher’s Remark:</strong>{" "}
                           {headTeacherRemark || "________________________"}
                         </p>
                         <p>
-                          <strong>Date:</strong> ________________________
+                          <strong>Date:</strong>{" "}
+                          {new Date().toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
                         </p>
                       </div>
-                    </div>
-
-                    {/* Stamp & Signature */}
-                    <div className="text-center mt-4">
-                      <p className="fw-bold mb-2">School Stamp & Signature</p>
-                      <img
-                        src="/imgs/finalstamp.png"
-                        alt="Bright Kingdom British School Stamp"
-                        className="mx-auto d-block"
-                        style={{
-                          width: "120px",
-                          opacity: 0.95,
-                        }}
-                      />
                     </div>
                   </div>
                 </div>

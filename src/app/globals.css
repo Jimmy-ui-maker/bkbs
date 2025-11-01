@@ -151,7 +151,6 @@ a {
   font-size: 1.1rem;
 }
 .portal-btn i:hover {
-  
   color: var(--textColor);
   font-size: 1.1rem;
 }
@@ -754,19 +753,26 @@ select {
   border: 1px solid var(--boderColor);
 }
 
-/* === FULL RESULT SHEET === */
+/* === FULL RESULT SHEET (Optimized for screen, print & mobile PDF) === */
 .result-sheet {
+  --sheet-width: 210mm;
+  --sheet-height: 297mm;
   border: 2px solid var(--praColor);
-  background: linear-gradient(180deg, #fffef5 0%, var(--bgColor) 100%);
-  padding: 20px;
-  font-size: 0.85rem;
+  background: #fff8dc;
+  width: var(--sheet-width);
+  min-height: var(--sheet-height);
+  margin: 0 auto;
+  padding: 12mm 10mm;
+  font-size: 0.75rem;
   border-radius: 10px;
   position: relative;
   box-shadow: var(--boxCardShadow);
   color: var(--textColor);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Elegant dotted watermark background */
+/* Elegant dotted watermark background (visible in print) */
 .result-sheet::before {
   content: "";
   position: absolute;
@@ -775,10 +781,12 @@ select {
     rgba(184, 171, 61, 0.15) 1px,
     transparent 1px
   );
-  background-size: 14px 14px;
+  background-size: 12px 12px;
   border-radius: 10px;
   z-index: 0;
   pointer-events: none;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 .result-sheet > * {
@@ -790,11 +798,18 @@ select {
 .report-header {
   background: linear-gradient(135deg, #fff8dc 0%, #fff4b0 100%);
   border: 2px solid var(--praColor);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 3px 10px rgba(184, 171, 61, 0.4);
-  position: relative;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(184, 171, 61, 0.4);
   text-align: center;
+  margin-bottom: 8px;
+  position: relative;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+.st-info {
+  border: 2px solid var(--praColor);
 }
 
 .report-header::before {
@@ -802,11 +817,11 @@ select {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
-    rgba(184, 171, 61, 0.15) 1px,
+    rgba(184, 171, 61, 0.12) 1px,
     transparent 1px
   );
-  background-size: 12px 12px;
-  border-radius: 10px;
+  background-size: 10px 10px;
+  border-radius: 8px;
   z-index: 0;
 }
 
@@ -827,30 +842,31 @@ select {
 
 /* === LOGO & PASSPORT === */
 .school-logo {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   object-fit: contain;
 }
 
 .student-passport {
-  width: 90px;
-  height: 90px;
+  width: 75px;
+  height: 75px;
   border-radius: 8px;
   object-fit: cover;
-  box-shadow: 0 2px 6px rgba(184, 171, 61, 0.4);
+  box-shadow: 0 2px 4px rgba(184, 171, 61, 0.4);
 }
 
 /* === TEXT === */
 .report-header h4 {
   color: var(--textColor);
   font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 1rem;
 }
 
 .report-header p,
 .result-sheet p {
   color: var(--textColor);
   margin-bottom: 0;
+  font-size: 0.75rem;
 }
 
 .report-header strong {
@@ -859,35 +875,38 @@ select {
 
 /* === TABLES === */
 .result-sheet table {
-  font-size: 0.8rem;
-  background-color: var(--WhiteColor);
+  font-size: 0.7rem;
+  background-color: rgba(
+    217,
+    209,
+    209,
+    0.9
+  ); /* ✅ allow watermark visibility */
   border: 1px solid var(--boderColor);
-}
-
-.result-sheet thead {
-  background-color: var(--praColor);
-  color: #fff;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .result-sheet th,
 .result-sheet td {
   border: 1px solid var(--boderColor) !important;
   vertical-align: middle !important;
-  padding: 6px 8px !important;
+  padding: 4px 6px !important;
+  text-align: center;
+}
+
+.result-sheet thead th {
+  background-color: #fff4b0 !important;
+  color: var(--textColor);
+  opacity: 0.98; /* ✅ maintain color vibrancy while allowing soft blend */
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 .table-warning th {
   background-color: #fff6d1 !important;
-}
-
-/* === SKILLS TABLE === */
-.table-skills thead th {
-  background-color: var(--praColor);
-  color: #fff;
-}
-
-.table-skills tbody td {
-  background-color: var(--WhiteColor);
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 /* === GRADING KEY === */
@@ -895,8 +914,9 @@ select {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--textColor);
+  margin-top: 4px;
 }
 
 .grading-key ul {
@@ -904,23 +924,28 @@ select {
   background: #fffef5;
   border: 1px solid var(--praColor);
   border-radius: 6px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(184, 171, 61, 0.2);
+  padding: 8px;
+  box-shadow: 0 1px 3px rgba(184, 171, 61, 0.2);
 }
 
-/* === WATERMARK === */
+/* === WATERMARK (Improved Visibility) === */
 .result-watermark {
   position: absolute;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-30deg);
-  font-size: 3rem;
-  color: rgba(0, 0, 0, 0.05);
+  font-size: 2.5rem;
+  color: var(--praColor);
   font-weight: 700;
-  letter-spacing: 1px;
-  z-index: 0;
+  letter-spacing: 2px;
+  z-index: 5; /* ✅ Lift it above the table background but under text */
   pointer-events: none;
   white-space: nowrap;
+  opacity: 0.12; /* ✅ Softer to avoid overpowering text */
+  mix-blend-mode: multiply; /* ✅ Blend naturally through light table background */
+  text-shadow: 0 0 1px rgba(184, 171, 61, 0.15);
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 .result-sheet img {
@@ -928,13 +953,117 @@ select {
   height: auto;
 }
 
+/* === FOOTER (Remarks + Stamp + Signature) === */
+.result-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  position: relative;
+}
 
+/* Left Section */
+.footer-left {
+  width: 42%;
+  text-align: left;
+}
+
+/* Center Section (Stamp + Signature) */
+.footer-center {
+  width: 16%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.footer-center .stamp-image {
+  width: 85px;
+  opacity: 0.95;
+  margin-bottom: 4px;
+}
+
+.footer-center .signature-image {
+  width: 90px;
+  opacity: 0.9;
+  margin-top: 3px;
+}
+
+.signature-line {
+  border-top: 1px solid #000;
+  width: 120px;
+  margin-top: 5px;
+}
+
+/* Right Section (Head Teacher) */
+.footer-right {
+  width: 42%;
+  text-align: left; /* ✅ Align start instead of end */
+  padding-left: 8px;
+}
+
+/* Responsive for smaller devices */
+@media screen and (max-width: 768px) {
+  .result-footer {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .footer-left,
+  .footer-right {
+    width: 48%;
+  }
+
+  .footer-center {
+    width: 100%;
+    order: 3;
+    margin-top: 8px;
+  }
+
+  .footer-center .stamp-image {
+    width: 70px;
+  }
+
+  .footer-center .signature-image {
+    width: 80px;
+  }
+
+  .signature-line {
+    width: 100px;
+  }
+}
 
 /* === PRINT === */
 @media print {
   .result-sheet {
-    page-break-inside: avoid;
     box-shadow: none;
     border: 1px solid var(--boderColor);
+    margin: 0;
+    width: 100%;
+    min-height: auto;
+    padding: 10mm;
+    background: linear-gradient(180deg, #fffef5 0%, var(--bgColor) 100%);
+  }
+
+  .btn,
+  .navbar,
+  .modal-footer {
+    display: none !important;
+  }
+
+  .result-sheet::before,
+  .report-header::before,
+  .result-watermark {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .footer-center img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
