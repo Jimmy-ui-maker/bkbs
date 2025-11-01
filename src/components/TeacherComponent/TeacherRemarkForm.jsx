@@ -194,7 +194,7 @@ export default function TeacherRemarkForm({
               value={selectedLearner}
               onChange={(e) => setSelectedLearner(e.target.value)}
             >
-              <option value="">Select Learner</option>
+              <option value="">-- Select Learner --</option>
               {learners.map((l) => (
                 <option key={l._id} value={l._id}>
                   {l.fullName}
@@ -210,8 +210,9 @@ export default function TeacherRemarkForm({
               value={session}
               onChange={(e) => setSession(e.target.value)}
             >
-              <option value="">Select Session</option>
+              
               {sessions.map((s) => (
+                
                 <option key={s._id || s.sessionName} value={s.sessionName || s}>
                   {s.sessionName || s}
                 </option>
@@ -226,6 +227,7 @@ export default function TeacherRemarkForm({
               value={term}
               onChange={(e) => setTerm(e.target.value)}
             >
+              
               <option value="First Term">First Term</option>
               <option value="Second Term">Second Term</option>
               <option value="Third Term">Third Term</option>
@@ -295,7 +297,7 @@ export default function TeacherRemarkForm({
       <div className="mt-4">
         <h6 className="fw-bold">📋 All Remarks ({remarksList.length})</h6>
         <div className="table-responsive">
-          <table className="table table-sm table-bordered align-middle">
+          <table className="table table-sm custom-table table-bordered align-middle">
             <thead className="table-dark">
               <tr>
                 <th>Learner</th>

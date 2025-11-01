@@ -64,7 +64,7 @@ export default function AdminTables() {
         <div className="card shadow-sm">
           <div className="card-body p-0">
             <div className="table-responsive">
-              <table className="table table-striped mb-0">
+              <table className="table custom-table table-striped mb-0">
                 <thead className="table-dark">
                   <tr>
                     <th>#</th>

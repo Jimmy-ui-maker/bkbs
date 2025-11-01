@@ -111,7 +111,7 @@ export default function ViewTable() {
             className="table-responsive"
             style={{ maxHeight: "400px", overflowY: "auto" }}
           >
-            <table className="table table-bordered text-center align-middle">
+            <table className="table custom-table table-bordered text-center align-middle">
               <thead className="table-dark sticky-top">
                 <tr>
                   <th>#</th>

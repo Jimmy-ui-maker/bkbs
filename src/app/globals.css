@@ -923,6 +923,13 @@ select {
   white-space: nowrap;
 }
 
+.result-sheet img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
 /* === PRINT === */
 @media print {
   .result-sheet {

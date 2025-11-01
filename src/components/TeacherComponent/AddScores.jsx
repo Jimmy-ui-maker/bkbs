@@ -439,12 +439,12 @@ export default function AddScores({
         </div>
       ) : (
         <div className="table-responsive mt-4">
-          <h6 className="fw-semibold">
+          <h6 className="fw-semibold card-header">
             All Subjects ({term}) –{" "}
             <span className="text-success">{session}</span>
           </h6>
 
-          <table className="table table-sm table-bordered text-center">
+          <table className="table custom-table table-sm table-bordered text-center">
             <thead className="table-dark">
               <tr>
                 <th>#</th>

@@ -168,12 +168,12 @@ export default function AdminForm() {
 
         <form onSubmit={handleSubmit} className="form-card">
           <div className="row">
-            <p className="fw-bold text-muted">Staff Information</p>
+            <p className="fw-bold ">Staff Information</p>
             <hr />
 
             {/* Name */}
             <div className="col-md-6 mb-3">
-              <label className="fw-bold text-muted">Name</label>
+              <label className="fw-bold ">Full Name</label>
               <input
                 type="text"
                 className="form-control login-input"
@@ -186,7 +186,7 @@ export default function AdminForm() {
 
             {/* Email */}
             <div className="col-md-6 mb-3">
-              <label className="fw-bold text-muted">Email</label>
+              <label className="fw-bold ">Email</label>
               <input
                 type="email"
                 className="form-control login-input"
@@ -199,7 +199,7 @@ export default function AdminForm() {
 
             {/* Phone */}
             <div className="col-md-6 mb-3">
-              <label className="fw-bold text-muted">Phone</label>
+              <label className="fw-bold ">Phone</label>
               <input
                 type="text"
                 className="form-control login-input"
@@ -212,7 +212,7 @@ export default function AdminForm() {
 
             {/* Address */}
             <div className="col-md-6 mb-3">
-              <label className="fw-bold text-muted">Address</label>
+              <label className="fw-bold ">Address</label>
               <input
                 type="text"
                 className="form-control login-input"
@@ -227,7 +227,7 @@ export default function AdminForm() {
             {!form._id && (
               <>
                 <div className="col-md-6 mb-3">
-                  <label className="fw-bold text-muted">Password</label>
+                  <label className="fw-bold ">Password</label>
                   <input
                     type="password"
                     className="form-control login-input"
@@ -239,7 +239,7 @@ export default function AdminForm() {
                 </div>
 
                 <div className="col-md-6 mb-3">
-                  <label className="fw-bold text-muted">Confirm Password</label>
+                  <label className="fw-bold ">Confirm Password</label>
                   <input
                     type="password"
                     className="form-control login-input"
@@ -254,7 +254,7 @@ export default function AdminForm() {
 
             {/* Role */}
             <div className="col-md-12 mb-3">
-              <label className="fw-bold text-muted">Role</label>
+              <label className="fw-bold ">Role</label>
               <select
                 className="form-select login-input"
                 name="role"
@@ -274,7 +274,7 @@ export default function AdminForm() {
 
             {/* Block Toggle */}
             <div className="col-md-12 mb-3">
-              <label className="fw-bold text-muted me-2">Blocked:</label>
+              <label className="fw-bold  me-2">Blocked:</label>
               <input
                 type="checkbox"
                 name="isBlocked"
@@ -313,7 +313,7 @@ export default function AdminForm() {
         <div className="card-body p-0">
           <div className="table-scroll">
             <table className="table custom-table mb-0">
-              <thead>
+              <thead  className=" table-dark">
                 <tr>
                   <th>Email</th>
                   <th>Role</th>

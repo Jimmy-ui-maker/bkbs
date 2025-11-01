@@ -19,9 +19,12 @@ export default function ResultViewer({
   const terms = ["First Term", "Second Term", "Third Term"];
   const [termDates, setTermDates] = useState(null);
   const [highestLowest, setHighestLowest] = useState(null);
-  
+  const [teacherRemark, setTeacherRemark] = useState(null);
 
   const [classCount, setClassCount] = useState(0);
+
+  const [headTeacherRemark, setHeadTeacherRemark] = useState("");
+  const [headTeacherName, setHeadTeacherName] = useState("");
 
   // ✅ Count learner per class
   useEffect(() => {
@@ -41,6 +44,31 @@ export default function ResultViewer({
 
     fetchClassCount();
   }, [selectedClass]);
+
+  // ✅ Fetch Head Teacher Remark (corrected)
+  const fetchHeadTeacherRemark = async (term) => {
+    try {
+      const res = await fetch(
+        `/api/headteacher/remarks?learnerId=${
+          learner._id
+        }&class=${encodeURIComponent(
+          selectedClass
+        )}&session=${encodeURIComponent(
+          selectedSession
+        )}&term=${encodeURIComponent(term)}`
+      );
+      const data = await res.json();
+      if (data.success && data.remarks.length > 0) {
+        setHeadTeacherRemark(data.remarks[0].remark);
+        setHeadTeacherName(data.remarks[0].headTeacherName);
+      } else {
+        setHeadTeacherRemark("");
+        setHeadTeacherName("");
+      }
+    } catch (err) {
+      console.error("Error fetching Head Teacher remark:", err);
+    }
+  };
 
   // ✅ Fetch class  summary
   useEffect(() => {
@@ -153,6 +181,30 @@ export default function ResultViewer({
         }
 
         setShowModal(true);
+
+        // ✅ Fetch teacher remark and conduct
+        try {
+          const resRemark = await fetch(
+            `/api/teachers/remarks?learnerId=${
+              learner._id
+            }&class=${encodeURIComponent(
+              selectedClass
+            )}&session=${encodeURIComponent(
+              selectedSession
+            )}&term=${encodeURIComponent(term)}`
+          );
+          const dataRemark = await resRemark.json();
+          if (dataRemark.success && dataRemark.remarks.length > 0) {
+            setTeacherRemark(dataRemark.remarks[0]);
+          } else {
+            setTeacherRemark(null);
+          }
+        } catch (err) {
+          console.error("Error fetching teacher remark:", err);
+          setTeacherRemark(null);
+        }
+        // ✅ Fetch head teacher remark next
+        await fetchHeadTeacherRemark(term);
       } else alert("No result data found.");
     } catch (err) {
       console.error(err);
@@ -383,13 +435,13 @@ export default function ResultViewer({
                       <p>
                         <strong>Highest in Class:</strong>{" "}
                         {highestLowest?.highest
-                          ? `${highestLowest.highest.name} (${highestLowest.highest.total})`
+                          ? `${highestLowest.highest.total}`
                           : "—"}
                       </p>
                       <p>
                         <strong>Lowest in Class:</strong>{" "}
                         {highestLowest?.lowest
-                          ? `${highestLowest.lowest.name} (${highestLowest.lowest.total})`
+                          ? `${highestLowest.lowest.total} `
                           : "—"}
                       </p>
                     </div>
@@ -470,31 +522,56 @@ export default function ResultViewer({
                     </div>
                   </div>
 
-                  {/* REMARKS */}
-                  <div className="border-top pt-2 small text-start">
-                    <p>
-                      <strong>Learner Conduct:</strong>{" "}
-                      ____________________________
-                    </p>
-                    <p>
-                      <strong>Class Teacher Name:</strong>{" "}
-                      ________________________
-                    </p>
-                    <p>
-                      <strong>Teacher Remark:</strong> ________________________
-                    </p>
-                    <p>
-                      <strong>Head Teacher Name:</strong>{" "}
-                      ________________________
-                    </p>
-                    <p>
-                      <strong>Head Teacher Remark:</strong>{" "}
-                      ________________________
-                    </p>
-                    <p>
-                      <strong>School Stamp & Signature:</strong>{" "}
-                      ________________________
-                    </p>
+                  {/* REMARKS SECTION */}
+                  <div className="border-top pt-3 small text-start mt-4">
+                    <div className="row">
+                      {/* Left - Class Teacher */}
+                      <div className="col-md-6">
+                        <p>
+                          <strong>Learner Conduct:</strong>{" "}
+                          {teacherRemark?.conduct ||
+                            "____________________________"}
+                        </p>
+                        <p>
+                          <strong>Class Teacher Name:</strong>{" "}
+                          {teacherRemark?.teacherName ||
+                            "________________________"}
+                        </p>
+                        <p>
+                          <strong>Teacher’s Remark:</strong>{" "}
+                          {teacherRemark?.remark || "________________________"}
+                        </p>
+                      </div>
+
+                      {/* Right - Head Teacher */}
+                      <div className="col-md-6">
+                        <p>
+                          <strong>Head Teacher Name:</strong>{" "}
+                          {headTeacherName || "________________________"}
+                        </p>
+                        <p>
+                          <strong>Head Teacher Remark:</strong>{" "}
+                          {headTeacherRemark || "________________________"}
+                        </p>
+                        <p>
+                          <strong>Date:</strong> ________________________
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Stamp & Signature */}
+                    <div className="text-center mt-4">
+                      <p className="fw-bold mb-2">School Stamp & Signature</p>
+                      <img
+                        src="/imgs/finalstamp.png"
+                        alt="Bright Kingdom British School Stamp"
+                        className="mx-auto d-block"
+                        style={{
+                          width: "120px",
+                          opacity: 0.95,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

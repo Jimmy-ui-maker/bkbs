@@ -318,8 +318,8 @@ export default function TeacherAttendance({
 
               {!collapsedWeeks[wi] && (
                 <div className="table-responsive">
-                  <table className="table table-sm table-bordered text-center mb-0">
-                    <thead className="table-light">
+                  <table className="table table-sm  table-bordered text-center mb-0">
+                    <thead className="table-dark">
                       <tr>
                         <th className="text-start">Date</th>
                         <th>Status</th>
