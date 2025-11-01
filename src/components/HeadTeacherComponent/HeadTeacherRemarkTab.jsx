@@ -193,7 +193,7 @@ export default function HeadTeacherRemarkTab({ username }) {
           <div className="col-md-3">
             <label className="form-label small">Select Class</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={selectedClass}
               onChange={(e) => setSelectedClass(e.target.value)}
             >
@@ -209,7 +209,7 @@ export default function HeadTeacherRemarkTab({ username }) {
           <div className="col-md-3">
             <label className="form-label small">Select Learner</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={selectedLearner}
               onChange={(e) => setSelectedLearner(e.target.value)}
               disabled={!selectedClass}
@@ -226,7 +226,7 @@ export default function HeadTeacherRemarkTab({ username }) {
           <div className="col-md-3">
             <label className="form-label small">Session</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={session}
               onChange={(e) => setSession(e.target.value)}
             >
@@ -241,7 +241,7 @@ export default function HeadTeacherRemarkTab({ username }) {
           <div className="col-md-3">
             <label className="form-label small">Term</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={term}
               onChange={(e) => setTerm(e.target.value)}
             >
@@ -256,7 +256,7 @@ export default function HeadTeacherRemarkTab({ username }) {
           <label className="form-label small">Head Teacher Remark</label>
           <input
             list="remarks"
-            className="form-control form-control-sm"
+            className="form-control login-input form-control-sm"
             value={remark}
             onChange={(e) => setRemark(e.target.value)}
             placeholder="Type or select remark..."
