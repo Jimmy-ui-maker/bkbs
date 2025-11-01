@@ -276,7 +276,11 @@ export default function ResultViewer({
               <div className="modal-body " ref={pdfRef}>
                 <div className="result-sheet">
                   <div className="result-watermark">
-                    Bright Kingdom British School
+                    <img
+                      src="/imgs/school logo.png"
+                      alt="water mark"
+                      className="school-logo"
+                    />
                   </div>
 
                   {/* HEADER */}
@@ -322,6 +326,9 @@ export default function ResultViewer({
                         Report Sheet for {viewingTerm} {selectedSession}{" "}
                         Academic Session
                       </strong>
+                    </p>
+                    <p className="small mt-2 mb-0 fw-semibold">
+                      Admission No: {learner.admissionNo}
                     </p>
                   </div>
 
@@ -407,118 +414,127 @@ export default function ResultViewer({
                     </tbody>
                   </table>
 
-                  {/* SUMMARY */}
-                  <div className="row small mb-3 text-start">
-                    <div className="col-md-6">
-                      <p>
-                        <strong>Total Obtainable:</strong>{" "}
-                        {termData.subjects.length * 100}
-                      </p>
-                      <p>
-                        <strong>Total Score:</strong>{" "}
-                        {termData.subjects.reduce(
-                          (a, b) => a + (b.Total || 0),
-                          0
-                        )}
-                      </p>
-                      <p>
-                        <strong>Average Score:</strong>{" "}
-                        {(
-                          termData.subjects.reduce(
+                  {/* === SUMMARY SECTION === */}
+                  <div className="summary-section small text-start">
+                    <div className="summary-row">
+                      {/* Left Column */}
+                      <div className="summary-col">
+                        <p>
+                          <strong>Total Obtainable:</strong>{" "}
+                          {termData.subjects.length * 100}
+                        </p>
+                        <p>
+                          <strong>Total Score:</strong>{" "}
+                          {termData.subjects.reduce(
                             (a, b) => a + (b.Total || 0),
                             0
-                          ) / termData.subjects.length
-                        ).toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="col-md-6">
-                      <p>
-                        <strong>Highest in Class:</strong>{" "}
-                        {highestLowest?.highest
-                          ? `${highestLowest.highest.total}`
-                          : "—"}
-                      </p>
-                      <p>
-                        <strong>Lowest in Class:</strong>{" "}
-                        {highestLowest?.lowest
-                          ? `${highestLowest.lowest.total} `
-                          : "—"}
-                      </p>
+                          )}
+                        </p>
+                        <p>
+                          <strong>Average Score:</strong>{" "}
+                          {(
+                            termData.subjects.reduce(
+                              (a, b) => a + (b.Total || 0),
+                              0
+                            ) / termData.subjects.length
+                          ).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="summary-col"></div>
+                      {/* Right Column */}
+                      <div className="summary-col">
+                        <p>
+                          <strong>Highest in Class:</strong>{" "}
+                          {highestLowest?.highest
+                            ? `${highestLowest.highest.total}`
+                            : "—"}
+                        </p>
+                        <p>
+                          <strong>Lowest in Class:</strong>{" "}
+                          {highestLowest?.lowest
+                            ? `${highestLowest.lowest.total}`
+                            : "—"}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* SKILLS */}
-                  <div className="row small ">
-                    {/* Psychomotor Skills */}
-                    <div className="col-md-6 ">
-                      <table className="table table-bordered text-center">
-                        <thead className="table-warning">
-                          <tr>
-                            <th>Psychomotor Skills</th>
-                            <th>A</th>
-                            <th>B</th>
-                            <th>C</th>
-                            <th>D</th>
-                            <th>E</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {[
-                            "Writing",
-                            "Reading",
-                            "Fluency",
-                            "Sports",
-                            "LanguageSkill",
-                            "-",
-                          ].map((s) => (
-                            <tr key={s}>
-                              <td>{s}</td>
-                              {["A", "B", "C", "D", "E"].map((g) => (
-                                <td key={g}>
-                                  {skillData?.psychomotor?.[s] === g
-                                    ? "✔️"
-                                    : ""}
-                                </td>
-                              ))}
+                  {/* === SKILLS SECTION === */}
+                  <div className="skills-section">
+                    <div className="skills-row">
+                      {/* Psychomotor Skills */}
+                      <div className="skills-col">
+                        <table className="table table-bordered text-center">
+                          <thead className="table-warning">
+                            <tr>
+                              <th>Psychomotor Skills</th>
+                              <th>A</th>
+                              <th>B</th>
+                              <th>C</th>
+                              <th>D</th>
+                              <th>E</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {[
+                              "Writing",
+                              "Reading",
+                              "Fluency",
+                              "Sports",
+                              "LanguageSkill",
+                              "-",
+                            ].map((s) => (
+                              <tr key={s}>
+                                <td>{s}</td>
+                                {["A", "B", "C", "D", "E"].map((g) => (
+                                  <td key={g}>
+                                    {skillData?.psychomotor?.[s] === g
+                                      ? "✔️"
+                                      : ""}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
 
-                    {/* Affective Ability */}
-                    <div className="col-md-6 mb-3">
-                      <table className="table table-bordered text-center">
-                        <thead className="table-warning">
-                          <tr>
-                            <th>Affective Ability</th>
-                            <th>A</th>
-                            <th>B</th>
-                            <th>C</th>
-                            <th>D</th>
-                            <th>E</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {[
-                            "Punctuality",
-                            "Neatness",
-                            "Politeness",
-                            "Cooperation",
-                            "SelfControl",
-                            "Attentiveness",
-                          ].map((t) => (
-                            <tr key={t}>
-                              <td>{t}</td>
-                              {["A", "B", "C", "D", "E"].map((g) => (
-                                <td key={g}>
-                                  {skillData?.affective?.[t] === g ? "✔️" : ""}
-                                </td>
-                              ))}
+                      {/* Affective Ability */}
+                      <div className="skills-col">
+                        <table className="table table-bordered text-center">
+                          <thead className="table-warning">
+                            <tr>
+                              <th>Affective Ability</th>
+                              <th>A</th>
+                              <th>B</th>
+                              <th>C</th>
+                              <th>D</th>
+                              <th>E</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {[
+                              "Punctuality",
+                              "Neatness",
+                              "Politeness",
+                              "Cooperation",
+                              "SelfControl",
+                              "Attentiveness",
+                            ].map((t) => (
+                              <tr key={t}>
+                                <td>{t}</td>
+                                {["A", "B", "C", "D", "E"].map((g) => (
+                                  <td key={g}>
+                                    {skillData?.affective?.[t] === g
+                                      ? "✔️"
+                                      : ""}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
 
@@ -561,7 +577,9 @@ export default function ResultViewer({
                       {/* === Right: Head Teacher === */}
                       <div className="footer-right text-start">
                         <p>
-                          <strong className=" fw-bold">Head Teacher’s Name:</strong>{" "}
+                          <strong className=" fw-bold">
+                            Head Teacher’s Name:
+                          </strong>{" "}
                           {headTeacherName || "________________________"}
                         </p>
                         <p>

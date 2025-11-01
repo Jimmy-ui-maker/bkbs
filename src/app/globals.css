@@ -757,7 +757,7 @@ select {
 .result-sheet {
   --sheet-width: 210mm;
   --sheet-height: 297mm;
-  border: 2px solid var(--praColor);
+  border: 2px solid var(--boderColor);
   background: #fff8dc;
   width: var(--sheet-width);
   min-height: var(--sheet-height);
@@ -797,7 +797,7 @@ select {
 /* === HEADER === */
 .report-header {
   background: linear-gradient(135deg, #fff8dc 0%, #fff4b0 100%);
-  border: 2px solid var(--praColor);
+  border: 1px solid var(--boderColor);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 6px rgba(184, 171, 61, 0.4);
@@ -808,8 +808,49 @@ select {
   print-color-adjust: exact !important;
 }
 
+/* === STUDENT INFO SECTION === */
 .st-info {
-  border: 2px solid var(--praColor);
+  border: 1px solid var(--boderColor);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.75rem;
+  background: #fffef5;
+}
+
+.st-info .row {
+  display: flex !important;
+  flex-wrap: nowrap !important; /* ✅ Keep all columns in one row */
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 8px;
+}
+
+.st-info .col-md-4 {
+  flex: 1;
+  min-width: 0; /* prevent overflow */
+}
+
+.st-info p {
+  margin: 2px 0;
+  line-height: 1.3;
+  white-space: nowrap !important; /* ✅ Prevent breaking lines */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media screen and (max-width: 768px) {
+  .st-info .row {
+    flex-wrap: wrap; /* ✅ Allow wrapping only if absolutely needed */
+  }
+
+  .st-info .col-md-4 {
+    flex: 1 1 100%; /* stack cleanly, equal width */
+    text-align: left;
+  }
+
+  .st-info p {
+    white-space: normal;
+  }
 }
 
 .report-header::before {
@@ -928,29 +969,164 @@ select {
   box-shadow: 0 1px 3px rgba(184, 171, 61, 0.2);
 }
 
-/* === WATERMARK (Improved Visibility) === */
+/* === WATERMARK (Unified Across All Screens) === */
 .result-watermark {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-30deg);
-  font-size: 2.5rem;
-  color: var(--praColor);
-  font-weight: 700;
-  letter-spacing: 2px;
-  z-index: 5; /* ✅ Lift it above the table background but under text */
+  transform: translate(-50%, -50%); /* ✅ Perfect center, upright */
+  z-index: 5; /* ✅ Below text but above background */
   pointer-events: none;
-  white-space: nowrap;
-  opacity: 0.12; /* ✅ Softer to avoid overpowering text */
-  mix-blend-mode: multiply; /* ✅ Blend naturally through light table background */
-  text-shadow: 0 0 1px rgba(184, 171, 61, 0.15);
+  opacity: 0.15; /* ✅ Soft but visible */
+  mix-blend-mode: multiply;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
+}
+
+.result-watermark img {
+  width: 350px; /* ✅ Fixed, consistent size across screens & print */
+  height: auto;
+  opacity: 0.05;
+  filter: grayscale(100%) brightness(1.1);
+  user-select: none;
+}
+
+/* === PRINT (Identical Output) === */
+@media print {
+  body,
+  .result-sheet {
+    zoom: 100%; /* ✅ Avoid browser auto-rescaling */
+    transform: none;
+  }
+
+  .result-watermark img {
+    opacity: 0.2; /* Slightly more visible on print */
+    filter: grayscale(100%) brightness(1);
+  }
 }
 
 .result-sheet img {
   max-width: 100%;
   height: auto;
+}
+
+/* === SUMMARY SECTION (Consistent Layout) === */
+.summary-section {
+  background: #fffef5;
+  border: 1px solid var(--boderColor);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(184, 171, 61, 0.15);
+  font-size: 0.8rem;
+  color: var(--textColor);
+}
+
+/* Row container */
+.summary-row {
+  display: flex;
+  justify-content: space-between !important; /* ✅ keeps equal spacing */
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: nowrap !important; /* ✅ prevent stacking */
+  width: 100%;
+}
+
+/* Columns */
+.summary-col {
+  flex: 1;
+  width: 48%;
+}
+
+.summary-col p {
+  margin: 4px 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* === Mobile Scaling (No stacking, just shrink slightly) === */
+@media screen and (max-width: 768px) {
+  .summary-section {
+    font-size: 0.75rem; /* ✅ smaller text for tight fit */
+    padding: 8px 10px;
+  }
+
+  .summary-row {
+    justify-content: space-between !important;
+    gap: 10px;
+  }
+
+  .summary-col {
+    width: 48% !important; /* ✅ fixed equal width on mobile */
+  }
+
+  .summary-col p {
+    white-space: normal; /* ✅ wrap text gently if needed */
+    word-break: break-word;
+  }
+}
+
+/* === SKILLS SECTION (Consistent Layout) === */
+.skills-section {
+  background: #fffef5;
+  border: 1px solid var(--boderColor);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(184, 171, 61, 0.15);
+}
+
+/* Skills row layout */
+.skills-row {
+  display: flex;
+  justify-content: space-between !important; /* ✅ keeps both tables side by side */
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: nowrap !important; /* ✅ prevent stacking */
+  width: 100%;
+}
+
+/* Skills column wrapper */
+.skills-col {
+  flex: 1;
+  width: 48%;
+}
+
+/* Table adjustments */
+.skills-col table {
+  width: 100%;
+  font-size: 0.8rem;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.skills-col th,
+.skills-col td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* === Responsive Adjustment (Keep side-by-side, just shrink) === */
+@media screen and (max-width: 768px) {
+  .skills-section {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  .skills-row {
+    justify-content: space-between !important;
+    gap: 10px;
+  }
+
+  .skills-col {
+    width: 48% !important; /* ✅ stays side by side on mobile */
+  }
+
+  .skills-col table {
+    font-size: 0.7rem; /* ✅ smaller font for tight screens */
+  }
 }
 
 /* === FOOTER (Remarks + Stamp + Signature) === */
