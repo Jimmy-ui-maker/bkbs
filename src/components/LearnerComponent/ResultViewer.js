@@ -499,9 +499,11 @@ export default function ResultViewer({
                                   <td>{s}</td>
                                   {["A", "B", "C", "D", "E"].map((g) => (
                                     <td key={g}>
-                                      {skillData?.psychomotor?.[s] === g
-                                        ? "✔️"
-                                        : ""}
+                                      {skillData?.psychomotor?.[s] === g ? (
+                                        <span className="tick">✔</span>
+                                      ) : (
+                                        ""
+                                      )}
                                     </td>
                                   ))}
                                 </tr>
@@ -510,7 +512,7 @@ export default function ResultViewer({
                           </table>
                         </div>
 
-                        {/* Affective Ability */}
+                        {/* Affective Ability ✔️ 🟡 */}
                         <div className="skills-col">
                           <table className="table table-bordered text-center">
                             <thead className="table-warning">
@@ -536,9 +538,11 @@ export default function ResultViewer({
                                   <td>{t}</td>
                                   {["A", "B", "C", "D", "E"].map((g) => (
                                     <td key={g}>
-                                      {skillData?.affective?.[t] === g
-                                        ? "✔️"
-                                        : ""}
+                                      {skillData?.affective?.[t] === g ? (
+                                        <span className="tick">✔</span>
+                                      ) : (
+                                        ""
+                                      )}
                                     </td>
                                   ))}
                                 </tr>
