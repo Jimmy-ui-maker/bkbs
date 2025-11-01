@@ -1,6 +1,5 @@
-// /api/attendance/summary/route.js
 import dbConnect from "@/lib/db";
-import Attendance from "@/models/Attendance"; // your mongoose model
+import Attendance from "@/models/Attendance";
 
 export async function GET(req) {
   await dbConnect();
@@ -9,19 +8,19 @@ export async function GET(req) {
   const session = searchParams.get("session");
   const term = searchParams.get("term");
 
-  if (!learnerId || !session || !term) {
-    return Response.json({ success: false, error: "Missing params" });
-  }
+  if (!learnerId || !session || !term)
+    return Response.json({ success: false, error: "Missing parameters" });
 
-  const records = await Attendance.find({
-    "records.learnerId": learnerId,
-    session,
-    term,
-  });
+  const attendanceDoc = await Attendance.findOne({ session, "terms.term": term });
 
-  // flatten all daily records
+  if (!attendanceDoc)
+    return Response.json({ success: true, presentCount: 0 });
+
+  const termEntry = attendanceDoc.terms.find((t) => t.term === term);
+  if (!termEntry) return Response.json({ success: true, presentCount: 0 });
+
   let presentCount = 0;
-  for (const day of records) {
+  for (const day of termEntry.attendance) {
     for (const rec of day.records) {
       if (
         String(rec.learnerId) === String(learnerId) &&

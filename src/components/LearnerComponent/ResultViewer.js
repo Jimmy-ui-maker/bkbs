@@ -152,19 +152,21 @@ export default function ResultViewer({
         setViewingTerm(term);
 
         // ✅ Fetch attendance summary
+        // ✅ Combine result + attendance properly
         try {
           const attRes = await fetch(
             `/api/attendance/summary?learnerId=${learner._id}&session=${selectedSession}&term=${term}`
           );
           const attJson = await attRes.json();
-          if (attJson.success) {
-            setTermData((prev) => ({
-              ...prev,
-              timePresent: attJson.presentCount || 0,
-            }));
-          }
+          const presentCount = attJson.success ? attJson.presentCount || 0 : 0;
+
+          // ✅ Merge attendance count into term data immediately
+          setTermData({ ...termObj, timePresent: presentCount });
+          setViewingTerm(term);
         } catch (err) {
           console.error("Attendance summary fetch failed:", err);
+          setTermData(termObj); // fallback
+          setViewingTerm(term);
         }
 
         // ✅ Fetch skills for that learner and term
@@ -274,331 +276,332 @@ export default function ResultViewer({
               </div>
 
               <div className="modal-body " ref={pdfRef}>
-              <div className="result-sheet-wrapper">
-                <div className="result-sheet">
-                  <div className="result-watermark">
-                    <img
-                      src="/imgs/school logo.png"
-                      alt="water mark"
-                      className="school-logo"
-                    />
-                  </div>
-
-                  {/* HEADER */}
-                  <div className="report-header text-center mb-3 pb-3 ">
-                    <div className="d-flex justify-content-between align-items-center">
-                      {/* Left: Logo */}
-                      <div className="text-start">
-                        <img
-                          src="/imgs/school logo.png"
-                          alt="school logo"
-                          className="school-logo"
-                        />
-                      </div>
-
-                      {/* Center: School Info */}
-                      <div className="flex-grow-1">
-                        <h4 className="fw-bold mb-1 text-uppercase ">
-                          Bright Kingdom British School
-                        </h4>
-                        <p className="small mb-0">
-                          Phase 3, Zakoyi-Bmuko, Dutse, Abuja (FCT)
-                        </p>
-                        <p className="small mb-0">
-                          Tel: +234 703 812 2394, +234 813 772 5649
-                        </p>
-                        <p className="small mb-0">
-                          Email: brightkingdombritishschool@gmail.com
-                        </p>
-                      </div>
-
-                      {/* Right: Passport */}
-                      <div className="text-end">
-                        <img
-                          src={learner.imgUrl}
-                          alt="passport"
-                          className="student-passport"
-                        />
-                      </div>
+                <div className="result-sheet-wrapper">
+                  <div className="result-sheet">
+                    <div className="result-watermark">
+                      <img
+                        src="/imgs/school logo.png"
+                        alt="water mark"
+                        className="school-logo"
+                      />
                     </div>
 
-                    <p className="small mt-2 mb-0 fw-semibold">
-                      <strong>
-                        Report Sheet for {viewingTerm} {selectedSession}{" "}
-                        Academic Session
-                      </strong>
-                    </p>
-                    <p className="small mt-2 mb-0 fw-semibold">
-                      Admission No: {learner.admissionNo}
-                    </p>
-                  </div>
+                    {/* HEADER */}
+                    <div className="report-header text-center mb-3 pb-3 ">
+                      <div className="d-flex justify-content-between align-items-center">
+                        {/* Left: Logo */}
+                        <div className="text-start">
+                          <img
+                            src="/imgs/school logo.png"
+                            alt="school logo"
+                            className="school-logo"
+                          />
+                        </div>
 
-                  {/* STUDENT INFO */}
-                  <div className=" st-info border-top rounded-3 p-2 mb-3">
-                    <div className="row g-2 text-start small">
-                      <div className="col-md-4">
-                        <p>
-                          <strong>Name:</strong> {learner.fullName}
-                        </p>
-                        <p>
-                          <strong>Sex:</strong> {learner.gender}
-                        </p>
-                        <p>
-                          <strong>DOB:</strong>{" "}
-                          {new Date(learner.dob).toDateString()}
-                        </p>
-                      </div>
-                      <div className="col-md-4">
-                        <p>
-                          <strong>Class:</strong> {selectedClass}
-                        </p>
-                        <p>
-                          <strong>Time Present:</strong>{" "}
-                          {termData?.timePresent !== undefined
-                            ? termData.timePresent
-                            : "—"}
-                        </p>
-
-                        <p>
-                          <strong>Number in Class:</strong>{" "}
-                          {String(classCount).padStart(3, "0")}
-                        </p>
-                      </div>
-                      {termDates && (
-                        <div className="col-md-4">
-                          <p>
-                            <strong>Term Opens:</strong>{" "}
-                            {termDates.termOpens || "—"}
+                        {/* Center: School Info */}
+                        <div className="flex-grow-1">
+                          <h4 className="fw-bold mb-1 text-uppercase ">
+                            Bright Kingdom British School
+                          </h4>
+                          <p className="small mb-0">
+                            Phase 3, Zakoyi-Bmuko, Dutse, Abuja (FCT)
                           </p>
-                          <p>
-                            <strong>Term Ends:</strong>{" "}
-                            {termDates.termEnds || "—"}
+                          <p className="small mb-0">
+                            Tel: +234 703 812 2394, +234 813 772 5649
                           </p>
-                          <p>
-                            <strong>Next Term:</strong>{" "}
-                            {termDates.nextTermBegins || "—"}
+                          <p className="small mb-0">
+                            Email: brightkingdombritishschool@gmail.com
                           </p>
                         </div>
-                      )}
+
+                        {/* Right: Passport */}
+                        <div className="text-end">
+                          <img
+                            src={learner.imgUrl}
+                            alt="passport"
+                            className="student-passport"
+                          />
+                        </div>
+                      </div>
+
+                      <p className="small mt-2 mb-0 fw-semibold">
+                        <strong>
+                          Report Sheet for {viewingTerm} {selectedSession}{" "}
+                          Academic Session
+                        </strong>
+                      </p>
+                      <p className="small mt-2 mb-0 fw-semibold">
+                        Admission No: {learner.admissionNo}
+                      </p>
                     </div>
-                  </div>
 
-                  {/* SUBJECTS */}
-                  <table className="table table-bordered small text-center align-middle">
-                    <thead className="table-warning">
-                      <tr>
-                        <th>Subjects</th> <th>1st CA (15)</th>{" "}
-                        <th>2nd CA (15)</th> <th>Home Fun (5)</th>{" "}
-                        <th>Project (5)</th> <th>Exams (60)</th>{" "}
-                        <th>Total (100)</th> <th>Highest</th> <th>Lowest</th>{" "}
-                        <th>Position</th>
-                        <th>Grade</th> <th>Remark</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {termData.subjects.map((s, i) => (
-                        <tr key={i}>
-                          <td>{s.subject}</td>
-                          <td>{s.CA1 ?? "-"}</td>
-                          <td>{s.CA2 ?? "-"}</td>
-                          <td>{s.HF ?? "-"}</td>
-                          <td>{s.Project ?? "-"}</td>
-                          <td>{s.Exams ?? "-"}</td>
-                          <td>{s.Total ?? "-"}</td>
-                          <td>{s.Highest ?? "-"}</td>
-                          <td>{s.Lowest ?? "-"}</td>
-                          <td>{s.Position ?? "-"}</td>
-                          <td>{s.Grade ?? "-"}</td>
-                          <td>{s.Remark ?? "-"}</td>
+                    {/* STUDENT INFO */}
+                    <div className=" st-info border-top rounded-3 p-2 mb-3">
+                      <div className="row g-2 text-start small">
+                        <div className="col-md-4">
+                          <p>
+                            <strong>Name:</strong> {learner.fullName}
+                          </p>
+                          <p>
+                            <strong>Sex:</strong> {learner.gender}
+                          </p>
+                          <p>
+                            <strong>DOB:</strong>{" "}
+                            {new Date(learner.dob).toDateString()}
+                          </p>
+                        </div>
+                        <div className="col-md-4">
+                          <p>
+                            <strong>Class:</strong> {selectedClass}
+                          </p>
+                          <p>
+                            <strong>Time Present:</strong>{" "}
+                            {termData?.timePresent !== undefined
+                              ? termData.timePresent
+                              : "—"}
+                          </p>
+
+                          <p>
+                            <strong>Number in Class:</strong>{" "}
+                            {String(classCount).padStart(3, "0")}
+                          </p>
+                        </div>
+                        {termDates && (
+                          <div className="col-md-4">
+                            <p>
+                              <strong>Term Opens:</strong>{" "}
+                              {termDates.termOpens || "—"}
+                            </p>
+                            <p>
+                              <strong>Term Ends:</strong>{" "}
+                              {termDates.termEnds || "—"}
+                            </p>
+                            <p>
+                              <strong>Next Term:</strong>{" "}
+                              {termDates.nextTermBegins || "—"}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* SUBJECTS */}
+                    <table className="table table-bordered small text-center align-middle">
+                      <thead className="table-warning">
+                        <tr>
+                          <th>Subjects</th> <th>1st CA (15)</th>{" "}
+                          <th>2nd CA (15)</th> <th>Home Fun (5)</th>{" "}
+                          <th>Project (5)</th> <th>Exams (60)</th>{" "}
+                          <th>Total (100)</th> <th>Highest</th> <th>Lowest</th>{" "}
+                          <th>Position</th>
+                          <th>Grade</th> <th>Remark</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {termData.subjects.map((s, i) => (
+                          <tr key={i}>
+                            <td>{s.subject}</td>
+                            <td>{s.CA1 ?? "-"}</td>
+                            <td>{s.CA2 ?? "-"}</td>
+                            <td>{s.HF ?? "-"}</td>
+                            <td>{s.Project ?? "-"}</td>
+                            <td>{s.Exams ?? "-"}</td>
+                            <td>{s.Total ?? "-"}</td>
+                            <td>{s.Highest ?? "-"}</td>
+                            <td>{s.Lowest ?? "-"}</td>
+                            <td>{s.Position ?? "-"}</td>
+                            <td>{s.Grade ?? "-"}</td>
+                            <td>{s.Remark ?? "-"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
 
-                  {/* === SUMMARY SECTION === */}
-                  <div className="summary-section small text-start">
-                    <div className="summary-row">
-                      {/* Left Column */}
-                      <div className="summary-col">
-                        <p>
-                          <strong>Total Obtainable:</strong>{" "}
-                          {termData.subjects.length * 100}
-                        </p>
-                        <p>
-                          <strong>Total Score:</strong>{" "}
-                          {termData.subjects.reduce(
-                            (a, b) => a + (b.Total || 0),
-                            0
-                          )}
-                        </p>
-                        <p>
-                          <strong>Average Score:</strong>{" "}
-                          {(
-                            termData.subjects.reduce(
+                    {/* === SUMMARY SECTION === */}
+                    <div className="summary-section small text-start">
+                      <div className="summary-row">
+                        {/* Left Column */}
+                        <div className="summary-col">
+                          <p>
+                            <strong>Total Obtainable:</strong>{" "}
+                            {termData.subjects.length * 100}
+                          </p>
+                          <p>
+                            <strong>Total Score:</strong>{" "}
+                            {termData.subjects.reduce(
                               (a, b) => a + (b.Total || 0),
                               0
-                            ) / termData.subjects.length
-                          ).toFixed(2)}
-                        </p>
-                      </div>
-                      <div className="summary-col"></div>
-                      {/* Right Column */}
-                      <div className="summary-col">
-                        <p>
-                          <strong>Highest in Class:</strong>{" "}
-                          {highestLowest?.highest
-                            ? `${highestLowest.highest.total}`
-                            : "—"}
-                        </p>
-                        <p>
-                          <strong>Lowest in Class:</strong>{" "}
-                          {highestLowest?.lowest
-                            ? `${highestLowest.lowest.total}`
-                            : "—"}
-                        </p>
+                            )}
+                          </p>
+                          <p>
+                            <strong>Average Score:</strong>{" "}
+                            {(
+                              termData.subjects.reduce(
+                                (a, b) => a + (b.Total || 0),
+                                0
+                              ) / termData.subjects.length
+                            ).toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="summary-col"></div>
+                        {/* Right Column */}
+                        <div className="summary-col">
+                          <p>
+                            <strong>Highest in Class:</strong>{" "}
+                            {highestLowest?.highest
+                              ? `${highestLowest.highest.total}`
+                              : "—"}
+                          </p>
+                          <p>
+                            <strong>Lowest in Class:</strong>{" "}
+                            {highestLowest?.lowest
+                              ? `${highestLowest.lowest.total}`
+                              : "—"}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* === SKILLS SECTION === */}
-                  <div className="skills-section">
-                    <div className="skills-row">
-                      {/* Psychomotor Skills */}
-                      <div className="skills-col">
-                        <table className="table table-bordered text-center">
-                          <thead className="table-warning">
-                            <tr>
-                              <th>Psychomotor Skills</th>
-                              <th>A</th>
-                              <th>B</th>
-                              <th>C</th>
-                              <th>D</th>
-                              <th>E</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[
-                              "Writing",
-                              "Reading",
-                              "Fluency",
-                              "Sports",
-                              "LanguageSkill",
-                              "-",
-                            ].map((s) => (
-                              <tr key={s}>
-                                <td>{s}</td>
-                                {["A", "B", "C", "D", "E"].map((g) => (
-                                  <td key={g}>
-                                    {skillData?.psychomotor?.[s] === g
-                                      ? "✔️"
-                                      : ""}
-                                  </td>
-                                ))}
+                    {/* === SKILLS SECTION === */}
+                    <div className="skills-section">
+                      <div className="skills-row">
+                        {/* Psychomotor Skills */}
+                        <div className="skills-col">
+                          <table className="table table-bordered text-center">
+                            <thead className="table-warning">
+                              <tr>
+                                <th>Psychomotor Skills</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                            </thead>
+                            <tbody>
+                              {[
+                                "Writing",
+                                "Reading",
+                                "Fluency",
+                                "Sports",
+                                "LanguageSkill",
+                                "-",
+                              ].map((s) => (
+                                <tr key={s}>
+                                  <td>{s}</td>
+                                  {["A", "B", "C", "D", "E"].map((g) => (
+                                    <td key={g}>
+                                      {skillData?.psychomotor?.[s] === g
+                                        ? "✔️"
+                                        : ""}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
 
-                      {/* Affective Ability */}
-                      <div className="skills-col">
-                        <table className="table table-bordered text-center">
-                          <thead className="table-warning">
-                            <tr>
-                              <th>Affective Ability</th>
-                              <th>A</th>
-                              <th>B</th>
-                              <th>C</th>
-                              <th>D</th>
-                              <th>E</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[
-                              "Punctuality",
-                              "Neatness",
-                              "Politeness",
-                              "Cooperation",
-                              "SelfControl",
-                              "Attentiveness",
-                            ].map((t) => (
-                              <tr key={t}>
-                                <td>{t}</td>
-                                {["A", "B", "C", "D", "E"].map((g) => (
-                                  <td key={g}>
-                                    {skillData?.affective?.[t] === g
-                                      ? "✔️"
-                                      : ""}
-                                  </td>
-                                ))}
+                        {/* Affective Ability */}
+                        <div className="skills-col">
+                          <table className="table table-bordered text-center">
+                            <thead className="table-warning">
+                              <tr>
+                                <th>Affective Ability</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {[
+                                "Punctuality",
+                                "Neatness",
+                                "Politeness",
+                                "Cooperation",
+                                "SelfControl",
+                                "Attentiveness",
+                              ].map((t) => (
+                                <tr key={t}>
+                                  <td>{t}</td>
+                                  {["A", "B", "C", "D", "E"].map((g) => (
+                                    <td key={g}>
+                                      {skillData?.affective?.[t] === g
+                                        ? "✔️"
+                                        : ""}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* === REMARKS & FOOTER SECTION === */}
+                    <div className="result-footer-section small text-start">
+                      <div className="result-footer">
+                        {/* === Left: Class Teacher === */}
+                        <div className="footer-left">
+                          <p>
+                            <strong>Learner’s Conduct:</strong>{" "}
+                            {teacherRemark?.conduct ||
+                              "____________________________"}
+                          </p>
+                          <p>
+                            <strong>Class Teacher’s Name:</strong>{" "}
+                            {teacherRemark?.teacherName ||
+                              "________________________"}
+                          </p>
+                          <p>
+                            <strong>Teacher’s Remark:</strong>{" "}
+                            {teacherRemark?.remark ||
+                              "________________________"}
+                          </p>
+                        </div>
+
+                        {/* === Center: Stamp & Signature === */}
+                        <div className="footer-center text-center">
+                          <img
+                            src="/imgs/stamp2.png"
+                            alt="Bright Kingdom British School Stamp"
+                            className="stamp-image"
+                          />
+                          <img
+                            src="/imgs/signature.png"
+                            alt="School Head Signature"
+                            className="signature-image"
+                          />
+                          <div className="signature-line"></div>
+                        </div>
+
+                        {/* === Right: Head Teacher === */}
+                        <div className="footer-right text-start">
+                          <p>
+                            <strong className=" fw-bold">
+                              Head Teacher’s Name:
+                            </strong>{" "}
+                            {headTeacherName || "________________________"}
+                          </p>
+                          <p>
+                            <strong>Head Teacher’s Remark:</strong>{" "}
+                            {headTeacherRemark || "________________________"}
+                          </p>
+                          <p>
+                            <strong>Date:</strong>{" "}
+                            {new Date().toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-                  {/* === REMARKS & FOOTER SECTION === */}
-                  <div className="result-footer-section small text-start">
-                    <div className="result-footer">
-                      {/* === Left: Class Teacher === */}
-                      <div className="footer-left">
-                        <p>
-                          <strong>Learner’s Conduct:</strong>{" "}
-                          {teacherRemark?.conduct ||
-                            "____________________________"}
-                        </p>
-                        <p>
-                          <strong>Class Teacher’s Name:</strong>{" "}
-                          {teacherRemark?.teacherName ||
-                            "________________________"}
-                        </p>
-                        <p>
-                          <strong>Teacher’s Remark:</strong>{" "}
-                          {teacherRemark?.remark || "________________________"}
-                        </p>
-                      </div>
-
-                      {/* === Center: Stamp & Signature === */}
-                      <div className="footer-center text-center">
-                        <img
-                          src="/imgs/stamp2.png"
-                          alt="Bright Kingdom British School Stamp"
-                          className="stamp-image"
-                        />
-                        <img
-                          src="/imgs/signature.png"
-                          alt="School Head Signature"
-                          className="signature-image"
-                        />
-                        <div className="signature-line"></div>
-                      </div>
-
-                      {/* === Right: Head Teacher === */}
-                      <div className="footer-right text-start">
-                        <p>
-                          <strong className=" fw-bold">
-                            Head Teacher’s Name:
-                          </strong>{" "}
-                          {headTeacherName || "________________________"}
-                        </p>
-                        <p>
-                          <strong>Head Teacher’s Remark:</strong>{" "}
-                          {headTeacherRemark || "________________________"}
-                        </p>
-                        <p>
-                          <strong>Date:</strong>{" "}
-                          {new Date().toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 </div>
               </div>
 

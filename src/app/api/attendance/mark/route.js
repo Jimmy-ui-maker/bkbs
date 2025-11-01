@@ -13,14 +13,43 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "Missing fields." });
     }
 
-    // Ensure date object is normalized (so upsert works correctly)
     const normalizedDate = new Date(new Date(date).toDateString());
 
-    const attendance = await Attendance.findOneAndUpdate(
-      { classLevel, session, term, date: normalizedDate },
-      { records },
-      { upsert: true, new: true }
+    // 🔹 Find or create attendance document for class & session
+    let attendanceDoc = await Attendance.findOne({ classLevel, session });
+
+    if (!attendanceDoc) {
+      attendanceDoc = new Attendance({
+        classLevel,
+        session,
+        terms: [],
+      });
+    }
+
+    // 🔹 Find the term inside "terms"
+    let termEntry = attendanceDoc.terms.find((t) => t.term === term);
+
+    if (!termEntry) {
+      termEntry = { term, attendance: [] };
+      attendanceDoc.terms.push(termEntry);
+    }
+
+    // 🔹 Check if date already exists inside this term
+    const existingDay = termEntry.attendance.find(
+      (d) => new Date(d.date).toDateString() === normalizedDate.toDateString()
     );
+
+    if (existingDay) {
+      existingDay.records = records;
+    } else {
+      termEntry.attendance.push({
+        date: normalizedDate,
+        records,
+      });
+    }
+
+    // 🔹 Save entire document
+    await attendanceDoc.save();
 
     // Count totals
     const presentCount = records.filter((r) => r.status === "Present").length;
@@ -28,11 +57,10 @@ export async function POST(req) {
 
     return NextResponse.json({
       success: true,
-      attendance,
       summary: { presentCount, absentCount },
     });
   } catch (error) {
-    console.error("❌ Attendance marking failed:", error);
+    console.error("❌ Attendance saving failed:", error);
     return NextResponse.json({ success: false, error: error.message });
   }
 }
