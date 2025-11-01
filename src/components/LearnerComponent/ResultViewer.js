@@ -218,13 +218,21 @@ export default function ResultViewer({
 
   const handleDownload = async () => {
     const html2pdf = (await import("html2pdf.js")).default;
+
     const opt = {
       margin: 0,
       filename: `${learner.fullName}-${viewingTerm}-result.pdf`,
       image: { type: "jpeg", quality: 1 },
-      html2canvas: { scale: 2 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true, // ✅ Enables cross-origin images
+        allowTaint: true, // ✅ Allows mixed content rendering
+        logging: false,
+        backgroundColor: "#ffffff",
+      },
       jsPDF: { unit: "in", format: "A4", orientation: "portrait" },
     };
+
     html2pdf().set(opt).from(pdfRef.current).save();
   };
 
