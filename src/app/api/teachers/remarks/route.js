@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import TeacherRemark from "@/models/TeacherRemark";
-import Teacher from "@/models/Teacher"; // <-- to auto-fetch teacher name
+import Teacher from "@/models/Teacher";
 
 export const dynamic = "force-dynamic";
 
-await dbConnect();
-
-/* ===========================
+/* ===========================================================
    📌 CREATE / UPDATE (UPSERT)
-=========================== */
+=========================================================== */
 export async function POST(req) {
+  await dbConnect();
   try {
     const {
       learnerId,
@@ -20,21 +19,24 @@ export async function POST(req) {
       conduct = "",
       remark = "",
       teacherId,
-      teacherName, // optional from frontend
+      teacherName, // optional
     } = await req.json();
 
-    // 🔹 Check minimum required fields
+    // ✅ Validate required fields
     if (!learnerId || !className || !session || !term || !teacherId) {
       return NextResponse.json({
         success: false,
-        error: "Missing required fields (learnerId, className, session, term, teacherId)",
+        error:
+          "Missing required fields (learnerId, className, session, term, teacherId)",
       });
     }
 
-    // 🔹 Auto-fetch teacher name if not provided
+    // ✅ Auto-fetch teacher name if not provided
     let tName = teacherName;
     if (!tName) {
-      const teacherDoc = await Teacher.findById(teacherId).select("fullName name");
+      const teacherDoc = await Teacher.findById(teacherId).select(
+        "fullName name"
+      );
       if (teacherDoc) {
         tName = teacherDoc.fullName || teacherDoc.name || "Unknown Teacher";
       } else {
@@ -42,7 +44,7 @@ export async function POST(req) {
       }
     }
 
-    // 🔹 Upsert (create if not exist, otherwise update)
+    // ✅ Upsert (create if not exist, otherwise update)
     const doc = await TeacherRemark.findOneAndUpdate(
       { learnerId, session, term },
       {
@@ -65,14 +67,15 @@ export async function POST(req) {
   }
 }
 
-/* ===========================
+/* ===========================================================
    📌 GET (Fetch remarks)
-=========================== */
+=========================================================== */
 export async function GET(req) {
+  await dbConnect();
   try {
     const { searchParams } = new URL(req.url);
     const learnerId = searchParams.get("learnerId");
-    const className = searchParams.get("class");
+    const className = searchParams.get("className"); // ✅ fixed key
     const session = searchParams.get("session");
     const term = searchParams.get("term");
 
@@ -84,7 +87,7 @@ export async function GET(req) {
 
     const remarks = await TeacherRemark.find(q)
       .populate("learnerId", "fullName admissionNo")
-      .populate("teacherId", "fullName name"); // also return teacher info
+      .populate("teacherId", "fullName name");
 
     return NextResponse.json({ success: true, remarks });
   } catch (err) {
@@ -93,14 +96,16 @@ export async function GET(req) {
   }
 }
 
-/* ===========================
+/* ===========================================================
    📌 DELETE (Remove remark)
-=========================== */
+=========================================================== */
 export async function DELETE(req) {
+  await dbConnect();
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ success: false, error: "Missing id" });
+    if (!id)
+      return NextResponse.json({ success: false, error: "Missing id" });
 
     await TeacherRemark.findByIdAndDelete(id);
     return NextResponse.json({ success: true });

@@ -19,6 +19,7 @@ export default function ResultViewer({
   const terms = ["First Term", "Second Term", "Third Term"];
   const [termDates, setTermDates] = useState(null);
   const [highestLowest, setHighestLowest] = useState(null);
+  
 
   const [classCount, setClassCount] = useState(0);
 

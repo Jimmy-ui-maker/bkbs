@@ -190,7 +190,7 @@ export default function TeacherRemarkForm({
           <div className="col-md-4">
             <label className="form-label small">Learner</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={selectedLearner}
               onChange={(e) => setSelectedLearner(e.target.value)}
             >
@@ -206,7 +206,7 @@ export default function TeacherRemarkForm({
           <div className="col-md-4">
             <label className="form-label small">Session</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select login-input form-select-sm"
               value={session}
               onChange={(e) => setSession(e.target.value)}
             >
@@ -222,7 +222,7 @@ export default function TeacherRemarkForm({
           <div className="col-md-4">
             <label className="form-label small">Term</label>
             <select
-              className="form-select form-select-sm"
+              className="form-select  login-input form-select-sm"
               value={term}
               onChange={(e) => setTerm(e.target.value)}
             >
@@ -237,7 +237,7 @@ export default function TeacherRemarkForm({
           <label className="form-label small">Learner Conduct</label>
           <input
             list="conducts"
-            className="form-control form-control-sm"
+            className="form-control login-input form-control-sm"
             value={conduct}
             onChange={(e) => setConduct(e.target.value)}
             placeholder="Type or select conduct..."
@@ -253,7 +253,7 @@ export default function TeacherRemarkForm({
           <label className="form-label small">Teacher Remark</label>
           <input
             list="remarks"
-            className="form-control form-control-sm"
+            className="form-control  login-input form-control-sm"
             value={remark}
             onChange={(e) => setRemark(e.target.value)}
             placeholder="Type or select remark..."
@@ -296,7 +296,7 @@ export default function TeacherRemarkForm({
         <h6 className="fw-bold">📋 All Remarks ({remarksList.length})</h6>
         <div className="table-responsive">
           <table className="table table-sm table-bordered align-middle">
-            <thead className="table-light">
+            <thead className="table-dark">
               <tr>
                 <th>Learner</th>
                 <th>Conduct</th>
