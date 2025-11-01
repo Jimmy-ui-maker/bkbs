@@ -753,20 +753,19 @@ select {
   border: 1px solid var(--boderColor);
 }
 
-/* === SCROLLABLE WRAPPER (Base) === */
+/* === FULL RESULT SHEET (Optimized for screen, print & mobile PDF) === */
+/* === SCROLLABLE CONTAINER for MOBILE === */
 .result-sheet-wrapper {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: auto !important;
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   display: flex;
   justify-content: center;
   background: #fffef5;
-  padding: 15px; /* small extra padding for breathing space */
-  box-sizing: border-box;
 }
 
-/* === RESULT SHEET (Fixed A4 layout) === */
+/* === RESULT SHEET (Keep A4 layout) === */
 .result-sheet {
   --sheet-width: 210mm;
   --sheet-height: 297mm;
@@ -774,8 +773,8 @@ select {
   background: #fff8dc;
   width: var(--sheet-width);
   min-height: var(--sheet-height);
-  margin: 0 auto;
   padding: 12mm 10mm;
+  margin: 0 auto;
   border-radius: 10px;
   font-size: 0.75rem;
   box-shadow: var(--boxCardShadow);
@@ -783,71 +782,33 @@ select {
   position: relative;
   box-sizing: border-box;
   overflow: visible;
-  transform-origin: top center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* === MOBILE AUTO SCALE (Fluid + Adaptive) === */
-@media screen and (max-width: 1200px) {
-  .result-sheet {
-    transform: scale(0.9);
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .result-sheet {
-    transform: scale(0.85);
-  }
-}
-
-@media screen and (max-width: 820px) {
-  .result-sheet {
-    transform: scale(0.75);
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .result-sheet {
-    transform: scale(0.65);
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .result-sheet {
-    transform: scale(0.55);
-  }
-}
-
-/* === Dynamic Fit Scaling for Tiny Devices === */
-@media screen and (max-width: 400px) {
-  .result-sheet {
-    transform: scale(calc(100vw / 850));
-  }
-}
-
-/* === Ensure wrapper shows scaled sheet fully === */
-@media screen and (max-width: 1024px) {
+/* === MOBILE RESPONSIVE ADJUSTMENT === */
+@media screen and (max-width: 768px) {
   .result-sheet-wrapper {
-    overflow-x: visible;
-    overflow-y: visible;
-    padding: 20px 10px; /* adds soft edges when scaled */
+    padding-bottom: 8px;
+    width: 100%;
+  }
+
+  .result-sheet {
+    font-size: 0.7rem;
+    padding: 10mm 6mm;
+    min-width: 210mm; /* keeps A4 width but allows scrolling */
+  }
+
+  /* Optional: nicer scrollbar */
+  .result-sheet-wrapper::-webkit-scrollbar {
+    height: 6px;
+  }
+  .result-sheet-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(184, 171, 61, 0.4);
+    border-radius: 3px;
+  }
+  .result-sheet-wrapper::-webkit-scrollbar-track {
+    background-color: transparent;
   }
 }
-
-/* === Optional Scrollbar Styling === */
-.result-sheet-wrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.result-sheet-wrapper::-webkit-scrollbar-thumb {
-  background-color: rgba(184, 171, 61, 0.4);
-  border-radius: 3px;
-}
-
-.result-sheet-wrapper::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
 
 /* Elegant dotted watermark background (visible in print) */
 .result-sheet::before {
