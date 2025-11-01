@@ -274,6 +274,7 @@ export default function ResultViewer({
               </div>
 
               <div className="modal-body " ref={pdfRef}>
+              <div className="result-sheet-wrapper">
                 <div className="result-sheet">
                   <div className="result-watermark">
                     <img
@@ -597,6 +598,7 @@ export default function ResultViewer({
                       </div>
                     </div>
                   </div>
+                </div>
                 </div>
               </div>
 
